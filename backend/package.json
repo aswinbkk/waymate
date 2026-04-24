@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "A Hybrid P2P Ride-Sharing & Group Transit Marketplace",
+  "keywords": [
+    "waymate"
+  ],
+  "homepage": "https://github.com/aswinbkk/waymate#readme",
+  "bugs": {
+    "url": "https://github.com/aswinbkk/waymate/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aswinbkk/waymate.git"
+  },
+  "license": "ISC",
+  "author": "Aswin Baburaj K K",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

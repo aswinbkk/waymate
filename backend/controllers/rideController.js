@@ -36,71 +36,35 @@ const getAllRides = async (req,res) => {
     }
 };
 
-const getUserRides = async (req, res) => {
-    const { userId } = req.params;
-
+const updateRide = async (req,res) => {
     try {
-        const rides = await Ride.find({ user: userId });
-
-        res.status(200).json(rides);
-
+        const {id} = req.params;
+        const updateData = await post.findByIdAndUpdate(id,req.body, {returnDocument: 'after'});
+        if (!updateData) {
+            return res.status(404).json({msg: "post not fonud"});
+        }
+        res.status(200).json({msg:"post updated", updateddata:updateData});
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Server error" });
+        res.status(500).json({msg:"server error"});
     }
 };
 
-const acceptRide = async (req, res) => {
-    const { rideId } = req.params;
-    const { agencyId } = req.body;
-
+const deleteRide = async (req,res) => {
     try {
-        const ride = await Ride.findByIdAndUpdate(
-            rideId,
-            {
-                agency: agencyId,
-                status: "accepted"
-            },
-            { new: true }
-        );
-
-        res.status(200).json({
-            msg: "Ride accepted",
-            data: ride
-        });
-
+        const {id} = req.params;
+        const deleteData = await post.findByIdAndDelete(id);
+        if (!deleteData) {
+           return res.status(404).json({msg:"post not fonud"});
+        }
+        res.status(200).json({msg:"post deleted"});
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Server error" });
-    }
-};
-
-const updateRideStatus = async (req, res) => {
-    const { rideId } = req.params;
-    const { status } = req.body;
-
-    try {
-        const ride = await Ride.findByIdAndUpdate(
-            rideId,
-            { status },
-            { new: true }
-        );
-
-        res.status(200).json({
-            msg: "Ride status updated",
-            data: ride
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Server error" });
+        res.status(500).json({msg:"server error"});
     }
 };
 
 module.exports = {
     createRide,
     getAllRides,
-    getUserRides,
-    acceptRide,
-    updateRideStatus
+    updateRide,
+    deleteRide
 };

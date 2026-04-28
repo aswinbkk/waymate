@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const saltRounds = 10;
 
@@ -61,8 +62,9 @@ const loginUser = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
-        
-        res.status(200).json({ msg: "Login successful" });
+
+        const token = jwt.sign({id:existingUser._id},process.env.SECRET_KEY,{expiresIn:'1h'});
+        res.status(200).json({msg:'Login successful',token:token});
 
     } catch (error) {
         console.log(error);

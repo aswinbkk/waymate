@@ -16,9 +16,10 @@ const createRide = async (req, res) => {
             vehicle
         });
 
+
         res.status(201).json({
             msg: "Ride created successfully",
-            data: ride
+            data: ride,
         });
 
     } catch (error) {

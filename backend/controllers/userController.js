@@ -6,6 +6,10 @@ const saltRounds = 10;
 const createUser = async (req, res) => {
     const { fullname, email, password, phone } = req.body;
 
+    if (!fullname.firstname || !email || !password || !phone) {
+        return res.status(400).json({ msg: "Required fields missing" });
+    }
+
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -42,7 +46,7 @@ const createUser = async (req, res) => {
     }
 };
 
-const login = async (req, res) => {
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -66,4 +70,4 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { createUser, login };
+module.exports = { createUser, loginUser };

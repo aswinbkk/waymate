@@ -45,5 +45,5 @@ const agencySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const agency = mongoose.model("agencies", agencySchema);
+const agency = mongoose.model("agency", agencySchema);
 module.exports = agency;

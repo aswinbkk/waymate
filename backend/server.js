@@ -12,7 +12,9 @@ const userRoutes = require('./routes/userRouter');
 app.use(express.json());
 
 // routes
-app.use('/users', userRoutes);
+app.use('/user', userRoutes);
+app.use('/agency', agencyRoutes);
+app.use('/ride', rideRoutes);
 
 const PORT = process.env.PORT || 5000;
 

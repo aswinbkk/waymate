@@ -39,11 +39,11 @@ const getAllRides = async (req,res) => {
 const updateRide = async (req,res) => {
     try {
         const {id} = req.params;
-        const updateData = await post.findByIdAndUpdate(id,req.body, {returnDocument: 'after'});
+        const updateData = await Ride.findByIdAndUpdate(id,req.body, {returnDocument: 'after'});
         if (!updateData) {
-            return res.status(404).json({msg: "post not fonud"});
+            return res.status(404).json({msg: "ride not fonud"});
         }
-        res.status(200).json({msg:"post updated", updateddata:updateData});
+        res.status(200).json({msg:"ride updated", updateddata:updateData});
     } catch (error) {
         res.status(500).json({msg:"server error"});
     }
@@ -52,11 +52,11 @@ const updateRide = async (req,res) => {
 const deleteRide = async (req,res) => {
     try {
         const {id} = req.params;
-        const deleteData = await post.findByIdAndDelete(id);
+        const deleteData = await Ride.findByIdAndDelete(id);
         if (!deleteData) {
-           return res.status(404).json({msg:"post not fonud"});
+           return res.status(404).json({msg:"ride not fonud"});
         }
-        res.status(200).json({msg:"post deleted"});
+        res.status(200).json({msg:"ride deleted"});
     } catch (error) {
         res.status(500).json({msg:"server error"});
     }

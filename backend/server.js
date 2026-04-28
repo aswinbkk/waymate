@@ -6,12 +6,14 @@ const app = express();
 const connectDB = require('./config/db');
 connectDB();
 
-const userRoutes = require('./routes/userRouter');
+const userRoutes = require('./routes/userRoutes');
+const agencyRoutes = require('./routes/agencyRoutes');
+const rideRoutes = require('./routes/rideRoutes');
 
-// middleware
+
 app.use(express.json());
 
-// routes
+
 app.use('/user', userRoutes);
 app.use('/agency', agencyRoutes);
 app.use('/ride', rideRoutes);

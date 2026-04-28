@@ -61,7 +61,7 @@ const loginUser = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
-
+        
         res.status(200).json({ msg: "Login successful" });
 
     } catch (error) {

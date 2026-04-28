@@ -27,17 +27,12 @@ const createRide = async (req, res) => {
     }
 };
 
-const getAllRides = async (req, res) => {
+const getAllRides = async (req,res) => {
     try {
-        const rides = await Ride.find()
-            .populate('user', 'fullname email')
-            .populate('agency', 'agencyname email');
-
-        res.status(200).json(rides);
-
+        const getData = await Ride.find().sort({createdAt: -1});
+        res.status(200).json({msg:"all ride", data:getData});
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Server error" });
+        res.status(500).json({msg:"server error"});
     }
 };
 

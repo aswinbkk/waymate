@@ -59,14 +59,14 @@ const joinRide = async (req, res) => {
         }
 
         //already joined
-        // const existing = ride.passengers.find(p => p.user.equals(req.user._id));
-        // if (existing) {
-        //     return res.status(400).json({ message: "Already joined this ride" });
-        // }
+        const existing = ride.passengers.find(p => p.user.equals(req.user.id));
+        if (existing) {
+            return res.status(400).json({ message: "Already joined this ride" });
+        }
 
         //add passenger
         ride.passengers.push({
-            user: req.user._id
+            user: req.user.id
         });
         ride.availableSeats -= 1;
 
@@ -81,6 +81,42 @@ const joinRide = async (req, res) => {
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
+};
+
+//leave ride
+const leaveRide = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ride = await Ride.findById(id);
+
+    if (!ride) {
+      return res.status(404).json({ msg: "Ride not found" });
+    }
+
+    const passengerIndex = ride.passengers.findIndex(
+        p => p.user.equals(req.user.id)
+    );
+
+    if (passengerIndex === -1) {
+      return res.status(400).json({ msg: "You are not in this ride" });
+    }
+
+    // Remove passenger
+    ride.passengers.splice(passengerIndex, 1);
+    ride.availableSeats += 1;
+
+    // Reopen ride
+    if (ride.status === "full") {
+      ride.status = "open";
+    }
+
+    await ride.save();
+    
+    res.status(201).json({ msg: "Left ride successfully", data: ride });
+
+  } catch (error) {
+    res.status(500).json({ msg: `Server error,${error}` });
+  }
 };
 
 //get all ride
@@ -106,6 +142,7 @@ const updateRide = async (req, res) => {
     }
 };
 
+
 const deleteRide = async (req, res) => {
     try {
         const { id } = req.params;
@@ -122,6 +159,7 @@ const deleteRide = async (req, res) => {
 module.exports = {
     createRide,
     joinRide,
+    leaveRide,
     getAllRides,
     updateRide,
     deleteRide

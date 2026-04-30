@@ -1,30 +1,41 @@
-const Ride = require('../models/rideModel');
+const Ride = require("../models/rideModel");
 
+// create ride (User or Agency)
 const createRide = async (req, res) => {
-    const { user, pickup, destination, fare, vehicle } = req.body;
+  try {
+    const {
+      pickup,
+      destination,
+      date,
+      totalSeats,
+      pricePerSeat,
+      vehicleNumber,
+      preferences
+    } = req.body;
 
-    if (!user || !pickup || !destination || !fare || !vehicle) {
-        return res.status(400).json({ msg: "Required fields missing" });
+
+    if (!pickup || !destination || !date || !totalSeats || !pricePerSeat || !vehicleNumber) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    try {
-        const ride = await Ride.create({
-            user,
-            pickup,
-            destination,
-            fare,
-            vehicle
-        });
+    const ride = await Ride.create({
+      createdBy: req.user.id,
+      createdByRole: req.user.role,
+      pickup,
+      destination,
+      date,
+      totalSeats,
+      availableSeats: totalSeats,
+      pricePerSeat,
+      vehicleNumber,
+      preferences
+    });
 
-        res.status(201).json({
-            msg: "Ride created successfully",
-            data: ride,
-        });
+    res.status(201).json({msg: "Ride created successfully", data: ride});
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Server error" });
-    }
+  } catch (error) {
+    res.status(500).json({ msg: `Server error,${error}`});
+  }
 };
 
 const getAllRides = async (req,res) => {

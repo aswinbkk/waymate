@@ -9,7 +9,7 @@ const rideSchema = new mongoose.Schema(
   {
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+
       required: true,
     },
 
@@ -73,7 +73,7 @@ const rideSchema = new mongoose.Schema(
     ],
 
     preferences: {
-      genderPreference: {
+      gender: {
         type: String,
         enum: ["male", "female", "any"],
         default: "any",

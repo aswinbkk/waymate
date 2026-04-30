@@ -1,47 +1,96 @@
+//rideModel.js
+//Users creating rides
+//Agencies creating rides
+//Users joining rides
+
 const mongoose = require("mongoose");
 
 const rideSchema = new mongoose.Schema(
   {
-    user: {
-      type: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    agency: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "agency",
+
+    createdByRole: {
+      type: String,
+      enum: ["user", "agency"],
+      required: true,
     },
+
     pickup: {
       type: String,
       required: true,
     },
+
     destination: {
       type: String,
       required: true,
     },
-    fare: {
-      type: Number,
+
+    date: {
+      type: Date,
       required: true,
-    },
-    vehicle: {
-      type: String,
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ["pending", "accepted", "ongoing", "completed", "cancelled"],
-      default: "pending",
-    },
-    duration: {
-      type: Number,
     },
 
-    distance: {
+    totalSeats: {
       type: Number,
+      required: true,
+      min: 1,
+    },
+
+    availableSeats: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    pricePerSeat: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    vehicleNumber: {
+      type: String,
+      required: function () {
+        return this.createdByRole === "agency";
+      },
+    },
+
+    passengers: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        joinedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
+    preferences: {
+      genderPreference: {
+        type: String,
+        enum: ["male", "female", "any"],
+        default: "any",
+      },
+      ac: {
+        type: Boolean,
+        default: false,
+      },
+    },
+
+    status: {
+      type: String,
+      enum: ["open", "full", "ongoing", "completed", "cancelled"],
+      default: "open",
     },
   },
   { timestamps: true }
 );
 
-const Ride = mongoose.model("ride", rideSchema);
-module.exports = Ride;
+module.exports = mongoose.model("Ride", rideSchema);

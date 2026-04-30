@@ -18,7 +18,7 @@ const createRide = async (req, res) => {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        const ride = await Ride.create({
+        const ride = await Ride({
             createdBy: req.user.id,
             createdByRole: req.user.role,
             pickup,
@@ -30,6 +30,7 @@ const createRide = async (req, res) => {
             vehicleNumber,
             preferences
         });
+        await ride.save();
         res.status(201).json({ msg: "Ride created successfully", data: ride });
 
     } catch (error) {

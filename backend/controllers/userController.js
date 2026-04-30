@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
         }
 console.log(existingUser);
 
-        const token = jwt.sign({id:existingUser._id, role:existingUser.role},process.env.SECRET_KEY,{expiresIn:'1h'});
+        const token = jwt.sign({id:existingUser._id, role:existingUser.role},process.env.SECRET_KEY,{expiresIn:'100h'});
         res.status(200).json({msg:'Login successful',token:token});
 
     } catch (error) {

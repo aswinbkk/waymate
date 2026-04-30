@@ -9,7 +9,6 @@ const rideSchema = new mongoose.Schema(
   {
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-
       required: true,
     },
 
@@ -62,7 +61,7 @@ const rideSchema = new mongoose.Schema(
     passengers: [
       {
         user: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: String,
           ref: "User",
         },
         joinedAt: {

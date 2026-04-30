@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
 const createUser = async (req, res) => {
-    const { fullname, email, password, phone } = req.body;
+    const { role, fullname, email, password, phone } = req.body;
 
-    if (!fullname.firstname || !email || !password || !phone) {
+    if (!role || !fullname.firstname || !email || !password || !phone) {
         return res.status(400).json({ msg: "Required fields missing" });
     }
 
@@ -20,6 +20,7 @@ const createUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const createdUser = new User({
+            role,
             fullname:
             {
                 firstname: fullname.firstname,
@@ -43,7 +44,7 @@ const createUser = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ msg: "Server error" });
+        res.status(500).json({ msg: `Server error ${error}` });
     }
 };
 

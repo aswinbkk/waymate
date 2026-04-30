@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    role: {
+      type: String,
+      enum: ["user", "agency"],
+      default: "user"
+    },
     fullname: {
       firstname: {
         type: String,
@@ -22,7 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-    },
+    }
   },
   { timestamps: true }
 );

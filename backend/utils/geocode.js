@@ -10,7 +10,7 @@ const geocodeAddress = async (address) => {
       limit: 1
     },
     headers: {
-      "User-Agent": "carpool-app (aswinbrontowin@gmail.com)"
+      "User-Agent": "waymate (aswinbrontowin@gmail.com)"
     }
   });
 

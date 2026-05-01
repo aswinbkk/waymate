@@ -47,7 +47,7 @@ const getNearbyRides = async (req, res) => {
         const {
             originName,
             destinationName,
-            range
+            range = 1
         } = req.body;
 
         if (!originName || !destinationName) {
@@ -56,13 +56,16 @@ const getNearbyRides = async (req, res) => {
 
         const originCoords = await geocodeAddress(originName);
         const destCoords = await geocodeAddress(destinationName);
+        if (!originCoords || !destCoords) {
+            return res.status(400).json({
+                msg: "Invalid or unrecognized location. Please enter a valid place."
+            });
+        }
 
         const originLat = originCoords.lat;
         const originLng = originCoords.lng;
-
         const destLat = destCoords.lat;
         const destLng = destCoords.lng;
-
         // Approx: 1 degree ≈ 111 km
         const radius = range / 111;
 
@@ -91,20 +94,24 @@ const joinRide = async (req, res) => {
         const ride = await Ride.findById(id);
 
         if (!ride) {
-            return res.status(404).json({ message: "Ride not found" });
+            return res.status(404).json({ msg: "Ride not found" });
+        }
+
+        if (ride.createdBy.equals(req.user.id)) {
+            return res.status(400).json({ msg: "It's your own ride" });
         }
 
         if (ride.status !== "open") {
-            return res.status(400).json({ message: "Ride not open" });
+            return res.status(400).json({ msg: "Ride not open" });
         }
 
         if (ride.availableSeats <= 0) {
-            return res.status(400).json({ message: "No seats available" });
+            return res.status(400).json({ msg: "No seats available" });
         }
 
         const existing = ride.passengers.find(params => params.user.equals(req.user.id));
         if (existing) {
-            return res.status(400).json({ message: "Already joined this ride" });
+            return res.status(400).json({ msg: "Already joined this ride" });
         }
         //add passenger
         ride.passengers.push({ user: req.user.id });

@@ -141,11 +141,15 @@ const updateRide = async (req, res) => {
 const deleteRide = async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteData = await Ride.findByIdAndDelete(id);
-        if (!deleteData) {
-            return res.status(404).json({ msg: "ride not fonud" });
+
+        const deletedRide = await Ride.findOneAndDelete({ _id: id, createdBy: req.user.id });
+
+        if (!deletedRide) {
+            return res.status(404).json({ msg: "Ride not found or not authorized" });
         }
-        res.status(200).json({ msg: "Ride deleted" });
+
+        res.status(200).json({ msg: "Ride deleted successfully" });
+
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }

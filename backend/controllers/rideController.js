@@ -41,53 +41,7 @@ const createRide = async (req, res) => {
     }
 };
 
-// Get near by rides by coordinates matching.
-const getNearbyRides = async (req, res) => {
-    try {
-        const {
-            originName,
-            destinationName,
-            range = 1
-        } = req.body;
-
-        if (!originName || !destinationName) {
-            return res.status(400).json({ msg: "Origin and destination are required" });
-        };
-
-        const originCoords = await geocodeAddress(originName);
-        const destCoords = await geocodeAddress(destinationName);
-        if (!originCoords || !destCoords) {
-            return res.status(400).json({
-                msg: "Invalid or unrecognized location. Please enter a valid place."
-            });
-        }
-
-        const originLat = originCoords.lat;
-        const originLng = originCoords.lng;
-        const destLat = destCoords.lat;
-        const destLng = destCoords.lng;
-        // Approx: 1 degree ≈ 111 km
-        const radius = range / 111;
-
-        const rides = await Ride.find({
-            // Origin match
-            "origin.coordinates.lat": { $gte: originLat - radius, $lte: originLat + radius },
-            "origin.coordinates.lng": { $gte: originLng - radius, $lte: originLng + radius },
-            // Destination match
-            "destination.coordinates.lat": { $gte: destLat - radius, $lte: destLat + radius },
-            "destination.coordinates.lng": { $gte: destLng - radius, $lte: destLng + radius },
-
-            status: "open"
-        })
-            .populate("createdBy", "name email role").populate("passengers.user", "name");
-
-        res.status(200).json({ msg: "Matching rides found", count: rides.length, data: rides });
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
-
-// Join ride
+// Join a ride.
 const joinRide = async (req, res) => {
     try {
         const { id } = req.params;
@@ -130,7 +84,7 @@ const joinRide = async (req, res) => {
     }
 };
 
-// Leave ride
+// Leave from ride.
 const leaveRide = async (req, res) => {
     try {
         const { id } = req.params;
@@ -162,17 +116,7 @@ const leaveRide = async (req, res) => {
     }
 };
 
-// Get all ride
-const getAllRides = async (req, res) => {
-    try {
-        const getData = await Ride.find().sort({ createdAt: -1 });
-        res.status(200).json({ msg: "All ride", data: getData });
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
-
-// Update ride
+// Update ride.
 const updateRide = async (req, res) => {
     try {
         const { id } = req.params;
@@ -186,7 +130,7 @@ const updateRide = async (req, res) => {
     }
 };
 
-// Delete ride
+// Delete ride.
 const deleteRide = async (req, res) => {
     try {
         const { id } = req.params;
@@ -200,12 +144,60 @@ const deleteRide = async (req, res) => {
     }
 };
 
+// Search ride.
+const searchRides = async (req, res) => {
+    try {
+        const {
+            originName,
+            destinationName,
+            range = 1,
+            status = "open"
+        } = req.body;
+
+        if (originName && destinationName) {
+            const originCoords = await geocodeAddress(originName);
+            const destCoords = await geocodeAddress(destinationName);
+
+            if (!originCoords || !destCoords) {
+                return res.status(400).json({
+                    msg: "Invalid or unrecognized location. Please enter a valid place."
+                });
+            }
+
+            const originLat = originCoords.lat;
+            const originLng = originCoords.lng;
+            const destLat = destCoords.lat;
+            const destLng = destCoords.lng;
+            // Approx: 1 degree ≈ 111 km
+            const radius = range / 111;
+
+            const rides = await Ride.find({
+                // Origin match
+                "origin.coordinates.lat": { $gte: originLat - radius, $lte: originLat + radius },
+                "origin.coordinates.lng": { $gte: originLng - radius, $lte: originLng + radius },
+                // Destination match
+                "destination.coordinates.lat": { $gte: destLat - radius, $lte: destLat + radius },
+                "destination.coordinates.lng": { $gte: destLng - radius, $lte: destLng + radius },
+                status: status
+            });
+            res.status(200).json({ msg: "Matching rides found", count: rides.length, data: rides });
+
+        } else {
+            // All rides
+            const allRide = await Ride.find({ status: status }).sort({ createdAt: -1 })
+            res.status(200).json({ msg: "All ride", count: allRide.length, data: allRide });
+        }
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
 module.exports = {
     createRide,
-    getNearbyRides,
     joinRide,
     leaveRide,
-    getAllRides,
     updateRide,
-    deleteRide
+    deleteRide,
+    searchRides
 };

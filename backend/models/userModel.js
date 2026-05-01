@@ -1,6 +1,3 @@
-//userModel.js
-//user and agency schema
-
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -10,24 +7,28 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "agency"],
       default: "user"
     },
+
     fullname: {
       firstname: {
         type: String,
-        required: true,
+        required: true
       },
       lastname: {
-        type: String,
+        type: String
       },
     },
+
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
+
     password: {
       type: String,
       required: true,
     },
+
     phone: {
       type: String,
     }
@@ -36,5 +37,4 @@ const userSchema = new mongoose.Schema(
 );
 
 const User = mongoose.model("User", userSchema);
-
 module.exports = User;

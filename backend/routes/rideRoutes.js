@@ -10,6 +10,5 @@ router.post('/leave/:id' ,AuthMiddleware,rideController.leaveRide);
 router.get('/allRide', rideController.getAllRides);
 router.put('/update/:id', rideController.updateRide);
 router.delete('/delete/:id', rideController.deleteRide);
-// router.put('/updateStatus/:rideId', rideController.updateRideStatus);
 
 module.exports = router;

@@ -129,7 +129,7 @@ const updateRide = async (req, res) => {
             return res.status(403).json({ msg: "Not authorized to update this ride" });
         }
 
-        const updatedRide = await Ride.findByIdAndUpdate(id, req.body, { new: true });
+        const updatedRide = await Ride.findByIdAndUpdate(id, req.body, { returnDocument: "after" });
 
         res.status(200).json({ msg: "Ride updated", data: updatedRide });
     } catch (error) {

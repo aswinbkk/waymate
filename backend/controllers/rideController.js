@@ -120,11 +120,18 @@ const leaveRide = async (req, res) => {
 const updateRide = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateData = await Ride.findByIdAndUpdate(id, req.body, { returnDocument: 'after' });
-        if (!updateData) {
-            return res.status(404).json({ msg: "Ride not fonud" });
+        const ride = await Ride.findById(id);
+        if (!ride) {
+            return res.status(404).json({ msg: "Ride not found" });
         }
-        res.status(200).json({ msg: "Ride updated", data: updateData });
+
+        if (!ride.createdBy.equals(req.user.id)) {
+            return res.status(403).json({ msg: "Not authorized to update this ride" });
+        }
+
+        const updatedRide = await Ride.findByIdAndUpdate(id, req.body, { new: true });
+
+        res.status(200).json({ msg: "Ride updated", data: updatedRide });
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }

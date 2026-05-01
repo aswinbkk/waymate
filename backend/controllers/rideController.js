@@ -1,11 +1,12 @@
 const Ride = require("../models/rideModel");
+const geocodeAddress = require("../utils/geocode");
 
 // create ride (User or Agency)
 const createRide = async (req, res) => {
     try {
         const {
-            pickup,
-            destination,
+            originName,
+            destinationName,
             date,
             totalSeats,
             pricePerSeat,
@@ -14,15 +15,26 @@ const createRide = async (req, res) => {
         } = req.body;
 
 
-        if (!pickup || !destination || !date || !totalSeats || !pricePerSeat || !vehicleNumber) {
+        if (!originName || !destinationName || !date || !totalSeats || !pricePerSeat || !vehicleNumber) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
+        const originCoords = await geocodeAddress(originName);
+        const destCoords = await geocodeAddress(destinationName);
+        
         const ride = await Ride({
             createdBy: req.user.id,
             createdByRole: req.user.role,
-            pickup,
-            destination,
+            origin:
+            {
+                name: originName,
+                coordinates: originCoords
+            },
+            destination:
+            {
+                name: destinationName,
+                coordinates: destCoords
+            },
             date,
             totalSeats,
             availableSeats: totalSeats,
@@ -37,6 +49,74 @@ const createRide = async (req, res) => {
         res.status(500).json({ msg: `Server error,${error}` });
     }
 };
+
+//get near by Rides by coordinates matching
+const getNearbyRides = async (req, res) => {
+  try {
+    const {
+      originName,
+      destinationName,
+      range
+    } = req.body;
+
+    if (!originName || !destinationName) {
+      return res.status(400).json({
+        message: "origin and destination are required"
+      });
+    }
+
+    const originCoords = await geocodeAddress(originName);
+    const destCoords = await geocodeAddress(destinationName);
+
+    const originLat = originCoords.lat;
+    const originLng = originCoords.lng;
+
+    const destLat = destCoords.lat;
+    const destLng = destCoords.lng;
+
+    // ⚠️ Approx: 1 degree ≈ 111 km
+    const radius = range / 111;
+
+    const rides = await Ride.find({
+      // ✅ Pickup match
+      "origin.coordinates.lat": {
+        $gte: originLat - radius,
+        $lte: originLat + radius
+      },
+      "origin.coordinates.lng": {
+        $gte: originLng - radius,
+        $lte: originLng + radius
+      },
+
+      // ✅ Destination match
+      "destination.coordinates.lat": {
+        $gte: destLat - radius,
+        $lte: destLat + radius
+      },
+      "destination.coordinates.lng": {
+        $gte: destLng - radius,
+        $lte: destLng + radius
+      },
+
+      status: "open"
+    })
+      .populate("createdBy", "name email role")
+      .populate("passengers.user", "name");
+
+    res.status(200).json({
+      message: "Matching rides found",
+      count: rides.length,
+      data: rides
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 
 // join ride
 const joinRide = async (req, res) => {
@@ -129,6 +209,7 @@ const getAllRides = async (req, res) => {
     }
 };
 
+//update ride
 const updateRide = async (req, res) => {
     try {
         const { id } = req.params;
@@ -158,6 +239,7 @@ const deleteRide = async (req, res) => {
 
 module.exports = {
     createRide,
+    getNearbyRides,
     joinRide,
     leaveRide,
     getAllRides,

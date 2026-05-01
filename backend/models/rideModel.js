@@ -18,14 +18,14 @@ const rideSchema = new mongoose.Schema(
       required: true,
     },
 
-    pickup: {
-      type: String,
-      required: true,
+    origin: {
+      name: { type: String, required: true },
+      coordinates: { type: Object, required: true }
     },
-
+    
     destination: {
-      type: String,
-      required: true,
+      name: { type: String, required: true },
+      coordinates: { type: Object, required: true}
     },
 
     date: {

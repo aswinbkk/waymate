@@ -60,9 +60,7 @@ const getNearbyRides = async (req, res) => {
     } = req.body;
 
     if (!originName || !destinationName) {
-      return res.status(400).json({
-        message: "origin and destination are required"
-      });
+      return res.status(400).json({msg: "origin and destination are required"});
     }
 
     const originCoords = await geocodeAddress(originName);
@@ -74,11 +72,11 @@ const getNearbyRides = async (req, res) => {
     const destLat = destCoords.lat;
     const destLng = destCoords.lng;
 
-    // ⚠️ Approx: 1 degree ≈ 111 km
+    //Approx: 1 degree ≈ 111 km
     const radius = range / 111;
 
     const rides = await Ride.find({
-      // ✅ Pickup match
+      //Pickup match
       "origin.coordinates.lat": {
         $gte: originLat - radius,
         $lte: originLat + radius
@@ -88,7 +86,7 @@ const getNearbyRides = async (req, res) => {
         $lte: originLng + radius
       },
 
-      // ✅ Destination match
+      //Destination match
       "destination.coordinates.lat": {
         $gte: destLat - radius,
         $lte: destLat + radius
@@ -103,17 +101,12 @@ const getNearbyRides = async (req, res) => {
       .populate("createdBy", "name email role")
       .populate("passengers.user", "name");
 
-    res.status(200).json({
-      message: "Matching rides found",
-      count: rides.length,
-      data: rides
-    });
+    res.status(200).json({msg: "Matching rides found",count: rides.length,data: rides});
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ msg: `Server error,${error}` });
+
   }
 };
 

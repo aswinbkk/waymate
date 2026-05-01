@@ -1,21 +1,16 @@
-//rideModel.js
-//Users creating rides
-//Agencies creating rides
-//Users joining rides
-
 const mongoose = require("mongoose");
 
 const rideSchema = new mongoose.Schema(
   {
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      required: true
     },
 
     createdByRole: {
       type: String,
       enum: ["user", "agency"],
-      required: true,
+      required: true
     },
 
     origin: {
@@ -30,25 +25,25 @@ const rideSchema = new mongoose.Schema(
 
     date: {
       type: Date,
-      required: true,
+      required: true
     },
 
     totalSeats: {
       type: Number,
       required: true,
-      min: 1,
+      min: 1
     },
 
     availableSeats: {
       type: Number,
       required: true,
-      min: 0,
+      min: 0
     },
 
     pricePerSeat: {
       type: Number,
       required: true,
-      min: 0,
+      min: 0
     },
 
     vehicleNumber: {
@@ -62,11 +57,11 @@ const rideSchema = new mongoose.Schema(
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
+          ref: "User"
         },
         joinedAt: {
           type: Date,
-          default: Date.now,
+          default: Date.now
         },
       },
     ],
@@ -75,7 +70,7 @@ const rideSchema = new mongoose.Schema(
       gender: {
         type: String,
         enum: ["male", "female", "any"],
-        default: "any",
+        default: "any"
       },
       ac: {
         type: Boolean,
@@ -86,7 +81,7 @@ const rideSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["open", "full", "ongoing", "completed", "cancelled"],
-      default: "open",
+      default: "open"
     },
   },
   { timestamps: true }

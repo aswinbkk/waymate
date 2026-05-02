@@ -1,11 +1,11 @@
  🚗 waymate – Smart Carpooling Platform
 
 <p align="center">
-  <img src="" alt="WayMate Logo" />
+  <img src="frontend/public/waymate_standalone_icon.png" alt="waymate icon" />
 </p>
 
 <p align="center">
-  <img src="frontend/public/waymate_full_logo.png" alt="WayMate Logo" width="200"/>
+  <img src="frontend/public/waymate_wordmark_logo.png" alt="waymate wordmark" width="200"/>
 </p>
 
 ---
@@ -189,29 +189,3 @@ For major changes, open an issue first.
 MIT License
 
 ---
-
-# 💡 Branding Note
-
-👉 Replace logo with your actual:
-
-```html
-<img src="frontend/public/waymate_full_logo.png" />
-```
-
----
-
-# 🚀 Tagline Ideas
-
-* *“Travel Smart, Share the Way”*
-* *“Ride Together, Save Together”*
-* *“WayMate – Your Smart Travel Companion”*
-
----
-
-If you want, I can also:
-
-* 🎨 Generate **real WayMate logo (PNG/SVG)**
-* 🌐 Create **landing page UI**
-* 📦 Add **API documentation (Swagger)**
-
-Just tell 👍

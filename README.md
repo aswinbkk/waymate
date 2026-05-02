@@ -1,7 +1,7 @@
  🚗 waymate – Smart Carpooling Platform
 
 <p align="center">
-  <img src="frontend/public/waymate_standalone_icon.png" alt="waymate icon" />
+  <img src="frontend/public/waymate_standalone_icon.png" alt="waymate icon" width="200"/>
 </p>
 
 <p align="center">

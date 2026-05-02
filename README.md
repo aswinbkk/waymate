@@ -1,224 +1,217 @@
-# 🚗 MERN Carpooling Platform (waymate)
+ 🚗 waymate – Smart Carpooling Platform
 
-A scalable backend for a **carpooling platform** built using the MERN stack.  
-This system allows users and agencies to create, join, and manage rides with advanced features like **group booking, bidding, and geolocation-based matching**.
+<p align="center">
+  <img src="" alt="WayMate Logo" />
+</p>
 
----
-
-## 📌 Features
-
-### 👤 Users
-- Register & Login (JWT Authentication)
-- Create ride requests
-- Join existing rides (user/agency)
-- Leave rides
-- View created & joined rides
-- Group booking (create & join)
-- Bid for cheaper rides
-- Set ride preferences (gender, AC, etc.)
-- Forgot & Reset Password
+<p align="center">
+  <img src="frontend/public/waymate_full_logo.png" alt="WayMate Logo" width="200"/>
+</p>
 
 ---
 
-### 🏢 Ride Providers (Agencies)
-- Create rides on routes
-- View user demand (location-based)
-- Accept or ignore group bookings
-- Participate in bidding system
-- Set ride preferences
+# ✨ Features
+
+## 👤 Users
+
+* Create ride requests
+* Join rides created by users & agencies
+* Create & join group bookings
+* Bid for cheaper rides 💰
+* Set travel preferences (AC, gender, timing, etc.)
+* View ride history & dashboard
 
 ---
 
-### 📍 Core Functionalities
-- Geo-based ride matching (origin & destination)
-- Passenger management
-- Seat availability tracking
-- Role-based access (user / agency)
-- Secure password reset system
-- Ride search with filters (location, range, date)
+## 🏢 Ride Providers (Agencies)
+
+* Create rides on specific routes
+* View user demand on routes 📍
+* Accept or reject group bookings
+* Participate in bidding system
+* Set ride preferences
 
 ---
 
-## 🛠️ Tech Stack
+## 🔍 Smart Matching
 
-- **Node.js**
-- **Express.js**
-- **MongoDB (Mongoose)**
-- **JWT Authentication**
-- **bcrypt (Password Hashing)**
-- **Axios (Geocoding API)**
+* Location-based ride search (Geo matching)
+* Route-based pickup & destination matching
+* Nearby ride discovery
 
 ---
 
-## 📂 Project Structure
+# 🛠️ Tech Stack
 
-```
+### Frontend
 
-project/
-│
-├── controllers/
-│   ├── userController.js
-│   ├── rideController.js
-│
-├── models/
-│   ├── userModel.js
-│   ├── rideModel.js
-│
-├── routes/
-│   ├── userRoutes.js
-│   ├── rideRoutes.js
-│
-├── middleware/
-│   ├── authMiddleware.js
-│   ├── roleMiddleware.js
-│
-├── utils/
-│   ├── geocode.js
-│
-├── server.js
-└── .env
+* ⚛️ React.js
+* 🎨 CSS / Tailwind (optional)
 
-````
+### Backend
+
+* 🟢 Node.js
+* 🚀 Express.js
+* 🍃 MongoDB (Mongoose)
+
+### Other Tools
+
+* JWT Authentication 🔐
+* Axios
+* OpenStreetMap (Geocoding)
 
 ---
 
-## ⚙️ Installation
+# 📁 Project Structure
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/carpooling-backend.git
-
-# Navigate to project
-cd carpooling-backend
-
-# Install dependencies
-npm install
-
-# Run server
-npm run dev
-````
+WayMate/
+│
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── utils/
+│   └── server.js
+│
+├── frontend/
+│   ├── src/
+│   ├── components/
+│   ├── pages/
+│   └── App.js
+│
+└── README.md
+```
 
 ---
 
-## 🔐 Environment Variables (.env)
+# ⚙️ Backend Setup
+
+```bash
+cd backend
+npm install
+```
+
+### 🔑 Create `.env`
 
 ```env
-PORT=5000
+PORT=4000
 MONGO_URI=your_mongodb_connection
 JWT_SECRET=your_secret_key
 ```
 
----
+### ▶️ Run Server
 
-## 🔑 API Endpoints
-
-### 🧑 Auth
-
-```
-POST   /api/users/register
-POST   /api/users/login
-POST   /api/users/forgot-password
-POST   /api/users/reset-password/:token
+```bash
+npm start
 ```
 
 ---
 
-### 👤 User
+# 💻 Frontend Setup
 
-```
-GET    /api/users/profile
-PUT    /api/users/profile
-GET    /api/users/my-rides
-GET    /api/users/joined-rides
-GET    /api/users/dashboard
+```bash
+cd frontend
+npm install
+npm start
 ```
 
 ---
 
-### 🚗 Rides
+# 🔐 API Highlights
 
+## Auth
+
+* `POST /api/users/register`
+* `POST /api/users/login`
+
+## Rides
+
+* `POST /api/rides/create`
+* `GET /api/rides/search`
+* `POST /api/users/ride/:id/join`
+* `POST /api/users/ride/:id/leave`
+
+## User
+
+* `GET /api/users/profile`
+* `GET /api/users/my-rides`
+* `GET /api/users/joined-rides`
+
+---
+
+# 📊 Dashboard Features
+
+* Total rides created
+* Total rides joined
+* Activity tracking
+
+---
+
+# 🌍 Geo Features
+
+* Convert location name → coordinates
+* Find rides within range
+* Match origin & destination
+
+---
+
+# 🚀 Future Enhancements
+
+* 🔄 Real-time ride tracking
+* 💳 Payment integration
+* 📱 Mobile app (React Native)
+* ⭐ Ratings & reviews
+* 🔔 Notifications system
+
+---
+
+# 🧠 Concept
+
+WayMate solves:
+
+* 🚗 Empty seats problem
+* 💸 High travel costs
+* 🌱 Environmental impact
+
+---
+
+# 🤝 Contributing
+
+Pull requests are welcome!
+For major changes, open an issue first.
+
+---
+
+# 📄 License
+
+MIT License
+
+---
+
+# 💡 Branding Note
+
+👉 Replace logo with your actual:
+
+```html
+<img src="frontend/public/waymate_full_logo.png" />
 ```
-POST   /api/rides/create
-GET    /api/rides/:id
-PUT    /api/rides/:id
-DELETE /api/rides/:id
-
-POST   /api/rides/search
-POST   /api/rides/:id/join
-POST   /api/rides/:id/leave
-```
 
 ---
 
-## 📍 Geolocation Matching
+# 🚀 Tagline Ideas
 
-* Converts location names → coordinates using OpenStreetMap
-* Matches rides within a given range
-* Supports origin & destination filtering
-
----
-
-## 🔐 Security
-
-* Password hashing using bcrypt
-* JWT-based authentication
-* Protected routes
-* Role-based authorization
-* Secure password reset (token-based)
+* *“Travel Smart, Share the Way”*
+* *“Ride Together, Save Together”*
+* *“WayMate – Your Smart Travel Companion”*
 
 ---
 
-## 🚀 Future Enhancements
+If you want, I can also:
 
-* Real-time ride tracking (WebSockets)
-* Payment integration
-* Rating & review system
-* Notification system (email/SMS)
-* Advanced route matching (polyline-based)
-* Mobile app support
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repo
-2. Create your feature branch
-3. Commit changes
-4. Push to branch
-5. Open a Pull Request
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-## 👨‍💻 Author
-
-**Aswin**
-
----
-
-## ⭐ Support
-
-If you like this project, give it a ⭐ on GitHub!
-
-```
-
----
-
-# 🚀 If You Want Next
-
-I can also help you create:
-
-- 📘 **:contentReference[oaicite:0]{index=0}**
-- 🧪 **:contentReference[oaicite:1]{index=1}**
-- 🐳 **:contentReference[oaicite:2]{index=2}**
-- 🌐 **:contentReference[oaicite:3]{index=3}**
+* 🎨 Generate **real WayMate logo (PNG/SVG)**
+* 🌐 Create **landing page UI**
+* 📦 Add **API documentation (Swagger)**
 
 Just tell 👍
-```

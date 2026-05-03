@@ -1,5 +1,7 @@
 const Ride = require("../models/rideModel");
 const geocodeAddress = require("../utils/geocode");
+const getRoadDistance = require("../utils/osrm")
+const calculateDistance = require("../utils/calculateDistance")
 
 // Create ride (User or Agency).
 const createRide = async (req, res) => {
@@ -22,6 +24,54 @@ const createRide = async (req, res) => {
         const originCoords = await geocodeAddress(originName);
         const destCoords = await geocodeAddress(destinationName);
 
+        if (!originCoords || !destCoords) {
+      return res.status(400).json({ msg: "Invalid location" });
+    }
+
+    const origin = {
+      name: originName,
+      coordinates: {
+        lat: originCoords.lat,
+        lng: originCoords.lng
+      }
+    };
+
+    const destination = {
+      name: destinationName,
+      coordinates: {
+        lat: destCoords.lat,
+        lng: destCoords.lng
+      }
+    };
+
+    // Get ROAD distance (OSRM)
+    let distanceData = await getRoadDistance(
+      origin.coordinates,
+      destination.coordinates
+    );
+
+    let distance;
+
+    if (distanceData) {
+      distance = distanceData.distance;
+    } else {
+      // fallback if OSRM fails
+      distance = calculateDistance(
+        origin.coordinates.lat,
+        origin.coordinates.lng,
+        destination.coordinates.lat,
+        destination.coordinates.lng
+      );
+    }
+
+    // Auto price
+    const baseFare = 50;
+    const perKmRate = 10;
+    const acCharge = preferences?.ac ? 2 : 0;
+
+    const totalCost = baseFare + distance * (perKmRate + acCharge);
+    const autoPricePerSeat = Math.ceil(totalCost / totalSeats);
+
         const ride = await Ride({
             createdBy: req.user.id,
             createdByRole: req.user.role,
@@ -30,6 +80,7 @@ const createRide = async (req, res) => {
             date,
             totalSeats,
             availableSeats: totalSeats,
+            autoPricePerSeat,
             pricePerSeat,
             vehicleNumber,
             preferences
@@ -39,6 +90,85 @@ const createRide = async (req, res) => {
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
+};
+
+// Add passenger (creator only)
+const addPassenger = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const ride = await Ride.findById(id);
+
+    if (!ride) {
+      return res.status(404).json({ msg: "Ride not found" });
+    }
+
+    if (!ride.createdBy.equals(req.user.id)) {
+      return res.status(403).json({msg: "Not authorized"});
+    }
+
+    if (ride.createdBy.equals(userId)) {
+      return res.status(400).json({ msg: "Creator is already part of ride"});
+    }
+
+    const exists = ride.passengers.find(p => p.user.equals(userId));
+    if (exists) {
+      return res.status(400).json({msg: "User already in ride"});
+    }
+
+    if (ride.availableSeats <= 0) {
+      return res.status(400).json({msg: "No seats available"});
+    }
+
+    ride.passengers.push({ user: userId });
+    ride.availableSeats = ride.availableSeats-1;
+
+    if (ride.availableSeats === 0) {
+      ride.status = "full";
+    }
+    await ride.save();
+    res.status(200).json({msg: "Passenger added",data: ride});
+
+  } catch (error) {
+    res.status(500).json({ msg: `Server error,${error}` });
+  }
+};
+
+// Remove passenger (creator only)
+const removePassenger = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const ride = await Ride.findById(id);
+
+    if (!ride) {
+      return res.status(404).json({ msg: "Ride not found" });
+    }
+
+    if (!ride.createdBy.equals(req.user.id)) {
+      return res.status(403).json({msg: "Not authorized"});
+    }
+
+    const index = ride.passengers.findIndex(p =>p.user.equals(userId));
+    if (index === -1) {
+      return res.status(400).json({msg: "User not in ride"});
+    }
+
+    // Remove passenger
+    ride.passengers.splice(index, 1);
+    ride.availableSeats = ride.availableSeats+1;
+
+    if (ride.status === "full") {
+      ride.status = "open";
+    }
+    await ride.save();
+    res.status(201).json({msg: "Passenger removed",data: ride});
+
+  } catch (error) {
+    res.status(500).json({ msg: `Server error,${error}` });
+  }
 };
 
 // Join a ride.
@@ -206,6 +336,8 @@ const searchRides = async (req, res) => {
 
 module.exports = {
     createRide,
+    addPassenger,
+    removePassenger,
     joinRide,
     leaveRide,
     updateRide,

@@ -40,6 +40,12 @@ const rideSchema = new mongoose.Schema(
       min: 0
     },
 
+    autoPricePerSeat: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+
     pricePerSeat: {
       type: Number,
       required: true,

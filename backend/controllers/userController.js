@@ -1,5 +1,7 @@
 const User = require('../models/userModel');
 const Ride = require('../models/rideModel');
+const sendEmail = require('../utils/sendEmail')
+const { otpTemplate } = require("../utils/template/OtpEmailTemplates");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
@@ -28,8 +30,8 @@ const registerUser = async (req, res) => {
         });
         await createdUser.save();
 
-        res.status(201).json({
-            msg: "User created successfully", data: {
+        res.status(201).json({msg: "User created successfully",
+            data: {
                 id: createdUser._id,
                 fullname: createdUser.fullname,
                 email: createdUser.email,
@@ -59,6 +61,81 @@ const loginUser = async (req, res) => {
         }
         const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
         res.status(200).json({ msg: 'Login successful', token: token });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        const hashedOtp = await bcrypt.hash(otp, saltRounds);
+        user.otp = hashedOtp;
+
+        // Expire in 5 minutes
+        user.otpExpire = Date.now() + 5 * 60 * 1000;
+        await user.save();
+
+        // Send email
+        await sendEmail({
+            to: user.email,
+            subject: "Password Reset OTP",
+            html: otpTemplate(otp)
+        });
+
+        res.json({ msg: "OTP sent to email" });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ msg: "All fields are required" });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ msg: "Invalid request" });
+        }
+
+        const isOtpMatch = await bcrypt.compare(otp, user.otp);
+
+        if (!isOtpMatch) {
+            return res.status(400).json({ msg: "Invalid OTP" });
+        }
+
+        // Expiry check
+        if (!user.otpExpire || user.otpExpire < Date.now()) {
+            return res.status(400).json({ msg: "OTP expired" });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        user.password = hashedPassword;
+
+        // Clear OTP fields
+        user.otp = undefined;
+        user.otpExpire = undefined;
+
+        await user.save();
+        res.status(200).json({ msg: "Password reset successful" });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -126,6 +203,8 @@ const getJoinedRides = async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
+    forgotPassword,
+    resetPassword,
     getDashboard,
     getProfile,
     updateProfile,

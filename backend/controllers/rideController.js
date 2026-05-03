@@ -16,7 +16,6 @@ const createRide = async (req, res) => {
             preferences
         } = req.body;
 
-
         if (!originName || !destinationName || !date || !totalSeats || !pricePerSeat || !vehicleNumber) {
             return res.status(400).json({ msg: "Missing required fields" });
         };

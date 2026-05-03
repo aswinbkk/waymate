@@ -47,7 +47,6 @@ const registerUser = async (req, res) => {
 // Login user.
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
-
     try {
         const existingUser = await User.findOne({ email });
 
@@ -82,8 +81,8 @@ const forgotPassword = async (req, res) => {
         const hashedOtp = await bcrypt.hash(otp, saltRounds);
         user.otp = hashedOtp;
 
-        // Expire in 5 minutes
-        user.otpExpire = Date.now() + 5 * 60 * 1000;
+        // Expire in 10 minutes
+        user.otpExpire = Date.now() + 10 * 60 * 1000;
         await user.save();
 
         // Send email
@@ -92,7 +91,6 @@ const forgotPassword = async (req, res) => {
             subject: "Password Reset OTP",
             html: otpTemplate(otp)
         });
-
         res.json({ msg: "OTP sent to email" });
 
     } catch (error) {
@@ -103,19 +101,16 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const { email, otp, newPassword } = req.body;
-
         if (!email || !otp || !newPassword) {
             return res.status(400).json({ msg: "All fields are required" });
         }
 
         const user = await User.findOne({ email });
-
         if (!user) {
             return res.status(400).json({ msg: "Invalid request" });
         }
 
         const isOtpMatch = await bcrypt.compare(otp, user.otp);
-
         if (!isOtpMatch) {
             return res.status(400).json({ msg: "Invalid OTP" });
         }
@@ -127,13 +122,11 @@ const resetPassword = async (req, res) => {
 
         // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
         user.password = hashedPassword;
 
         // Clear OTP fields
         user.otp = undefined;
         user.otpExpire = undefined;
-
         await user.save();
         res.status(200).json({ msg: "Password reset successful" });
 

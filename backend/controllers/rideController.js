@@ -27,21 +27,8 @@ const createRide = async (req, res) => {
             return res.status(400).json({ msg: "Invalid location" });
         }
 
-        const origin = {
-            name: originName,
-            coordinates: {
-                lat: originCoords.lat,
-                lng: originCoords.lng
-            }
-        };
-
-        const destination = {
-            name: destinationName,
-            coordinates: {
-                lat: destCoords.lat,
-                lng: destCoords.lng
-            }
-        };
+        const origin = {name: originName, coordinates: {lat: originCoords.lat, lng: originCoords.lng}};
+        const destination = {name: destinationName, coordinates: {lat: destCoords.lat,lng: destCoords.lng}};
 
         // Get ROAD distance (OSRM)
         let distanceData = await getRoadDistance(origin.coordinates, destination.coordinates);
@@ -62,8 +49,8 @@ const createRide = async (req, res) => {
         // Auto price
         const baseFare = 50;
         const perKmRate = 10;
-
         let acCharge;
+
         if (preferences && preferences.ac === true) {
             acCharge = 2;   // ₹2 per km extra
         } else {
@@ -98,7 +85,6 @@ const addPassenger = async (req, res) => {
     try {
         const { id } = req.params;
         const { userId } = req.body;
-
         const ride = await Ride.findById(id);
 
         if (!ride) {
@@ -141,7 +127,6 @@ const removePassenger = async (req, res) => {
     try {
         const { id } = req.params;
         const { userId } = req.body;
-
         const ride = await Ride.findById(id);
 
         if (!ride) {

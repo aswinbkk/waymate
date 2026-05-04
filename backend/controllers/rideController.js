@@ -80,6 +80,27 @@ const createRide = async (req, res) => {
     }
 };
 
+// Update ride.
+const updateRide = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ride = await Ride.findById(id);
+        if (!ride) {
+            return res.status(404).json({ msg: "Ride not found" });
+        }
+
+        if (!ride.createdBy.equals(req.user.id)) {
+            return res.status(403).json({ msg: "Not authorized to update this ride" });
+        }
+
+        const updatedRide = await Ride.findByIdAndUpdate(id, req.body, { returnDocument: "after" });
+
+        res.status(200).json({ msg: "Ride updated", data: updatedRide });
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
 // Add passenger (creator only)
 const addPassenger = async (req, res) => {
     try {
@@ -232,27 +253,6 @@ const leaveRide = async (req, res) => {
     }
 };
 
-// Update ride.
-const updateRide = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const ride = await Ride.findById(id);
-        if (!ride) {
-            return res.status(404).json({ msg: "Ride not found" });
-        }
-
-        if (!ride.createdBy.equals(req.user.id)) {
-            return res.status(403).json({ msg: "Not authorized to update this ride" });
-        }
-
-        const updatedRide = await Ride.findByIdAndUpdate(id, req.body, { returnDocument: "after" });
-
-        res.status(200).json({ msg: "Ride updated", data: updatedRide });
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
-
 // Delete ride.
 const deleteRide = async (req, res) => {
     try {
@@ -320,6 +320,40 @@ const searchRides = async (req, res) => {
     }
 };
 
+// Dashboard summary
+const getDashboard = async (req, res) => {
+    try {
+        const ridesCreated = await Ride.countDocuments({ createdBy: req.user.id });
+        const ridesJoined = await Ride.countDocuments({ "passengers.user": req.user.id });
+        res.status(200).json({ ridesCreated, ridesJoined });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Created rides
+const getCreatedRides = async (req, res) => {
+    try {
+        const createdRides = await Ride.find({ createdBy: req.user.id }).sort({ createdAt: -1 });
+        res.status(200).json({ count: createdRides.length, data: createdRides });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Joined rides
+const getJoinedRides = async (req, res) => {
+    try {
+        const joinedRides = await Ride.find({ "passengers.user": req.user.id })
+        res.status(200).json({ count: joinedRides.length, data: joinedRides });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
 module.exports = {
     createRide,
     addPassenger,
@@ -328,5 +362,8 @@ module.exports = {
     leaveRide,
     updateRide,
     deleteRide,
-    searchRides
+    searchRides,
+    getDashboard,
+    getCreatedRides,
+    getJoinedRides
 };

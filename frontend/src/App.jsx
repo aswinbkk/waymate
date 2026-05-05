@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import NavBar from "../src/components/NavBar"
 
 const StyledButton = styled.button`
  background-color: #6200ea;
@@ -17,6 +18,7 @@ const StyledButton = styled.button`
 const App = () => {
  return (
    <div>
+   <NavBar></NavBar>
      <h1>Hello Styled Components</h1>
      <StyledButton>Click Me</StyledButton>
    </div>

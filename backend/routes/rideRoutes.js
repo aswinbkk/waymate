@@ -12,8 +12,8 @@ router.post('/passenger/remove/:id', AuthMiddleware, rideController.removePassen
 router.post('/join/:id', AuthMiddleware, rideController.joinRide);
 router.post('/leave/:id', AuthMiddleware, rideController.leaveRide);
 router.delete('/delete/:id', AuthMiddleware, rideController.deleteRide);
-router.get('/search', rideController.searchRides);
 
+router.get('/search', rideController.searchRides);
 router.get('/dashboard', AuthMiddleware, rideController.getDashboard);
 router.get('/dashboard/created', AuthMiddleware, rideController.getCreatedRides);
 router.get('/dashboard/joined', AuthMiddleware, rideController.getJoinedRides);

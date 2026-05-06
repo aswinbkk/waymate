@@ -1,14 +1,13 @@
-.logo img{
+.navbar_container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar_left img{
     width: 50px;
 }
-
-.nav_center ul{
+.navbar_center ul{
     list-style: none;
     display: flex;
     gap: 2em;
-}
-
-.nav_container{
-    display: flex;
-    justify-content: space-between;
 }

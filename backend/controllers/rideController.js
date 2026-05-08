@@ -356,11 +356,11 @@ const getJoinedRides = async (req, res) => {
 
 module.exports = {
     createRide,
+    updateRide,
     addPassenger,
     removePassenger,
     joinRide,
     leaveRide,
-    updateRide,
     deleteRide,
     searchRides,
     getDashboard,

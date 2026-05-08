@@ -7,12 +7,16 @@ const connectDB = require('./config/db');
 connectDB();
 
 const userRoutes = require('./routes/userRoutes');
+const agencyRoutes = require('./routes/agencyRoutes');
 const rideRoutes = require('./routes/rideRoutes');
+const bidRoutes = require('./routes/bidRoutes')
 
 app.use(express.json());
 
 app.use('/user', userRoutes);
+app.use('/agency', agencyRoutes);
 app.use('/ride', rideRoutes);
+app.use('/bid', bidRoutes)
 
 const PORT = process.env.PORT || 5000;
 

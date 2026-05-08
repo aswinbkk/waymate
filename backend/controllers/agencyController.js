@@ -1,62 +1,57 @@
-const User = require('../models/userModel');
+const Agency = require('../models/agencyModel');
 const sendEmail = require('../utils/sendEmail')
 const { otpTemplate } = require("../utils/template/OtpEmailTemplates");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
-// Register user.
-const registerUser = async (req, res) => {
-    const { fullName, email, password, phone } = req.body;
+// Register agency.
+const registerAgency = async (req, res) => {
+    const { agencyName, address, gst, email, password, phone } = req.body;
 
-    if (!fullName.firstName || !email || !password || !phone) {
+    if (!agencyName || !address.street || !address.city || !address?.state || !address.pincode || !gst.gstin || !gst.legalName || !gst.tradeName || !email || !password || !phone) {
         return res.status(400).json({ msg: "Required fields missing" });
     }
 
     try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ msg: "User already exists" });
+        const existingAgency = await Agency.findOne({ email });
+        if (existingAgency) {
+            return res.status(400).json({ msg: "Agency already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const createdUser = new User({
-            fullName: { firstName: fullName.firstName, lastName: fullName.lastName },
+        const createdAgency = new Agency({
+            agencyName,
+            address: { street: address.street, city: address.city, state: address.state, pincode: address.pincode },
+            gst: { gstin: gst.gstin, legalName: gst.legalName, tradeName: gst.tradeName },
             email,
             password: hashedPassword,
             phone
         });
-        await createdUser.save();
+        await createdAgency.save();
 
-        res.status(201).json({msg: "User created successfully",
-            data: {
-                id: createdUser._id,
-                fullName: createdUser.fullName,
-                email: createdUser.email,
-                phone: createdUser.phone
-            }
-        });
+        res.status(201).json({ msg: "Agency created successfully", data: createdAgency });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error ${error}` });
     }
 };
 
-// Login user.
-const loginUser = async (req, res) => {
+// Login agency.
+const loginAgency = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const existingUser = await User.findOne({ email });
+        const existingAgency = await Agency.findOne({ email });
 
-        if (!existingUser) {
-            return res.status(404).json({ msg: "No user registered" });
+        if (!existingAgency) {
+            return res.status(404).json({ msg: "No agency registered" });
         }
-        const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
+        const isPasswordMatch = await bcrypt.compare(password, existingAgency.password);
 
         if (!isPasswordMatch) {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
-        const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
+        const token = jwt.sign({ id: existingAgency._id, role: existingAgency.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
         res.status(200).json({ msg: 'Login successful', token: token });
 
     } catch (error) {
@@ -64,29 +59,28 @@ const loginUser = async (req, res) => {
     }
 };
 
-// ForgotPassword
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ email });
+        const agency = await Agency.findOne({ email });
 
-        if (!user) {
-            return res.status(404).json({ msg: "User not found" });
+        if (!agency) {
+            return res.status(404).json({ msg: "Agency not found" });
         }
 
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         const hashedOtp = await bcrypt.hash(otp, saltRounds);
-        user.otp = hashedOtp;
+        agency.otp = hashedOtp;
 
         // Expire in 10 minutes
-        user.otpExpire = Date.now() + 10 * 60 * 1000;
-        await user.save();
+        agency.otpExpire = Date.now() + 10 * 60 * 1000;
+        await agency.save();
 
         // Send email
         await sendEmail({
-            to: user.email,
+            to: agency.email,
             subject: "Password Reset OTP",
             html: otpTemplate(otp)
         });
@@ -97,7 +91,6 @@ const forgotPassword = async (req, res) => {
     }
 };
 
-// ResetPassword
 const resetPassword = async (req, res) => {
     try {
         const { email, otp, newPassword } = req.body;
@@ -105,29 +98,29 @@ const resetPassword = async (req, res) => {
             return res.status(400).json({ msg: "All fields are required" });
         }
 
-        const user = await User.findOne({ email });
-        if (!user) {
+        const agency = await Agency.findOne({ email });
+        if (!agency) {
             return res.status(400).json({ msg: "Invalid request" });
         }
 
-        const isOtpMatch = await bcrypt.compare(otp, user.otp);
+        const isOtpMatch = await bcrypt.compare(otp, agency.otp);
         if (!isOtpMatch) {
             return res.status(400).json({ msg: "Invalid OTP" });
         }
 
         // Expiry check
-        if (!user.otpExpire || user.otpExpire < Date.now()) {
+        if (!agency.otpExpire || agency.otpExpire < Date.now()) {
             return res.status(400).json({ msg: "OTP expired" });
         }
 
         // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-        user.password = hashedPassword;
+        agency.password = hashedPassword;
 
         // Clear OTP fields
-        user.otp = undefined;
-        user.otpExpire = undefined;
-        await user.save();
+        agency.otp = undefined;
+        agency.otpExpire = undefined;
+        await agency.save();
         res.status(200).json({ msg: "Password reset successful" });
 
     } catch (error) {
@@ -138,8 +131,8 @@ const resetPassword = async (req, res) => {
 // Get Profile.
 const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.auth.id).select("-password");
-        res.status(200).json({ msg: "Profile fetched", data: user });
+        const agency = await Agency.findById(req.auth.id).select("-password");
+        res.status(200).json({ msg: "Profile fetched", data: agency });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -151,8 +144,8 @@ const updateProfile = async (req, res) => {
     try {
         const updates = req.body;
         delete updates.password;
-        const user = await User.findByIdAndUpdate(req.auth.id, updates, { returnDocument: "after", runValidators: true }).select("-password");
-        res.status(200).json({ msg: "Profile updated", data: user });
+        const agency = await Agency.findByIdAndUpdate(req.auth.id, updates, { returnDocument: "after", runValidators: true }).select("-password");
+        res.status(200).json({ msg: "Profile updated", data: agency });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -160,8 +153,8 @@ const updateProfile = async (req, res) => {
 };
 
 module.exports = {
-    registerUser,
-    loginUser,
+    registerAgency,
+    loginAgency,
     forgotPassword,
     resetPassword,
     getProfile,

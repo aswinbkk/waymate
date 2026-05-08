@@ -4,16 +4,15 @@ const userSchema = new mongoose.Schema(
   {
     role: {
       type: String,
-      enum: ["user", "agency"],
       default: "user"
     },
 
-    fullname: {
-      firstname: {
+    fullName: {
+      firstName: {
         type: String,
         required: true
       },
-      lastname: {
+      lastName: {
         type: String
       },
     },

@@ -61,8 +61,8 @@ const createRide = async (req, res) => {
         const autoPricePerSeat = Math.ceil(totalCost / totalSeats);
 
         const ride = await Ride({
-            createdBy: req.user.id,
-            createdByRole: req.user.role,
+            createdBy: req.auth.id,
+            createdByRole: req.auth.role,
             origin: { name: originName, coordinates: originCoords },
             destination: { name: destinationName, coordinates: destCoords },
             date,
@@ -89,7 +89,7 @@ const updateRide = async (req, res) => {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (!ride.createdBy.equals(req.user.id)) {
+        if (!ride.createdBy.equals(req.auth.id)) {
             return res.status(403).json({ msg: "Not authorized to update this ride" });
         }
 
@@ -112,7 +112,7 @@ const addPassenger = async (req, res) => {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (!ride.createdBy.equals(req.user.id)) {
+        if (!ride.createdBy.equals(req.auth.id)) {
             return res.status(403).json({ msg: "Not authorized" });
         }
 
@@ -154,7 +154,7 @@ const removePassenger = async (req, res) => {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (!ride.createdBy.equals(req.user.id)) {
+        if (!ride.createdBy.equals(req.auth.id)) {
             return res.status(403).json({ msg: "Not authorized" });
         }
 
@@ -188,7 +188,7 @@ const joinRide = async (req, res) => {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (ride.createdBy.equals(req.user.id)) {
+        if (ride.createdBy.equals(req.auth.id)) {
             return res.status(400).json({ msg: "It's your own ride" });
         }
 
@@ -200,12 +200,12 @@ const joinRide = async (req, res) => {
             return res.status(400).json({ msg: "No seats available" });
         }
 
-        const existing = ride.passengers.find(params => params.user.equals(req.user.id));
+        const existing = ride.passengers.find(params => params.user.equals(req.auth.id));
         if (existing) {
             return res.status(400).json({ msg: "Already joined this ride" });
         }
         //add passenger
-        ride.passengers.push({ user: req.user.id });
+        ride.passengers.push({ user: req.auth.id });
         ride.availableSeats = ride.availableSeats - 1;
 
         //update status
@@ -231,7 +231,7 @@ const leaveRide = async (req, res) => {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        const passengerIndex = ride.passengers.findIndex(params => params.user.equals(req.user.id));
+        const passengerIndex = ride.passengers.findIndex(params => params.user.equals(req.auth.id));
 
         if (passengerIndex === -1) {
             return res.status(400).json({ msg: "You are not in this ride" });
@@ -258,7 +258,7 @@ const deleteRide = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const deletedRide = await Ride.findOneAndDelete({ _id: id, createdBy: req.user.id });
+        const deletedRide = await Ride.findOneAndDelete({ _id: id, createdBy: req.auth.id });
 
         if (!deletedRide) {
             return res.status(404).json({ msg: "Ride not found or not authorized" });
@@ -323,8 +323,8 @@ const searchRides = async (req, res) => {
 // Dashboard summary
 const getDashboard = async (req, res) => {
     try {
-        const ridesCreated = await Ride.countDocuments({ createdBy: req.user.id });
-        const ridesJoined = await Ride.countDocuments({ "passengers.user": req.user.id });
+        const ridesCreated = await Ride.countDocuments({ createdBy: req.auth.id });
+        const ridesJoined = await Ride.countDocuments({ "passengers.user": req.auth.id });
         res.status(200).json({ ridesCreated, ridesJoined });
 
     } catch (error) {
@@ -335,7 +335,7 @@ const getDashboard = async (req, res) => {
 // Created rides
 const getCreatedRides = async (req, res) => {
     try {
-        const createdRides = await Ride.find({ createdBy: req.user.id }).sort({ createdAt: -1 });
+        const createdRides = await Ride.find({ createdBy: req.auth.id }).sort({ createdAt: -1 });
         res.status(200).json({ count: createdRides.length, data: createdRides });
 
     } catch (error) {
@@ -346,7 +346,7 @@ const getCreatedRides = async (req, res) => {
 // Joined rides
 const getJoinedRides = async (req, res) => {
     try {
-        const joinedRides = await Ride.find({ "passengers.user": req.user.id })
+        const joinedRides = await Ride.find({ "passengers.user": req.auth.id })
         res.status(200).json({ count: joinedRides.length, data: joinedRides });
 
     } catch (error) {

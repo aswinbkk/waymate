@@ -1,4 +1,5 @@
 const UserRide = require("../models/userRideModel");
+const User = require("../models/userModel")
 const geocodeAddress = require("../utils/geocode");
 const getRoadDistance = require("../utils/osrm");
 const calculateDistance = require("../utils/calculateDistance");
@@ -215,6 +216,11 @@ const addPassenger = async (req, res) => {
 
         if (userRide.createdBy.equals(userId)) {
             return res.status(400).json({ msg: "Creator is already part of ride" });
+        }
+
+        const passenger = await User.findById(userId);
+        if (!passenger) {
+            return res.status(404).json({ msg: "User not registered" });
         }
 
         const exists = userRide.passengers.find(variable => variable.user.equals(userId));

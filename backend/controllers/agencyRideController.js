@@ -67,7 +67,7 @@ const createAgencyRide = async (req, res) => {
             preferences
         });
         await agencyRide.save();
-        res.status(201).json({ msg: "Agency Ride created", data: agencyRide });
+        res.status(201).json({ msg: "Ride created", data: agencyRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -118,7 +118,6 @@ const updateAgencyRide = async (req, res) => {
             }
             agencyRide.destination = { name: destinationName, coordinates: destCoords };
         }
-
 
         // Update date
         if (date) {
@@ -179,6 +178,23 @@ const updateAgencyRide = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ msg: `Server error, ${error.message}` });
+    }
+};
+
+// Delete agency ride.
+const deleteAgencyRide = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const agencyRide = await AgencyRide.findOneAndDelete({ _id: id, createdBy: req.auth.id });
+
+        if (!agencyRide) {
+            return res.status(404).json({ msg: "Ride not found or unauthorized" });
+        }
+        res.status(200).json({ msg: "Ride deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error, ${error}` });
+
     }
 };
 
@@ -281,25 +297,8 @@ const viewAgencyCreatedRides = async (req, res) => {
     }
 };
 
-// Delete agency ride.
-const deleteAgencyRide = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const agencyRide = await AgencyRide.findOneAndDelete({ _id: id, createdBy: req.auth.id });
-
-        if (!agencyRide) {
-            return res.status(404).json({ msg: "Ride not found or unauthorized" });
-        }
-        res.status(200).json({ msg: "Ride deleted successfully" });
-
-    } catch (error) {
-        res.status(500).json({ msg: `Server error, ${error}` });
-
-    }
-};
-
 // Search agency ride.
-const searchRides = async (req, res) => {
+const searchAgencyRides = async (req, res) => {
     try {
         const {
             originName,
@@ -350,10 +349,10 @@ const searchRides = async (req, res) => {
 module.exports = {
     createAgencyRide,
     updateAgencyRide,
+    deleteAgencyRide,
     addPassenger,
     removePassenger,
-    deleteAgencyRide,
     agencyDashboard,
     viewAgencyCreatedRides,
-    searchRides
+    searchAgencyRides
 };

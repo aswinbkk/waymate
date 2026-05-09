@@ -1,10 +1,11 @@
 const UserRide = require("../models/userRideModel");
 const geocodeAddress = require("../utils/geocode");
-const getRoadDistance = require("../utils/osrm")
-const calculateDistance = require("../utils/calculateDistance")
+const getRoadDistance = require("../utils/osrm");
+const calculateDistance = require("../utils/calculateDistance");
+const { BASE_FARE, PER_KM_RATE, AC_EXTRA_PER_KM } = require("../config/pricingConfig");
 
-// Create ride (User or Agency).
-const createRide = async (req, res) => {
+// Create user ride.
+const createUserRide = async (req, res) => {
     try {
         const {
             originName,
@@ -27,8 +28,8 @@ const createRide = async (req, res) => {
             return res.status(400).json({ msg: "Invalid location" });
         }
 
-        const origin = {name: originName, coordinates: {lat: originCoords.lat, lng: originCoords.lng}};
-        const destination = {name: destinationName, coordinates: {lat: destCoords.lat,lng: destCoords.lng}};
+        const origin = { name: originName, coordinates: { lat: originCoords.lat, lng: originCoords.lng } };
+        const destination = { name: destinationName, coordinates: { lat: destCoords.lat, lng: destCoords.lng } };
 
         // Get ROAD distance (OSRM)
         let distanceData = await getRoadDistance(origin.coordinates, destination.coordinates);
@@ -38,29 +39,21 @@ const createRide = async (req, res) => {
             distance = distanceData.distance;
         } else {
             // fallback if OSRM fails
-            distance = calculateDistance(
-                origin.coordinates.lat,
-                origin.coordinates.lng,
-                destination.coordinates.lat,
-                destination.coordinates.lng
-            );
+            distance = calculateDistance(origin.coordinates.lat, origin.coordinates.lng, destination.coordinates.lat, destination.coordinates.lng);
         }
 
         // Auto price
-        const baseFare = 50;
-        const perKmRate = 10;
         let acCharge;
-
         if (preferences && preferences.ac === true) {
-            acCharge = 2;   // ₹2 per km extra
+            acCharge = AC_EXTRA_PER_KM;
         } else {
             acCharge = 0;   // no extra charge
         }
 
-        const totalCost = baseFare + distance * (perKmRate + acCharge);
+        const totalCost = BASE_FARE + distance * (PER_KM_RATE + acCharge);
         const autoPricePerSeat = Math.ceil(totalCost / totalSeats);
 
-        const ride = await Ride({
+        const userRide = await UserRide({
             createdBy: req.auth.id,
             createdByRole: req.auth.role,
             origin: { name: originName, coordinates: originCoords },
@@ -73,105 +66,209 @@ const createRide = async (req, res) => {
             vehicleNumber,
             preferences
         });
-        await ride.save();
-        res.status(201).json({ msg: "Ride created", data: ride });
+        await userRide.save();
+        res.status(201).json({ msg: "Ride created", data: userRide });
+
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
 };
 
-// Update ride.
-const updateRide = async (req, res) => {
+// Update user ride.
+const updateUserRide = async (req, res) => {
     try {
         const { id } = req.params;
-        const ride = await Ride.findById(id);
-        if (!ride) {
+        const userRide = await UserRide.findById(id);
+
+        if (!userRide) {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (!ride.createdBy.equals(req.auth.id)) {
+        // Owner check
+        if (!userRide.createdBy.equals(req.auth.id)) {
             return res.status(403).json({ msg: "Not authorized to update this ride" });
         }
 
-        const updatedRide = await Ride.findByIdAndUpdate(id, req.body, { returnDocument: "after" });
+        const {
+            originName,
+            destinationName,
+            date,
+            totalSeats,
+            pricePerSeat,
+            vehicleNumber,
+            preferences
+        } = req.body;
 
-        res.status(200).json({ msg: "Ride updated", data: updatedRide });
+        // Update origin
+        if (originName) {
+            const originCoords = await geocodeAddress(originName);
+
+            if (!originCoords) {
+                return res.status(400).json({ msg: "Invalid origin location" });
+            }
+            userRide.origin = { name: originName, coordinates: originCoords };
+        }
+
+        // Update destination
+        if (destinationName) {
+            const destCoords = await geocodeAddress(destinationName);
+
+            if (!destCoords) {
+                return res.status(400).json({ msg: "Invalid destination location" });
+            }
+            userRide.destination = { name: destinationName, coordinates: destCoords };
+        }
+
+        // Update date
+        if (date) {
+            userRide.date = new Date(date);
+        }
+
+        // Update seats
+        if (totalSeats) {
+            // prevent reducing below booked seats
+            const bookedSeats = userRide.totalSeats - userRide.availableSeats;
+
+            if (totalSeats < bookedSeats) {
+                return res.status(400).json({ msg: `Minimum seats must be ${bookedSeats}` });
+            }
+            userRide.availableSeats = totalSeats - bookedSeats;
+            userRide.totalSeats = totalSeats;
+        }
+
+        // Update price
+        if (pricePerSeat) {
+            userRide.pricePerSeat = pricePerSeat;
+        }
+
+        // Vehicle number
+        if (vehicleNumber) {
+            userRide.vehicleNumber = vehicleNumber;
+        }
+
+        // Preferences
+        if (preferences) {
+            userRide.preferences = preferences;
+        }
+
+        // Recalculate distance
+        let distanceData = await getRoadDistance(userRide.origin.coordinates, userRide.destination.coordinates);
+
+        let distance;
+        if (distanceData) {
+            distance = distanceData.distance;
+        } else {
+            // fallback if OSRM fails
+            distance = calculateDistance(userRide.origin.coordinates.lat, userRide.origin.coordinates.lng, userRide.destination.coordinates.lat, userRide.destination.coordinates.lng);
+        }
+        userRide.distance = distance;
+
+        // Auto price recalc
+        let acCharge;
+        if (preferences && preferences.ac === true) {
+            acCharge = AC_EXTRA_PER_KM;
+        } else {
+            acCharge = 0;   // no extra charge
+        }
+
+        const totalCost = BASE_FARE + distance * (PER_KM_RATE + acCharge);
+        userRide.autoPricePerSeat = Math.ceil(totalCost / userRide.totalSeats);
+        await userRide.save();
+        res.status(200).json({ msg: "Ride updated successfully", data: userRide });
+
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+        res.status(500).json({ msg: `Server error, ${error.message}` });
     }
 };
 
-// Add passenger (creator only)
+// Delete user ride.
+const deleteUserRide = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userRide = await UserRide.findOneAndDelete({ _id: id, createdBy: req.auth.id });
+
+        if (!userRide) {
+            return res.status(404).json({ msg: "Ride not found or unauthorized" });
+        }
+        res.status(200).json({ msg: "Ride deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error, ${error}` });
+
+    }
+};
+
+// Add passenger to user ride (creator only).
 const addPassenger = async (req, res) => {
     try {
         const { id } = req.params;
         const { userId } = req.body;
-        const ride = await Ride.findById(id);
+        const userRide = await UserRide.findById(id);
 
-        if (!ride) {
+        if (!userRide) {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (!ride.createdBy.equals(req.auth.id)) {
+        if (!userRide.createdBy.equals(req.auth.id)) {
             return res.status(403).json({ msg: "Not authorized" });
         }
 
-        if (ride.createdBy.equals(userId)) {
+        if (userRide.createdBy.equals(userId)) {
             return res.status(400).json({ msg: "Creator is already part of ride" });
         }
 
-        const exists = ride.passengers.find(p => p.user.equals(userId));
+        const exists = userRide.passengers.find(variable => variable.user.equals(userId));
         if (exists) {
             return res.status(400).json({ msg: "User already in ride" });
         }
 
-        if (ride.availableSeats <= 0) {
-            return res.status(400).json({ msg: "No seats available" });
+        if (userRide.availableSeats <= 0) {
+            return res.status(409).json({ msg: "No seats available" });
         }
 
-        ride.passengers.push({ user: userId });
-        ride.availableSeats = ride.availableSeats - 1;
+        userRide.passengers.push({ user: userId });
+        userRide.availableSeats = userRide.availableSeats - 1;
 
-        if (ride.availableSeats === 0) {
-            ride.status = "full";
+        if (userRide.availableSeats === 0) {
+            userRide.status = "full";
         }
-        await ride.save();
-        res.status(200).json({ msg: "Passenger added", data: ride });
+        await userRide.save();
+        res.status(200).json({ msg: "Passenger added", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
 };
 
-// Remove passenger (creator only)
+// Remove passenger from user ride (creator only).
 const removePassenger = async (req, res) => {
     try {
         const { id } = req.params;
         const { userId } = req.body;
-        const ride = await Ride.findById(id);
+        const userRide = await UserRide.findById(id);
 
-        if (!ride) {
+        if (!userRide) {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (!ride.createdBy.equals(req.auth.id)) {
+        if (!userRide.createdBy.equals(req.auth.id)) {
             return res.status(403).json({ msg: "Not authorized" });
         }
 
-        const index = ride.passengers.findIndex(p => p.user.equals(userId));
+        const index = userRide.passengers.findIndex(variable => variable.user.equals(userId));
         if (index === -1) {
             return res.status(400).json({ msg: "User not in ride" });
         }
 
         // Remove passenger
-        ride.passengers.splice(index, 1);
-        ride.availableSeats = ride.availableSeats + 1;
+        userRide.passengers.splice(index, 1);
+        userRide.availableSeats = userRide.availableSeats + 1;
 
-        if (ride.status === "full") {
-            ride.status = "open";
+        if (userRide.status === "full") {
+            userRide.status = "open";
         }
-        await ride.save();
-        res.status(201).json({ msg: "Passenger removed", data: ride });
+        await userRide.save();
+        res.status(200).json({ msg: "Passenger removed", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -179,42 +276,42 @@ const removePassenger = async (req, res) => {
 };
 
 // Join a ride.
-const joinRide = async (req, res) => {
+const UserJoinRide = async (req, res) => {
     try {
         const { id } = req.params;
-        const ride = await Ride.findById(id);
+        const userRide = await UserRide.findById(id);
 
-        if (!ride) {
+        if (!userRide) {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        if (ride.createdBy.equals(req.auth.id)) {
+        if (userRide.createdBy.equals(req.auth.id)) {
             return res.status(400).json({ msg: "It's your own ride" });
         }
 
-        if (ride.status !== "open") {
+        if (userRide.status !== "open") {
             return res.status(400).json({ msg: "Ride not open" });
         }
 
-        if (ride.availableSeats <= 0) {
+        if (userRide.availableSeats <= 0) {
             return res.status(400).json({ msg: "No seats available" });
         }
 
-        const existing = ride.passengers.find(params => params.user.equals(req.auth.id));
+        const existing = userRide.passengers.find(variable => variable.user.equals(req.auth.id));
         if (existing) {
             return res.status(400).json({ msg: "Already joined this ride" });
         }
         //add passenger
-        ride.passengers.push({ user: req.auth.id });
-        ride.availableSeats = ride.availableSeats - 1;
+        userRide.passengers.push({ user: req.auth.id });
+        userRide.availableSeats = userRide.availableSeats - 1;
 
         //update status
-        if (ride.availableSeats === 0) {
-            ride.status = "full";
+        if (userRide.availableSeats === 0) {
+            userRide.status = "full";
         }
 
-        await ride.save();
-        res.status(201).json({ msg: "Joined ride successfully", data: ride });
+        await userRide.save();
+        res.status(201).json({ msg: "Joined ride successfully", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -222,57 +319,73 @@ const joinRide = async (req, res) => {
 };
 
 // Leave from ride.
-const leaveRide = async (req, res) => {
+const UserleaveRide = async (req, res) => {
     try {
         const { id } = req.params;
-        const ride = await Ride.findById(id);
+        const userRide = await UserRide.findById(id);
 
-        if (!ride) {
+        if (!userRide) {
             return res.status(404).json({ msg: "Ride not found" });
         }
 
-        const passengerIndex = ride.passengers.findIndex(params => params.user.equals(req.auth.id));
+        const passengerIndex = userRide.passengers.findIndex(variable => variable.user.equals(req.auth.id));
 
         if (passengerIndex === -1) {
             return res.status(400).json({ msg: "You are not in this ride" });
         }
 
         // Remove passenger
-        ride.passengers.splice(passengerIndex, 1);
-        ride.availableSeats = ride.availableSeats + 1;
+        userRide.passengers.splice(passengerIndex, 1);
+        userRide.availableSeats = userRide.availableSeats + 1;
 
         // Reopen ride
-        if (ride.status === "full") {
-            ride.status = "open";
+        if (userRide.status === "full") {
+            userRide.status = "open";
         };
 
-        await ride.save();
-        res.status(201).json({ msg: "Left ride successfully", data: ride });
+        await userRide.save();
+        res.status(201).json({ msg: "Left ride successfully", data: userRide });
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
 };
 
-// Delete ride.
-const deleteRide = async (req, res) => {
+// User dashboard summary.
+const userDashboard = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        const deletedRide = await Ride.findOneAndDelete({ _id: id, createdBy: req.auth.id });
-
-        if (!deletedRide) {
-            return res.status(404).json({ msg: "Ride not found or not authorized" });
-        }
-
-        res.status(200).json({ msg: "Ride deleted successfully" });
+        const userCreatedRides = await UserRide.countDocuments({ createdBy: req.auth.id });
+        const userJoinedRides = await UserRide.countDocuments({ "passengers.user": req.auth.id });
+        res.status(200).json({ userCreatedRides, userJoinedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
 };
 
-// Search ride.
-const searchRides = async (req, res) => {
+// View user created rides.
+const viewUserCreatedRides = async (req, res) => {
+    try {
+        const userCreatedRides = await UserRide.find({ createdBy: req.auth.id }).sort({ createdAt: -1 });
+        res.status(200).json({ count: userCreatedRides.length, data: userCreatedRides });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// View user joined rides.
+const viewUserJoinedRides = async (req, res) => {
+    try {
+        const userJoinedRides = await UserRide.find({ "passengers.user": req.auth.id })
+        res.status(200).json({ count: userJoinedRides.length, data: userJoinedRides });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Search user ride.
+const searchUserRides = async (req, res) => {
     try {
         const {
             originName,
@@ -298,7 +411,7 @@ const searchRides = async (req, res) => {
             // Approx: 1 degree ≈ 111 km
             const radius = range / 111;
 
-            const rides = await Ride.find({
+            const userRide = await UserRide.find({
                 // Origin match
                 "origin.coordinates.lat": { $gte: originLat - radius, $lte: originLat + radius },
                 "origin.coordinates.lng": { $gte: originLng - radius, $lte: originLng + radius },
@@ -307,12 +420,12 @@ const searchRides = async (req, res) => {
                 "destination.coordinates.lng": { $gte: destLng - radius, $lte: destLng + radius },
                 status: status
             });
-            res.status(200).json({ msg: "Matching rides found", count: rides.length, data: rides });
+            res.status(200).json({ msg: "Matching rides found", count: userRide.length, data: userRide });
 
         } else {
-            // All rides
-            const allRide = await Ride.find({ status: status }).sort({ createdAt: -1 })
-            res.status(200).json({ msg: "All ride", count: allRide.length, data: allRide });
+            // view all user ride
+            const allUserRide = await UserRide.find({ status: status }).sort({ createdAt: -1 })
+            res.status(200).json({ msg: "All ride", count: allUserRide.length, data: allUserRide });
         }
 
     } catch (error) {
@@ -320,50 +433,16 @@ const searchRides = async (req, res) => {
     }
 };
 
-// Dashboard summary
-const getDashboard = async (req, res) => {
-    try {
-        const ridesCreated = await Ride.countDocuments({ createdBy: req.auth.id });
-        const ridesJoined = await Ride.countDocuments({ "passengers.user": req.auth.id });
-        res.status(200).json({ ridesCreated, ridesJoined });
-
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
-
-// Created rides
-const getCreatedRides = async (req, res) => {
-    try {
-        const createdRides = await Ride.find({ createdBy: req.auth.id }).sort({ createdAt: -1 });
-        res.status(200).json({ count: createdRides.length, data: createdRides });
-
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
-
-// Joined rides
-const getJoinedRides = async (req, res) => {
-    try {
-        const joinedRides = await Ride.find({ "passengers.user": req.auth.id })
-        res.status(200).json({ count: joinedRides.length, data: joinedRides });
-
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
-
 module.exports = {
-    createRide,
-    updateRide,
+    createUserRide,
+    updateUserRide,
+    deleteUserRide,
     addPassenger,
     removePassenger,
-    joinRide,
-    leaveRide,
-    deleteRide,
-    searchRides,
-    getDashboard,
-    getCreatedRides,
-    getJoinedRides
+    UserJoinRide,
+    UserleaveRide,
+    userDashboard,
+    viewUserCreatedRides,
+    viewUserJoinedRides,
+    searchUserRides
 };

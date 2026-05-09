@@ -157,7 +157,7 @@ const Footer = () => {
       <FooterBottom>
 
         <p>
-          © 2026 WayMate. All rights reserved.
+          © 2026 waymate. All rights reserved.
         </p>
 
         <SocialIcons>

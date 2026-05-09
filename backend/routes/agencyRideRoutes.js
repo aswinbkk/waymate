@@ -8,15 +8,14 @@ const authMiddleware = require("../middleware/middleware");
 router.post("/create", authMiddleware, agencyRideController.createAgencyRide);
 router.put("/update/:id", authMiddleware, agencyRideController.updateAgencyRide);
 
-// router.post("/passenger/add/:id", authMiddleware, agencyRideController.addPassenger);
-// router.post("/passenger/remove/:id", authMiddleware, agencyRideController.removePassenger);
+router.post("/passenger/add/:id", authMiddleware, agencyRideController.addPassenger);
+router.post("/passenger/remove/:id", authMiddleware, agencyRideController.removePassenger);
 
-// router.delete("/delete/:id", authMiddleware, agencyRideController.deleteRide);
+router.delete("/delete/:id", authMiddleware, agencyRideController.deleteAgencyRide);
 
-// router.get("/search", agencyRideController.searchRides);
+router.get("/dashboard", authMiddleware, agencyRideController.agencyDashboard);
+router.get("/dashboard/created", authMiddleware, agencyRideController.viewAgencyCreatedRides);
 
-// router.get("/dashboard", authMiddleware, agencyRideController.getDashboard);
-// router.get("/dashboard/created", authMiddleware, agencyRideController.getCreatedRides);
-// router.get("/dashboard/joined", authMiddleware, agencyRideController.getJoinedRides);
+router.get("/search", agencyRideController.searchRides);
 
 module.exports = router;

@@ -1,0 +1,458 @@
+const AgencyRide = require("../models/agencyRideModel");
+const geocodeAddress = require("../utils/geocode");
+const getRoadDistance = require("../utils/osrm")
+const calculateDistance = require("../utils/calculateDistance")
+
+// Create agency ride.
+const createAgencyRide = async (req, res) => {
+    try {
+        const {
+            originName,
+            destinationName,
+            date,
+            totalSeats,
+            pricePerSeat,
+            vehicleNumber,
+            preferences
+        } = req.body;
+
+        if (!originName || !destinationName || !date || !totalSeats || !pricePerSeat || !vehicleNumber) {
+            return res.status(400).json({ msg: "Missing required fields" });
+        };
+
+        const originCoords = await geocodeAddress(originName);
+        const destCoords = await geocodeAddress(destinationName);
+
+        if (!originCoords || !destCoords) {
+            return res.status(400).json({ msg: "Invalid location" });
+        }
+
+        const origin = {name: originName, coordinates: {lat: originCoords.lat, lng: originCoords.lng}};
+        const destination = {name: destinationName, coordinates: {lat: destCoords.lat,lng: destCoords.lng}};
+
+        // Get ROAD distance (OSRM)
+        let distanceData = await getRoadDistance(origin.coordinates, destination.coordinates);
+        let distance;
+
+        if (distanceData) {
+            distance = distanceData.distance;
+        } else {
+            // fallback if OSRM fails
+            distance = calculateDistance(
+                origin.coordinates.lat,
+                origin.coordinates.lng,
+                destination.coordinates.lat,
+                destination.coordinates.lng
+            );
+        }
+
+        // Auto price
+        const baseFare = 50;
+        const perKmRate = 10;
+        let acCharge;
+
+        if (preferences && preferences.ac === true) {
+            acCharge = 2;   // ₹2 per km extra
+        } else {
+            acCharge = 0;   // no extra charge
+        }
+
+        const totalCost = baseFare + distance * (perKmRate + acCharge);
+        const autoPricePerSeat = Math.ceil(totalCost / totalSeats);
+
+        const ride = await AgencyRide({
+            createdBy: req.auth.id,
+            createdByRole: req.auth.role,
+            origin: { name: originName, coordinates: originCoords },
+            destination: { name: destinationName, coordinates: destCoords },
+            date,
+            totalSeats,
+            availableSeats: totalSeats,
+            autoPricePerSeat,
+            pricePerSeat,
+            vehicleNumber,
+            preferences
+        });
+        await ride.save();
+        res.status(201).json({ msg: "Agency Ride created", data: ride });
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Update Agency ride.
+const updateAgencyRide = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ride = await AgencyRide.findById(id);
+
+    if (!ride) {
+      return res.status(404).json({msg: "Ride not found"});
+    }
+
+    // Owner check
+    if (!ride.createdBy.equals(req.auth.id)) {
+      return res.status(403).json({msg: "Not authorized to update this ride"});
+    }
+
+    const {
+      originName,
+      destinationName,
+      date,
+      totalSeats,
+      pricePerSeat,
+      vehicleNumber,
+      preferences
+    } = req.body;
+
+    // Update origin
+    if (originName) {
+      const originCoords = await geocodeAddress(originName);
+
+      if (!originCoords) {
+        return res.status(400).json({msg: "Invalid origin location"});
+      }
+      ride.origin = { name: originName, coordinates: originCoords};
+    }
+
+    // Update destination
+    if (destinationName) {
+      const destCoords = await geocodeAddress(destinationName);
+
+      if (!destCoords) {
+        return res.status(400).json({msg: "Invalid destination location"});
+      }
+      ride.destination = { name: destinationName, coordinates: destCoords };
+    }
+
+    
+    // Update date
+    if (date) {
+      ride.date = new Date(date);
+    }
+
+    // Update seats
+    if (totalSeats) {
+      // prevent reducing below booked seats
+      const bookedSeats = ride.totalSeats - ride.availableSeats;
+
+      if (totalSeats < bookedSeats) {
+        return res.status(400).json({ msg: `Minimum seats must be ${bookedSeats}` });
+      }
+      ride.availableSeats = totalSeats - bookedSeats;
+      ride.totalSeats = totalSeats;
+    }
+
+    // Update price
+    if (pricePerSeat) {
+      ride.pricePerSeat = pricePerSeat;
+    }
+
+    // Vehicle number
+    if (vehicleNumber) {
+      ride.vehicleNumber = vehicleNumber;
+    }
+
+    // Preferences
+    if (preferences) {
+      ride.preferences = preferences;
+    }
+
+    // Recalculate distance
+    let distanceData = await getRoadDistance(ride.origin.coordinates, ride.destination.coordinates);
+
+    let distance;
+    if (distanceData) {
+      distance = distanceData.distance;
+    } else {
+      distance = calculateDistance( ride.origin.coordinates.lat, ride.origin.coordinates.lng, ride.destination.coordinates.lat, ride.destination.coordinates.lng );
+    }
+    ride.distance = distance;
+
+    // Auto price recalc
+    const baseFare = 50;
+    const perKmRate = 10;
+    let acCharge
+
+    if (preferences && preferences.ac === true) {
+            acCharge = 2;   // ₹2 per km extra
+        } else {
+            acCharge = 0;   // no extra charge
+        }
+
+    const totalCost = baseFare + distance * (perKmRate + acCharge);
+    ride.autoPricePerSeat = Math.ceil(totalCost / ride.totalSeats);
+    await ride.save();
+    res.status(200).json({msg: "Ride updated successfully",data: ride});
+
+  } catch (error) {
+    res.status(500).json({ msg: `Server error, ${error.message}`});
+  }
+};
+
+// Add passenger (creator only)
+const addPassenger = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+        const ride = await Ride.findById(id);
+
+        if (!ride) {
+            return res.status(404).json({ msg: "Ride not found" });
+        }
+
+        if (!ride.createdBy.equals(req.auth.id)) {
+            return res.status(403).json({ msg: "Not authorized" });
+        }
+
+        if (ride.createdBy.equals(userId)) {
+            return res.status(400).json({ msg: "Creator is already part of ride" });
+        }
+
+        const exists = ride.passengers.find(p => p.user.equals(userId));
+        if (exists) {
+            return res.status(400).json({ msg: "User already in ride" });
+        }
+
+        if (ride.availableSeats <= 0) {
+            return res.status(400).json({ msg: "No seats available" });
+        }
+
+        ride.passengers.push({ user: userId });
+        ride.availableSeats = ride.availableSeats - 1;
+
+        if (ride.availableSeats === 0) {
+            ride.status = "full";
+        }
+        await ride.save();
+        res.status(200).json({ msg: "Passenger added", data: ride });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Remove passenger (creator only)
+const removePassenger = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+        const ride = await Ride.findById(id);
+
+        if (!ride) {
+            return res.status(404).json({ msg: "Ride not found" });
+        }
+
+        if (!ride.createdBy.equals(req.auth.id)) {
+            return res.status(403).json({ msg: "Not authorized" });
+        }
+
+        const index = ride.passengers.findIndex(p => p.user.equals(userId));
+        if (index === -1) {
+            return res.status(400).json({ msg: "User not in ride" });
+        }
+
+        // Remove passenger
+        ride.passengers.splice(index, 1);
+        ride.availableSeats = ride.availableSeats + 1;
+
+        if (ride.status === "full") {
+            ride.status = "open";
+        }
+        await ride.save();
+        res.status(201).json({ msg: "Passenger removed", data: ride });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Join a ride.
+const joinRide = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ride = await Ride.findById(id);
+
+        if (!ride) {
+            return res.status(404).json({ msg: "Ride not found" });
+        }
+
+        if (ride.createdBy.equals(req.auth.id)) {
+            return res.status(400).json({ msg: "It's your own ride" });
+        }
+
+        if (ride.status !== "open") {
+            return res.status(400).json({ msg: "Ride not open" });
+        }
+
+        if (ride.availableSeats <= 0) {
+            return res.status(400).json({ msg: "No seats available" });
+        }
+
+        const existing = ride.passengers.find(params => params.user.equals(req.auth.id));
+        if (existing) {
+            return res.status(400).json({ msg: "Already joined this ride" });
+        }
+        //add passenger
+        ride.passengers.push({ user: req.auth.id });
+        ride.availableSeats = ride.availableSeats - 1;
+
+        //update status
+        if (ride.availableSeats === 0) {
+            ride.status = "full";
+        }
+
+        await ride.save();
+        res.status(201).json({ msg: "Joined ride successfully", data: ride });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Leave from ride.
+const leaveRide = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ride = await Ride.findById(id);
+
+        if (!ride) {
+            return res.status(404).json({ msg: "Ride not found" });
+        }
+
+        const passengerIndex = ride.passengers.findIndex(params => params.user.equals(req.auth.id));
+
+        if (passengerIndex === -1) {
+            return res.status(400).json({ msg: "You are not in this ride" });
+        }
+
+        // Remove passenger
+        ride.passengers.splice(passengerIndex, 1);
+        ride.availableSeats = ride.availableSeats + 1;
+
+        // Reopen ride
+        if (ride.status === "full") {
+            ride.status = "open";
+        };
+
+        await ride.save();
+        res.status(201).json({ msg: "Left ride successfully", data: ride });
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Delete ride.
+const deleteRide = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedRide = await Ride.findOneAndDelete({ _id: id, createdBy: req.auth.id });
+
+        if (!deletedRide) {
+            return res.status(404).json({ msg: "Ride not found or not authorized" });
+        }
+
+        res.status(200).json({ msg: "Ride deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Search ride.
+const searchRides = async (req, res) => {
+    try {
+        const {
+            originName,
+            destinationName,
+            range = 1,
+            status = "open"
+        } = req.body;
+
+        if (originName && destinationName) {
+            const originCoords = await geocodeAddress(originName);
+            const destCoords = await geocodeAddress(destinationName);
+
+            if (!originCoords || !destCoords) {
+                return res.status(400).json({
+                    msg: "Invalid or unrecognized location. Please enter a valid place."
+                });
+            }
+
+            const originLat = originCoords.lat;
+            const originLng = originCoords.lng;
+            const destLat = destCoords.lat;
+            const destLng = destCoords.lng;
+            // Approx: 1 degree ≈ 111 km
+            const radius = range / 111;
+
+            const rides = await Ride.find({
+                // Origin match
+                "origin.coordinates.lat": { $gte: originLat - radius, $lte: originLat + radius },
+                "origin.coordinates.lng": { $gte: originLng - radius, $lte: originLng + radius },
+                // Destination match
+                "destination.coordinates.lat": { $gte: destLat - radius, $lte: destLat + radius },
+                "destination.coordinates.lng": { $gte: destLng - radius, $lte: destLng + radius },
+                status: status
+            });
+            res.status(200).json({ msg: "Matching rides found", count: rides.length, data: rides });
+
+        } else {
+            // All rides
+            const allRide = await Ride.find({ status: status }).sort({ createdAt: -1 })
+            res.status(200).json({ msg: "All ride", count: allRide.length, data: allRide });
+        }
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Dashboard summary
+const getDashboard = async (req, res) => {
+    try {
+        const ridesCreated = await Ride.countDocuments({ createdBy: req.auth.id });
+        const ridesJoined = await Ride.countDocuments({ "passengers.user": req.auth.id });
+        res.status(200).json({ ridesCreated, ridesJoined });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Created rides
+const getCreatedRides = async (req, res) => {
+    try {
+        const createdRides = await Ride.find({ createdBy: req.auth.id }).sort({ createdAt: -1 });
+        res.status(200).json({ count: createdRides.length, data: createdRides });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+// Joined rides
+const getJoinedRides = async (req, res) => {
+    try {
+        const joinedRides = await Ride.find({ "passengers.user": req.auth.id })
+        res.status(200).json({ count: joinedRides.length, data: joinedRides });
+
+    } catch (error) {
+        res.status(500).json({ msg: `Server error,${error}` });
+    }
+};
+
+module.exports = {
+    createAgencyRide,
+    updateAgencyRide,
+    addPassenger,
+    removePassenger,
+    joinRide,
+    leaveRide,
+    deleteRide,
+    searchRides,
+    getDashboard,
+    getCreatedRides,
+    getJoinedRides
+};

@@ -1,21 +1,23 @@
-const express = require('express');
+const express = require("express");
+
 const router = express.Router();
-const rideController = require('../controllers/rideController');
-const AuthMiddleware = require('../middleWare/middleWare')
 
-router.post('/create', AuthMiddleware, rideController.createRide);
-router.put('/update/:id', AuthMiddleware, rideController.updateRide);
+const rideController = require("../controllers/rideController");
+const authMiddleware = require("../middleware/middleware");
 
-router.post('/passenger/add/:id', AuthMiddleware, rideController.addPassenger);
-router.post('/passenger/remove/:id', AuthMiddleware, rideController.removePassenger);
+router.post("/create", authMiddleware, rideController.createRide);
+router.put("/update/:id", authMiddleware, rideController.updateRide);
 
-router.post('/join/:id', AuthMiddleware, rideController.joinRide);
-router.post('/leave/:id', AuthMiddleware, rideController.leaveRide);
-router.delete('/delete/:id', AuthMiddleware, rideController.deleteRide);
+router.post("/passenger/add/:id", authMiddleware, rideController.addPassenger);
+router.post("/passenger/remove/:id", authMiddleware, rideController.removePassenger);
 
-router.get('/search', rideController.searchRides);
-router.get('/dashboard', AuthMiddleware, rideController.getDashboard);
-router.get('/dashboard/created', AuthMiddleware, rideController.getCreatedRides);
-router.get('/dashboard/joined', AuthMiddleware, rideController.getJoinedRides);
+router.post("/join/:id", authMiddleware, rideController.joinRide);
+router.post("/leave/:id", authMiddleware, rideController.leaveRide);
+router.delete("/delete/:id", authMiddleware, rideController.deleteRide);
+router.get("/search", rideController.searchRides);
+
+router.get("/dashboard", authMiddleware, rideController.getDashboard);
+router.get("/dashboard/created", authMiddleware, rideController.getCreatedRides);
+router.get("/dashboard/joined", authMiddleware, rideController.getJoinedRides);
 
 module.exports = router;

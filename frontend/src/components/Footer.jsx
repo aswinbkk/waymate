@@ -1,40 +1,36 @@
 import styled from "styled-components";
 
 const FooterContainer = styled.footer`
-  background: linear-gradient(90deg, #0f172a, #020617);
-  color: white;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  padding: 60px 50px 25px;
 
-  padding: 50px 60px 20px;
-
-  border-top: 1px solid rgba(255,255,255,0.06);
-
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+  @media (max-width: 768px) {
+    padding: 45px 24px 20px;
+  }
 `;
 
 const FooterTop = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 50px;
-
+  gap: 60px;
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 40px;
+  }
 `;
 
 const BrandSection = styled.div`
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
+  max-width: 340px;
   img {
-    width: 100px;
-    margin-bottom: 10px;
+    width: 150px;
+    margin-bottom: 18px;
   }
-
   p {
-    color: rgba(255,255,255,0.65);
-    line-height: 1.6;
+    color: #64748b;
+    line-height: 1.7;
     font-size: 14px;
   }
 `;
@@ -42,66 +38,73 @@ const BrandSection = styled.div`
 const FooterLinks = styled.div`
   display: flex;
   gap: 70px;
-
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    gap: 40px;
+  }
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 `;
 
 const LinkGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
-
+  gap: 14px;
   h3 {
+    color: #0f172a;
     font-size: 16px;
-    margin-bottom: 10px;
-    color: #38bdf8;
+    font-weight: 700;
+    margin-bottom: 6px;
   }
 
   a {
     text-decoration: none;
-    color: rgba(255,255,255,0.7);
+    color: #64748b;
     font-size: 14px;
     transition: 0.3s;
-
     &:hover {
-      color: #38bdf8;
+      color: #0284c7;
       transform: translateX(3px);
     }
   }
 `;
 
 const FooterBottom = styled.div`
-  margin-top: 40px;
-  padding-top: 18px;
-
-  border-top: 1px solid rgba(255,255,255,0.08);
-
+  margin-top: 45px;
+  padding-top: 22px;
+  border-top: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   flex-wrap: wrap;
-  gap: 10px;
-
+  gap: 16px;
   p {
-    color: rgba(255,255,255,0.55);
+    color: #94a3b8;
     font-size: 13px;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
   }
 `;
 
 const SocialIcons = styled.div`
   display: flex;
   gap: 14px;
-
   img {
-    width: 18px;
-    opacity: 0.7;
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+    border-radius: 10px;
+    background: #f8fafc;
     cursor: pointer;
     transition: 0.3s;
-
     &:hover {
-      opacity: 1;
-      transform: scale(1.1);
+      background: #e0f2fe;
+      transform: translateY(-2px);
     }
   }
 `;
@@ -109,65 +112,47 @@ const SocialIcons = styled.div`
 const Footer = () => {
   return (
     <FooterContainer>
-
       <FooterTop>
-
         <BrandSection>
-          <img src="/waymate_full_logo.png" alt="WayMate Logo"/>
-
-          <p>
-            Smart carpooling platform connecting riders
-            travelling on the same route with comfort,
-            safety and affordability.
-          </p>
+          <img src="/waymate_wordmark_logo.png" alt="waymate"/>
+          <p>A better way of traveling that makes every journey easier, greener, and more connected.</p>
         </BrandSection>
 
         <FooterLinks>
-
           <LinkGroup>
             <h3>Platform</h3>
-
             <a href="/">Home</a>
             <a href="/find">Find Ride</a>
             <a href="/create">Offer Ride</a>
-            <a href="/dashboard">Dashboard</a>
+            <a href="/about">About</a>
           </LinkGroup>
 
           <LinkGroup>
             <h3>Company</h3>
-
-            <a href="/">About Us</a>
-            <a href="/">Contact</a>
             <a href="/">Careers</a>
             <a href="/">Support</a>
+            <a href="/">Contact</a>
           </LinkGroup>
 
           <LinkGroup>
             <h3>Legal</h3>
-
             <a href="/">Privacy Policy</a>
-            <a href="/">Terms & Conditions</a>
-            <a href="/">Community Guidelines</a>
+            <a href="/">Terms</a>
+            <a href="/">Guidelines</a>
           </LinkGroup>
-
         </FooterLinks>
-
       </FooterTop>
 
       <FooterBottom>
-
         <p>
           © 2026 waymate. All rights reserved.
         </p>
-
         <SocialIcons>
-          <img src="/waymate_standalone_icon.png" alt="facebook" />
-          <img src="/waymate_standalone_icon.png" alt="instagram" />
-          <img src="/waymate_standalone_icon.png" alt="twitter" />
+          <img src="/waymate_standalone_icon.png" alt="Facebook"/>
+          <img src="/waymate_standalone_icon.png" alt="Instagram"/>
+          <img src="/waymate_standalone_icon.png" alt="Twitter"/>
         </SocialIcons>
-
       </FooterBottom>
-
     </FooterContainer>
   );
 };

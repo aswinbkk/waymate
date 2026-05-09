@@ -1,15 +1,9 @@
 const mongoose = require("mongoose");
 
-const rideSchema = new mongoose.Schema(
+const userRideSchema = new mongoose.Schema(
   {
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-
-    createdByRole: {
-      type: String,
-      enum: ["user", "agency"],
       required: true
     },
 
@@ -53,10 +47,7 @@ const rideSchema = new mongoose.Schema(
     },
 
     vehicleNumber: {
-      type: String,
-      required: function () {
-        return this.createdByRole === "agency";
-      },
+      type: String
     },
 
     passengers: [
@@ -93,5 +84,5 @@ const rideSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Ride = mongoose.model("Ride", rideSchema);
-module.exports = Ride;
+const UserRide = mongoose.model("UserRide", userRideSchema);
+module.exports = UserRide;

@@ -1,4 +1,4 @@
-const Ride = require("../models/rideModel");
+const UserRide = require("../models/userRideModel");
 const geocodeAddress = require("../utils/geocode");
 const getRoadDistance = require("../utils/osrm")
 const calculateDistance = require("../utils/calculateDistance")

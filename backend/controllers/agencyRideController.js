@@ -43,7 +43,7 @@ const createAgencyRide = async (req, res) => {
         }
 
         // Auto price
-        const acCharge;
+        let acCharge;
         if (preferences && preferences.ac === true) {
             acCharge = AC_EXTRA_PER_KM;
         } else {
@@ -165,7 +165,7 @@ const updateAgencyRide = async (req, res) => {
         agencyRide.distance = distance;
 
         // Auto price recalc
-        const acCharge;
+        let acCharge;
         if (preferences && preferences.ac === true) {
             acCharge = AC_EXTRA_PER_KM;
         } else {

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Bid = require("../models/bidModel");
-const Ride = require("../models/rideModel");
+const Ride = require("../models/agencyRideModel");
 
 
 // CREATE BID

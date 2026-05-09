@@ -220,7 +220,7 @@ const addPassenger = async (req, res) => {
 
         const passenger = await User.findById(userId);
         if (!passenger) {
-            return res.status(404).json({ msg: "User not registered" });
+            return res.status(404).json({ msg: "Passenger not found" });
         }
 
         const exists = userRide.passengers.find(variable => variable.user.equals(userId));

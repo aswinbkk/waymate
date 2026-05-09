@@ -144,6 +144,9 @@ const updateProfile = async (req, res) => {
     try {
         const updates = req.body;
         delete updates.password;
+        delete updates.role;
+        delete updates.otp;
+        delete updates.otpExpire;
         const agency = await Agency.findByIdAndUpdate(req.auth.id, updates, { returnDocument: "after", runValidators: true }).select("-password");
         res.status(200).json({ msg: "Profile updated", data: agency });
 

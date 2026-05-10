@@ -122,8 +122,8 @@ const Footer = () => {
           <LinkGroup>
             <h3>Platform</h3>
             <a href="/">Home</a>
-            <a href="/find">Find Ride</a>
-            <a href="/create">Offer Ride</a>
+            <a href="/find">User Ride</a>
+            <a href="/create">Agency Ride</a>
             <a href="/about">About</a>
           </LinkGroup>
 
@@ -144,9 +144,7 @@ const Footer = () => {
       </FooterTop>
 
       <FooterBottom>
-        <p>
-          © 2026 waymate. All rights reserved.
-        </p>
+        <p>© 2026 waymate. All rights reserved.</p>
         <SocialIcons>
           <img src="/waymate_standalone_icon.png" alt="Facebook"/>
           <img src="/waymate_standalone_icon.png" alt="Instagram"/>

@@ -171,8 +171,8 @@ const SignIn = () => {
   return (
     <PageContainer>
       <SignInCard>
-        <Logo src="/waymate_wordmark_logo.png" alt="WayMate"/>
-
+        <Logo src="/waymate_full_logo.png" alt="waymate"/>
+        
         <Heading>
           Create Account
         </Heading>

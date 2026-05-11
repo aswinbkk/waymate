@@ -167,16 +167,22 @@ const BottomText = styled.p`
   }
 `;
 
+const AgentSignUp = styled.a`
+ text-decoration: none;
+ color: #0284c7;
+ font-size: 13px;
+ font-weight: 600;
+ &:hover{
+ text-decoration: underline;
+ }
+`;
+
 const SignIn = () => {
   return (
     <PageContainer>
       <SignInCard>
-        <Logo src="/waymate_full_logo.png" alt="waymate"/>
-        
-        <Heading>
-          Create Account
-        </Heading>
-
+        <Logo src="/waymate_full_logo.png" alt="waymate" />
+        <Heading>Create Account</Heading>
         <SubText>
           Join waymate and make every journey easier, greener, and more connected.
         </SubText>
@@ -185,30 +191,28 @@ const SignIn = () => {
           <Row>
             <InputGroup>
               <label>First Name</label>
-              <Input type="text" placeholder="First name"/>
+              <Input type="text" placeholder="First name" />
             </InputGroup>
 
             <InputGroup>
               <label>Last Name</label>
-              <Input type="text" placeholder="Last name"/>
+              <Input type="text" placeholder="Last name" />
             </InputGroup>
           </Row>
 
           <InputGroup>
             <label>Phone Number</label>
-            <Input type="tel" placeholder="Enter phone number"/>
+            <Input type="tel" placeholder="Enter phone number" />
           </InputGroup>
 
           <InputGroup>
             <label>Email Address</label>
-            <Input
-              type="email" placeholder="Enter your email"/>
+            <Input type="email" placeholder="Enter your email" />
           </InputGroup>
 
           <InputGroup>
             <label>Password</label>
-            <Input
-              type="password" placeholder="Create password"/>
+            <Input type="password" placeholder="Create password" />
           </InputGroup>
 
           <OptionsRow>
@@ -216,6 +220,9 @@ const SignIn = () => {
               <input type="checkbox" />
               I agree to Terms & Conditions
             </RememberMe>
+            <AgentSignUp href="/SignUp">
+                I am an agent!
+            </AgentSignUp>
           </OptionsRow>
 
           <SignInButton>

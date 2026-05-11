@@ -1,11 +1,7 @@
-require("dotenv").config();
-
 const express = require("express");
-
 const app = express();
 
 const connectDB = require("./config/db");
-
 connectDB();
 
 const userRoutes = require("./routes/userRoutes");
@@ -13,6 +9,9 @@ const userRideRoutes = require("./routes/userRideRoutes");
 const agencyRoutes = require("./routes/agencyRoutes");
 const agencyRideRoutes = require("./routes/agencyRideRoutes");
 const bidRoutes = require("./routes/bidRoutes");
+
+const cors = require("cors")
+app.use(cors())
 
 app.use(express.json());
 

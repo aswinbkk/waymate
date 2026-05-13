@@ -17,7 +17,7 @@ const PageContainer = styled.div`
 
 const SignInCard = styled.div`
   width: 100%;
-  max-width: 430px;
+  max-width: 460px;
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(18px);
   border: 1px solid rgba(37,99,235,0.08);
@@ -58,7 +58,17 @@ const Form = styled.form`
   gap: 20px;
 `;
 
+const Row = styled.div`
+  display: flex;
+  gap: 14px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+`;
+
 const InputGroup = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -81,8 +91,7 @@ const Input = styled.input`
   transition: 0.3s;
   &:focus {
     border-color: #38bdf8;
-    box-shadow:
-      0 0 0 4px rgba(56,189,248,0.12);
+    box-shadow: 0 0 0 4px rgba(56,189,248,0.12);
   }
   &::placeholder {
     color: #94a3b8;
@@ -95,6 +104,17 @@ const OptionsRow = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
+`;
+
+const RememberMe = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  input {
+    accent-color: #0284c7;
+  }
 `;
 
 const ForgotPassword = styled.a`
@@ -147,42 +167,72 @@ const BottomText = styled.p`
   }
 `;
 
+const AgentSignUp = styled.a`
+ text-decoration: none;
+ color: #0284c7;
+ font-size: 13px;
+ font-weight: 600;
+ &:hover{
+ text-decoration: underline;
+ }
+`;
+
 const SignIn = () => {
   return (
     <PageContainer>
       <SignInCard>
-        <Logo src="/waymate_full_logo.png" alt="waymate"/>
-
-        <Heading>
-          Welcome Back
-        </Heading>
-
+        <Logo src="/waymate_full_logo.png" alt="waymate" />
+        <Heading>Create Account</Heading>
         <SubText>
-          Log in to continue with a smarter, greener, and more connected way of traveling.
+          Join waymate and make every journey easier, greener, and more connected.
         </SubText>
 
         <Form>
+          <Row>
+            <InputGroup>
+              <label>First Name</label>
+              <Input type="text" placeholder="First name" />
+            </InputGroup>
+
+            <InputGroup>
+              <label>Last Name</label>
+              <Input type="text" placeholder="Last name" />
+            </InputGroup>
+          </Row>
+
+          <InputGroup>
+            <label>Phone Number</label>
+            <Input type="tel" placeholder="Enter phone number" />
+          </InputGroup>
+
           <InputGroup>
             <label>Email Address</label>
-            <Input type="email" placeholder="Enter your email"/>
+            <Input type="email" placeholder="Enter your email" />
           </InputGroup>
 
           <InputGroup>
             <label>Password</label>
-            <Input type="password" placeholder="Enter your password"/>
+            <Input type="password" placeholder="Create password" />
           </InputGroup>
 
           <OptionsRow>
-            <ForgotPassword href="/">Forgot Password?</ForgotPassword>
+            <RememberMe>
+              <input type="checkbox" />
+              I agree to Terms & Conditions
+            </RememberMe>
+            <AgentSignUp href="/SignUp">
+                I am an agent!
+            </AgentSignUp>
           </OptionsRow>
-          <SignInButton>Sign In</SignInButton>
+
+          <SignInButton>
+            Create Account
+          </SignInButton>
         </Form>
 
         <BottomText>
-          Don’t have an account?
-          <a href="/SignUp">
-            Sign Up
-          </a>
+          Already have an account?
+          <Link to="/SignIn">Login</Link>
         </BottomText>
       </SignInCard>
     </PageContainer>

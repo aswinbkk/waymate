@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getData } from '../../api/apiSearch';
+import { getData } from '../api/apiSearch';
 import styled from "styled-components";
 
 const PageContainer = styled.div`

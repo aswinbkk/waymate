@@ -156,10 +156,10 @@ const Navbar = () => {
 
       <NavbarCenter>
         <NavLinks>
-          <Link to="/Search">Home</Link>
-          <Link to="/Search">User Ride</Link>
-          <Link to="/Search">Agency Ride</Link>
-          <Link to="/Search">About</Link>
+          <Link to="/Home">Home</Link>
+          <Link to="/SignIn">User Ride</Link>
+          <Link to="/SignUp">Agency Ride</Link>
+          <Link to="/Home">About</Link>
         </NavLinks>
 
         <NavbarSearch>
@@ -170,7 +170,7 @@ const Navbar = () => {
 
       <NavbarRight>
         <LoginButton>
-          <Link to="/SignIn">SignIn</Link>
+          <Link to="/SignIn">Sign In</Link>
         </LoginButton>
         <SignupButton>
           <Link to="/SignUp">Get Started</Link>

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -177,7 +178,7 @@ const AgentSignUp = styled.a`
  }
 `;
 
-const SignIn = () => {
+const SignUp = () => {
   return (
     <PageContainer>
       <SignInCard>
@@ -239,4 +240,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

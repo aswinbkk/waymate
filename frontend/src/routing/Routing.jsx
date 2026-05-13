@@ -3,11 +3,11 @@ import Home from "../pages/Home";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 
-const Routes = () => {
+const Routing = () => {
     return (
         <>
             <Routes>
-                <Route path= "/Home" element={<Home />} />
+                <Route path="/Home" element={<Home />} />
                 <Route path="/SignIn" element={<SignIn />} />
                 <Route path="/SignUp" element={<SignUp />} />
             </Routes>
@@ -15,4 +15,4 @@ const Routes = () => {
     )
 }
 
-export default Routes
+export default Routing

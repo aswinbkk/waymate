@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const NavbarContainer = styled.nav`
   width: 100%;
@@ -155,21 +156,25 @@ const Navbar = () => {
 
       <NavbarCenter>
         <NavLinks>
-          <a href="/">Home</a>
-          <a href="/find">User Ride</a>
-          <a href="/create">Agency Ride</a>
-          <a href="/about">About</a>
+          <Link to="/Search">Home</Link>
+          <Link to="/Search">User Ride</Link>
+          <Link to="/Search">Agency Ride</Link>
+          <Link to="/Search">About</Link>
         </NavLinks>
 
         <NavbarSearch>
           <img src="/search_icon.png" alt="search" />
-          <input type="text" placeholder="Search ride..."/>
+          <input type="text" placeholder="Search ride..." />
         </NavbarSearch>
       </NavbarCenter>
 
       <NavbarRight>
-        <LoginButton>Login</LoginButton>
-        <SignupButton>Get Started</SignupButton>
+        <LoginButton>
+          <Link to="/SignIn">SignIn</Link>
+        </LoginButton>
+        <SignupButton>
+          <Link to="/SignUp">Get Started</Link>
+        </SignupButton>
       </NavbarRight>
     </NavbarContainer>
   );

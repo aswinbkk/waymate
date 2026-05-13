@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const FooterContainer = styled.footer`
   background: white;
@@ -114,31 +115,31 @@ const Footer = () => {
     <FooterContainer>
       <FooterTop>
         <BrandSection>
-          <img src="/waymate_wordmark_logo.png" alt="waymate"/>
+          <img src="/waymate_wordmark_logo.png" alt="waymate" />
           <p>A better way of traveling that makes every journey easier, greener, and more connected.</p>
         </BrandSection>
 
         <FooterLinks>
           <LinkGroup>
             <h3>Platform</h3>
-            <a href="/">Home</a>
-            <a href="/find">User Ride</a>
-            <a href="/create">Agency Ride</a>
-            <a href="/about">About</a>
+            <Link to="/">Home</Link>
+            <Link to="/">User Ride</Link>
+            <Link to="/">Agency Ride</Link>
+            <Link to="/">About</Link>
           </LinkGroup>
 
           <LinkGroup>
             <h3>Company</h3>
-            <a href="/">Careers</a>
-            <a href="/">Support</a>
-            <a href="/">Contact</a>
+            <Link to="/">Careers</Link>
+            <Link to="/">Support</Link>
+            <Link to="/">Contact</Link>
           </LinkGroup>
 
           <LinkGroup>
             <h3>Legal</h3>
-            <a href="/">Privacy Policy</a>
-            <a href="/">Terms</a>
-            <a href="/">Guidelines</a>
+            <Link to="/">Privacy Policy</Link>
+            <Link to="/">Terms</Link>
+            <Link to="/">Guidelines</Link>
           </LinkGroup>
         </FooterLinks>
       </FooterTop>
@@ -146,9 +147,9 @@ const Footer = () => {
       <FooterBottom>
         <p>© 2026 waymate. All rights reserved.</p>
         <SocialIcons>
-          <img src="/waymate_standalone_icon.png" alt="Facebook"/>
-          <img src="/waymate_standalone_icon.png" alt="Instagram"/>
-          <img src="/waymate_standalone_icon.png" alt="Twitter"/>
+          <img src="/waymate_standalone_icon.png" alt="Facebook" />
+          <img src="/waymate_standalone_icon.png" alt="Instagram" />
+          <img src="/waymate_standalone_icon.png" alt="Twitter" />
         </SocialIcons>
       </FooterBottom>
     </FooterContainer>

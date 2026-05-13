@@ -154,16 +154,16 @@ const Navbar = () => {
       <NavbarLeft>
         <img
           src="/waymate_wordmark_logo.png"
-          alt="WayMate Logo"
+          alt="waymate Logo"
         />
       </NavbarLeft>
 
       <NavbarCenter>
         <NavLinks>
-          <Link to="/Home">Home</Link>
-          <Link to="/Login">User Ride</Link>
-          <Link to="/SignUp">Agency Ride</Link>
-          <Link to="/Home">About</Link>
+          <Link to="/">Home</Link>
+          <Link to="/">User Ride</Link>
+          <Link to="/">Agency Ride</Link>
+          <Link to="/">About</Link>
         </NavLinks>
 
         <NavbarSearch>
@@ -173,7 +173,6 @@ const Navbar = () => {
       </NavbarCenter>
 
       <NavbarRight>
-
         <StyledLink to="/Login">
           <LoginButton>
             Login
@@ -185,7 +184,6 @@ const Navbar = () => {
             Get Started
           </SignupButton>
         </StyledLink>
-
       </NavbarRight>
     </NavbarContainer>
   );

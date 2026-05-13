@@ -221,8 +221,8 @@ const SignUp = () => {
               <input type="checkbox" />
               I agree to Terms & Conditions
             </RememberMe>
-            <AgentSignUp href="/SignUp">
-                I am an agent!
+            <AgentSignUp>
+              <Link to="/Login">I am an agent!</Link>
             </AgentSignUp>
           </OptionsRow>
 

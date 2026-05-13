@@ -174,7 +174,9 @@ const Login = () => {
           </InputGroup>
 
           <OptionsRow>
-            <ForgotPassword href="/">Forgot Password?</ForgotPassword>
+            <ForgotPassword href="/">
+            <Link to="/">Forgot Password?</Link>
+            </ForgotPassword>
           </OptionsRow>
           <LoginButton>Sign In</LoginButton>
         </Form>

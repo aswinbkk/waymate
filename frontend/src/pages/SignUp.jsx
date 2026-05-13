@@ -16,7 +16,7 @@ const PageContainer = styled.div`
     );
 `;
 
-const SignInCard = styled.div`
+const LoginCard = styled.div`
   width: 100%;
   max-width: 460px;
   background: rgba(255,255,255,0.92);
@@ -128,7 +128,7 @@ const ForgotPassword = styled.a`
   }
 `;
 
-const SignInButton = styled.button`
+const LoginButton = styled.button`
   margin-top: 8px;
   padding: 14px;
   border: none;
@@ -181,7 +181,7 @@ const AgentSignUp = styled.a`
 const SignUp = () => {
   return (
     <PageContainer>
-      <SignInCard>
+      <LoginCard>
         <Logo src="/waymate_full_logo.png" alt="waymate" />
         <Heading>Create Account</Heading>
         <SubText>
@@ -226,16 +226,16 @@ const SignUp = () => {
             </AgentSignUp>
           </OptionsRow>
 
-          <SignInButton>
+          <LoginButton>
             Create Account
-          </SignInButton>
+          </LoginButton>
         </Form>
 
         <BottomText>
           Already have an account?
-          <Link to="/SignIn">Login</Link>
+          <Link to="/Login">Login</Link>
         </BottomText>
-      </SignInCard>
+      </LoginCard>
     </PageContainer>
   );
 };

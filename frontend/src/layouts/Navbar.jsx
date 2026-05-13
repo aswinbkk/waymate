@@ -108,6 +108,10 @@ const NavbarRight = styled.div`
   gap: 12px;
 `;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+`;
+
 const LoginButton = styled.button`
   padding: 10px 18px;
   border-radius: 12px;
@@ -157,7 +161,7 @@ const Navbar = () => {
       <NavbarCenter>
         <NavLinks>
           <Link to="/Home">Home</Link>
-          <Link to="/SignIn">User Ride</Link>
+          <Link to="/Login">User Ride</Link>
           <Link to="/SignUp">Agency Ride</Link>
           <Link to="/Home">About</Link>
         </NavLinks>
@@ -169,12 +173,19 @@ const Navbar = () => {
       </NavbarCenter>
 
       <NavbarRight>
-        <LoginButton>
-          <Link to="/SignIn">Sign In</Link>
-        </LoginButton>
-        <SignupButton>
-          <Link to="/SignUp">Get Started</Link>
-        </SignupButton>
+
+        <StyledLink to="/Login">
+          <LoginButton>
+            Login
+          </LoginButton>
+        </StyledLink>
+
+        <StyledLink to="/SignUp">
+          <SignupButton>
+            Get Started
+          </SignupButton>
+        </StyledLink>
+
       </NavbarRight>
     </NavbarContainer>
   );

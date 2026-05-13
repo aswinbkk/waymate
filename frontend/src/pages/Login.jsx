@@ -16,7 +16,7 @@ const PageContainer = styled.div`
     );
 `;
 
-const SignInCard = styled.div`
+const LoginCard = styled.div`
   width: 100%;
   max-width: 430px;
   background: rgba(255,255,255,0.92);
@@ -108,7 +108,7 @@ const ForgotPassword = styled.a`
   }
 `;
 
-const SignInButton = styled.button`
+const LoginButton = styled.button`
   margin-top: 8px;
   padding: 14px;
   border: none;
@@ -148,10 +148,10 @@ const BottomText = styled.p`
   }
 `;
 
-const SignIn = () => {
+const Login = () => {
   return (
     <PageContainer>
-      <SignInCard>
+      <LoginCard>
         <Logo src="/waymate_full_logo.png" alt="waymate"/>
 
         <Heading>
@@ -176,16 +176,16 @@ const SignIn = () => {
           <OptionsRow>
             <ForgotPassword href="/">Forgot Password?</ForgotPassword>
           </OptionsRow>
-          <SignInButton>Sign In</SignInButton>
+          <LoginButton>Sign In</LoginButton>
         </Form>
 
         <BottomText>
           Don’t have an account?
           <Link to="/SignUp">Sign Up</Link>
         </BottomText>
-      </SignInCard>
+      </LoginCard>
     </PageContainer>
   );
 };
 
-export default SignIn;
+export default Login;

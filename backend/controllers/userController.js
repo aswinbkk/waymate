@@ -28,7 +28,8 @@ const registerUser = async (req, res) => {
         });
         await createdUser.save();
 
-        res.status(201).json({msg: "User created successfully",
+        res.status(201).json({
+            msg: "User created successfully",
             data: {
                 id: createdUser._id,
                 fullName: createdUser.fullName,
@@ -57,6 +58,12 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
         const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
+        //cookie settings
+        res.cookie("token", token, {
+            httpOnly: true,
+          
+            maxAge: 100 * 60 * 60 * 1000
+        });
         res.status(200).json({ msg: 'Login successful', token: token });
 
     } catch (error) {

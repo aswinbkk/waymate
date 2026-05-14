@@ -1,5 +1,7 @@
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../api/apiUser";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -63,6 +65,7 @@ const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
   label {
     font-size: 14px;
     font-weight: 600;
@@ -80,11 +83,13 @@ const Input = styled.input`
   color: #0f172a;
   outline: none;
   transition: 0.3s;
+
   &:focus {
     border-color: #38bdf8;
     box-shadow:
       0 0 0 4px rgba(56,189,248,0.12);
   }
+
   &::placeholder {
     color: #94a3b8;
   }
@@ -94,15 +99,14 @@ const OptionsRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
 `;
 
-const ForgotPassword = styled.a`
+const ForgotPassword = styled(Link)`
   text-decoration: none;
   color: #0284c7;
   font-size: 13px;
   font-weight: 600;
+
   &:hover {
     text-decoration: underline;
   }
@@ -126,6 +130,7 @@ const LoginButton = styled.button`
     );
   transition: 0.35s;
   box-shadow: 0 10px 24px rgba(37,99,235,0.16);
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 28px rgba(37,99,235,0.22);
@@ -137,11 +142,13 @@ const BottomText = styled.p`
   text-align: center;
   color: #64748b;
   font-size: 14px;
+
   a {
     text-decoration: none;
     color: #0284c7;
     font-weight: 700;
     margin-left: 5px;
+
     &:hover {
       text-decoration: underline;
     }
@@ -149,43 +156,125 @@ const BottomText = styled.p`
 `;
 
 const Login = () => {
+
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      const res = await loginUser(formData);
+
+      console.log(res);
+
+      if (res) {
+
+        alert("Login Successful");
+
+        navigate("/");
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Login Failed");
+
+    }
+  };
+
   return (
     <PageContainer>
+
       <LoginCard>
-        <Logo src="/waymate_full_logo.png" alt="waymate"/>
+
+        <Logo
+          src="/waymate_full_logo.png"
+          alt="waymate"
+        />
 
         <Heading>
           Welcome Back
         </Heading>
 
         <SubText>
-          Log in to continue with a smarter, greener, and more connected way of traveling.
+          Log in to continue with a smarter,
+          greener, and more connected way of traveling.
         </SubText>
 
-        <Form>
+        <Form onSubmit={handleSubmit}>
+
           <InputGroup>
+
             <label>Email Address</label>
-            <Input type="email" placeholder="Enter your email"/>
+
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+
           </InputGroup>
 
           <InputGroup>
+
             <label>Password</label>
-            <Input type="password" placeholder="Enter your password"/>
+
+            <Input
+              type="password"
+              placeholder="Enter your password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+
           </InputGroup>
 
           <OptionsRow>
-            <ForgotPassword href="/">
-            <Link to="/">Forgot Password?</Link>
+
+            <ForgotPassword to="/">
+              Forgot Password?
             </ForgotPassword>
+
           </OptionsRow>
-          <LoginButton>Sign In</LoginButton>
+
+          <LoginButton type="submit">
+            Sign In
+          </LoginButton>
+
         </Form>
 
         <BottomText>
+
           Don’t have an account?
-          <Link to="/SignUp">Sign Up</Link>
+
+          <Link to="/SignUp">
+            Sign Up
+          </Link>
+
         </BottomText>
+
       </LoginCard>
+
     </PageContainer>
   );
 };

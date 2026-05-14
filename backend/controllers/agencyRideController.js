@@ -354,7 +354,7 @@ const searchAgencyRides = async (req, res) => {
 
 const getAgencyRide = async (req, res)=>{
     try {
-        const allAgencyRide = await UserRide.find().sort({ createdAt: -1 })
+        const allAgencyRide = await AgencyRide.find().sort({ createdAt: -1 })
         res.status(200).json({ msg: "User Created Rides", count: allAgencyRide.length, data: allAgencyRide });
     } catch (error) {
         res.status(500).json({msg:`Server Error ${error}`})

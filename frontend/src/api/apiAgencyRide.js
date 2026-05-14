@@ -1,6 +1,6 @@
 const baseUrl = "http://localhost:3000";
 
-export const getData = async () => {
+export const getAgencyRide = async () => {
     try {
         const response = await fetch(`${baseUrl}/agency-ride/view-all-ride`);
         console.log("Response is",response);

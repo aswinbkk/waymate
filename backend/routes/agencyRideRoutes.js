@@ -16,5 +16,6 @@ router.get("/dashboard", authMiddleware, agencyRideController.agencyDashboard);
 router.get("/dashboard/created", authMiddleware, agencyRideController.viewAgencyCreatedRides);
 
 router.get("/search", agencyRideController.searchAgencyRides);
+router.get("/view-all-ride", agencyRideController.getAgencyRide);
 
 module.exports = router;

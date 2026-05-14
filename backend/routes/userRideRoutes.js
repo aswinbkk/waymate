@@ -12,13 +12,14 @@ router.delete("/delete/:id", authMiddleware, userRideController.deleteUserRide);
 router.post("/passenger/add/:id", authMiddleware, userRideController.addPassenger);
 router.post("/passenger/remove/:id", authMiddleware, userRideController.removePassenger);
 
-router.post("/join/:id", authMiddleware, userRideController.UserJoinRide);
-router.post("/leave/:id", authMiddleware, userRideController.UserleaveRide);
+router.post("/join/:id", authMiddleware, userRideController.userJoinRide);
+router.post("/leave/:id", authMiddleware, userRideController.userleaveRide);
 
 router.get("/dashboard", authMiddleware, userRideController.userDashboard);
 router.get("/dashboard/created", authMiddleware, userRideController.viewUserCreatedRides);
 router.get("/dashboard/joined", authMiddleware, userRideController.viewUserJoinedRides);
 
 router.get("/search", userRideController.searchUserRides);
+router.get("/view-all-ride", userRideController.getUserRide);
 
 module.exports = router;

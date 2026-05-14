@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { useEffect, useState } from 'react';
-import { getData } from '../api/apiSearch';
+import { getUserRide } from '../api/apiUserRide';
 
 const Overlay = styled.div`
   position: fixed;

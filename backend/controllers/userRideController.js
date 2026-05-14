@@ -282,7 +282,7 @@ const removePassenger = async (req, res) => {
 };
 
 // Join a ride.
-const UserJoinRide = async (req, res) => {
+const userJoinRide = async (req, res) => {
     try {
         const { id } = req.params;
         const userRide = await UserRide.findById(id);
@@ -325,7 +325,7 @@ const UserJoinRide = async (req, res) => {
 };
 
 // Leave from ride.
-const UserleaveRide = async (req, res) => {
+const userleaveRide = async (req, res) => {
     try {
         const { id } = req.params;
         const userRide = await UserRide.findById(id);
@@ -439,16 +439,26 @@ const searchUserRides = async (req, res) => {
     }
 };
 
+const getUserRide = async (req, res)=>{
+    try {
+        const allUserRide = await UserRide.find().sort({ createdAt: -1 })
+        res.status(200).json({ msg: "User Created Rides", count: allUserRide.length, data: allUserRide });
+    } catch (error) {
+        res.status(500).json({msg:`Server Error ${error}`})
+    }
+}
+
 module.exports = {
     createUserRide,
     updateUserRide,
     deleteUserRide,
     addPassenger,
     removePassenger,
-    UserJoinRide,
-    UserleaveRide,
+    userJoinRide,
+    userleaveRide,
     userDashboard,
     viewUserCreatedRides,
     viewUserJoinedRides,
-    searchUserRides
+    searchUserRides,
+    getUserRide
 };

@@ -156,7 +156,6 @@ const BottomText = styled.p`
 `;
 
 const Login = () => {
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -165,7 +164,6 @@ const Login = () => {
   });
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -174,27 +172,20 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       const res = await loginUser(formData);
-
       console.log(res);
 
-      if (res) {
-
+      if (res.success) {
         alert("Login Successful");
-
         navigate("/");
 
       }
 
     } catch (error) {
-
       console.error(error);
-
       alert("Login Failed");
 
     }
@@ -204,15 +195,9 @@ const Login = () => {
     <PageContainer>
 
       <LoginCard>
+        <Logo src="/waymate_full_logo.png" alt="waymate"/>
 
-        <Logo
-          src="/waymate_full_logo.png"
-          alt="waymate"
-        />
-
-        <Heading>
-          Welcome Back
-        </Heading>
+        <Heading> Welcome Back </Heading>
 
         <SubText>
           Log in to continue with a smarter,
@@ -220,61 +205,44 @@ const Login = () => {
         </SubText>
 
         <Form onSubmit={handleSubmit}>
-
           <InputGroup>
-
             <label>Email Address</label>
-
             <Input
               type="email"
               placeholder="Enter your email"
               name="email"
               value={formData.email}
-              onChange={handleChange}
-            />
-
+              onChange={handleChange}/>
           </InputGroup>
 
           <InputGroup>
-
             <label>Password</label>
-
             <Input
               type="password"
               placeholder="Enter your password"
               name="password"
               value={formData.password}
-              onChange={handleChange}
-            />
-
+              onChange={handleChange}/>
           </InputGroup>
 
           <OptionsRow>
-
             <ForgotPassword to="/">
               Forgot Password?
             </ForgotPassword>
-
           </OptionsRow>
 
           <LoginButton type="submit">
             Sign In
           </LoginButton>
-
         </Form>
 
         <BottomText>
-
           Don’t have an account?
-
           <Link to="/SignUp">
             Sign Up
           </Link>
-
         </BottomText>
-
       </LoginCard>
-
     </PageContainer>
   );
 };

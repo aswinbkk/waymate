@@ -61,10 +61,11 @@ const loginUser = async (req, res) => {
         //cookie settings
         res.cookie("token", token, {
             httpOnly: true,
-          
+            secure: true,
+            sameSite:"strict",
             maxAge: 100 * 60 * 60 * 1000
         });
-        res.status(200).json({ msg: 'Login successful', token: token });
+        res.status(200).json({success:true, msg: 'Login successful', token: token });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

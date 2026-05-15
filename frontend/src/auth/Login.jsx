@@ -180,7 +180,7 @@ const Login = () => {
 
       if (res.success) {
         alert("Login Successful");
-        navigate("/");
+        navigate("/user");
 
       }
 
@@ -238,7 +238,7 @@ const Login = () => {
 
         <BottomText>
           Don’t have an account?
-          <Link to="/SignUp">
+          <Link to="/signUp">
             Sign Up
           </Link>
         </BottomText>

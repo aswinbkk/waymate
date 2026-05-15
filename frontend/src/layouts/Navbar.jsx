@@ -177,8 +177,8 @@ const Navbar = () => {
             <Link to="/">Home</Link>
             <Link to="/">User Ride</Link>
             <Link to="/">Agency Ride</Link>
-            <Link to="/Help">Help</Link>
-            <Link to="/About">About</Link>
+            <Link to="/help">Help</Link>
+            <Link to="/about">About</Link>
           </NavLinks>
 
           <NavbarSearch
@@ -198,13 +198,13 @@ const Navbar = () => {
 
         <NavbarRight>
 
-          <StyledLink to="/Login">
+          <StyledLink to="/login">
             <LoginButton>
               Login
             </LoginButton>
           </StyledLink>
 
-          <StyledLink to="/SignUp">
+          <StyledLink to="/signUp">
             <SignupButton>
               Get Started
             </SignupButton>

@@ -4,6 +4,7 @@ import Login from "../auth/Login";
 import SignUp from "../auth/SignUp";
 import About from "../pages/About";
 import Help from "../pages/Help";
+import User from "../pages/User";
 
 
 const Routing = () => {
@@ -11,10 +12,11 @@ const Routing = () => {
         <>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/Login" element={<Login />} />
-                <Route path="/SignUp" element={<SignUp />} />
-                <Route path="/About" element={<About />} />
-                <Route path="/Help" element={<Help />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signUp" element={<SignUp />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/user" element={<User />} />
             </Routes>
         </>
     )

@@ -222,7 +222,7 @@ const SignUp = () => {
               I agree to Terms & Conditions
             </RememberMe>
             <AgentSignUp>
-              <Link to="/Login">I am an agent!</Link>
+              <Link to="/login">I am an agent!</Link>
             </AgentSignUp>
           </OptionsRow>
 
@@ -233,7 +233,7 @@ const SignUp = () => {
 
         <BottomText>
           Already have an account?
-          <Link to="/Login">Login</Link>
+          <Link to="/login">Login</Link>
         </BottomText>
       </LoginCard>
     </PageContainer>

@@ -179,12 +179,12 @@ const RideGrid = ({ rides }) => {
       {
         rides?.map((ride) => (
 
-          <RideCard key={ride._id}>
+          <RideCard key={ride.id}>
 
             <RideRoute>
-              {ride.origin.name}
+              {ride.origin}
               {" → "}
-              {ride.destination.name}
+              {ride.destination}
             </RideRoute>
 
             <InfoSection>
@@ -207,14 +207,6 @@ const RideGrid = ({ rides }) => {
                   {ride.availableSeats}
                   {" / "}
                   {ride.totalSeats}
-                </span>
-              </InfoItem>
-
-              <InfoItem>
-                <span>Vehicle</span>
-
-                <span>
-                  {ride.vehicleNumber}
                 </span>
               </InfoItem>
 

@@ -352,14 +352,37 @@ const searchAgencyRides = async (req, res) => {
     }
 };
 
-const getAgencyRide = async (req, res)=>{
+const getAgencyRide = async (req, res) => {
     try {
-        const allAgencyRide = await AgencyRide.find().sort({ createdAt: -1 })
-        res.status(200).json({ msg: "User Created Rides", count: allAgencyRide.length, data: allAgencyRide });
+        const allAgencyRide = await AgencyRide.find().sort({ createdAt: -1 });
+
+        const formattedRides = allAgencyRide.map((ride) => ({
+            id: ride._id,
+            origin: ride.origin?.name,
+            destination: ride.destination?.name,
+            date: ride.date,
+            availableSeats: ride.availableSeats,
+            totalSeats: ride.totalSeats,
+            status: ride.status,
+            preferences: {
+                gender: ride.preferences?.gender,
+                ac: ride.preferences?.ac
+            },
+            pricePerSeat: ride.pricePerSeat
+        }));
+
+        res.status(200).json({
+            msg: "Agency Created Rides",
+            count: formattedRides.length,
+            data: formattedRides
+        });
+
     } catch (error) {
-        res.status(500).json({msg:`Server Error ${error}`})
+        res.status(500).json({
+            msg: `Server Error ${error.message}`
+        });
     }
-}
+};
 
 module.exports = {
     createAgencyRide,

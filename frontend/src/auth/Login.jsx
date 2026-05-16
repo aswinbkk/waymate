@@ -179,9 +179,8 @@ const Login = () => {
       console.log(res);
 
       if (res.success) {
-        alert("Login Successful");
-        navigate("/user");
-
+        localStorage.setItem("isLoggedIn", true);
+        navigate("/");
       }
 
     } catch (error) {
@@ -195,7 +194,7 @@ const Login = () => {
     <PageContainer>
 
       <LoginCard>
-        <Logo src="/waymate_full_logo.png" alt="waymate"/>
+        <Logo src="/waymate_full_logo.png" alt="waymate" />
 
         <Heading> Welcome Back </Heading>
 
@@ -212,7 +211,7 @@ const Login = () => {
               placeholder="Enter your email"
               name="email"
               value={formData.email}
-              onChange={handleChange}/>
+              onChange={handleChange} />
           </InputGroup>
 
           <InputGroup>
@@ -222,7 +221,7 @@ const Login = () => {
               placeholder="Enter your password"
               name="password"
               value={formData.password}
-              onChange={handleChange}/>
+              onChange={handleChange} />
           </InputGroup>
 
           <OptionsRow>

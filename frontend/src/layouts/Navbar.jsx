@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import Search from "../components/Search";
@@ -160,6 +160,13 @@ const SignupButton = styled.button`
 const Navbar = () => {
 
   const [showSearch, setShowSearch] = useState(false);
+  const navigate = useNavigate();
+
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    navigate("/login");
+  };
 
   return (
     <>
@@ -167,7 +174,7 @@ const Navbar = () => {
 
         <NavbarLeft>
 
-          <img src="/waymate_wordmark_logo.png" alt="waymate Logo"/>
+          <img src="/waymate_wordmark_logo.png" alt="waymate Logo" />
 
         </NavbarLeft>
 
@@ -198,17 +205,41 @@ const Navbar = () => {
 
         <NavbarRight>
 
-          <StyledLink to="/login">
-            <LoginButton>
-              Login
-            </LoginButton>
-          </StyledLink>
+          {
+            isLoggedIn ? (
+              <>
 
-          <StyledLink to="/signUp">
-            <SignupButton>
-              Get Started
-            </SignupButton>
-          </StyledLink>
+                <StyledLink to="/user">
+                  <LoginButton>
+                    Profile
+                  </LoginButton>
+                </StyledLink>
+
+                <SignupButton
+                  onClick={handleLogout}
+                >
+                  Logout
+                </SignupButton>
+
+              </>
+            ) : (
+              <>
+
+                <StyledLink to="/login">
+                  <LoginButton>
+                    Login
+                  </LoginButton>
+                </StyledLink>
+
+                <StyledLink to="/signUp">
+                  <SignupButton>
+                    Get Started
+                  </SignupButton>
+                </StyledLink>
+
+              </>
+            )
+          }
 
         </NavbarRight>
 

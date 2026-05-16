@@ -1,9 +1,6 @@
 import React from "react";
-
 import styled from "styled-components";
-
-import Navbar from "../layouts/Navbar";
-import Footer from "../layouts/Footer";
+import Layout from "../layouts/Layout";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -336,9 +333,8 @@ const ContactButton = styled.button`
 const Help = () => {
 
   return (
+    <Layout>
     <PageContainer>
-
-      <Navbar />
 
       <HeroSection>
 
@@ -502,10 +498,9 @@ const Help = () => {
         </ContactSection>
 
       </HelpContainer>
-
-      <Footer />
-
     </PageContainer>
+    </Layout>
+
   );
 };
 

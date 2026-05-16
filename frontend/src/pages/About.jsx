@@ -1,9 +1,7 @@
 import React from "react";
 
 import styled from "styled-components";
-
-import Navbar from "../layouts/Navbar";
-import Footer from "../layouts/Footer";
+import Layout from "../layouts/Layout";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -385,9 +383,10 @@ const StatLabel = styled.p`
 const About = () => {
 
   return (
+
+    <Layout>
     <PageContainer>
 
-      <Navbar />
 
       <HeroSection>
 
@@ -565,6 +564,7 @@ const About = () => {
       <Footer />
 
     </PageContainer>
+    </Layout>
   );
 };
 

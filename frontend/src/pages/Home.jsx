@@ -1,7 +1,6 @@
 import React, {useEffect,useState} from "react";
 import styled from "styled-components";
-import Navbar from "../layouts/Navbar";
-import Footer from "../layouts/Footer";
+import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import { getUserRide } from "../api/apiUserRide";
 import { getAgencyRide } from "../api/apiAgencyRide";
@@ -89,8 +88,8 @@ const Home = () => {
   }, []);
 
   return (
+     <Layout>
     <PageContainer>
-      <Navbar />
       <ContentWrapper>
         <HeroSection>
           <Title>
@@ -121,8 +120,8 @@ const Home = () => {
         </HeroSection>
         <RideGrid rides={agencyRides} />
       </ContentWrapper>
-      <Footer />
     </PageContainer>
+    </Layout>
   );
 };
 

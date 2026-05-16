@@ -9,7 +9,7 @@ export const loginUser = async (postData) => {
             },
             body: JSON.stringify(postData)
         });
-        console.log("Response is", response);
+        console.log("Login response", response);
         const data = await response.json();
         return data;
 

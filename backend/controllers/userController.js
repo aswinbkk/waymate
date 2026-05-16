@@ -57,13 +57,13 @@ const loginUser = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
-        const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
+        const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, { expiresIn: '24h' });
         //cookie settings
         res.cookie("token", token, {
             httpOnly: true,
             secure: true,
             sameSite:"strict",
-            maxAge: 100 * 60 * 60 * 1000
+            maxAge: 24 * 60 * 60 * 1000
         });
         res.status(200).json({success:true, msg: 'Login successful', token: token });
 

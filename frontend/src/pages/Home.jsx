@@ -58,7 +58,7 @@ const Home = () => {
       try {
         const response = await getUserRide();
         setUserRides(response.data);
-        console.log("User Ride Data:", response);
+        //console.log("User Ride Data:", response);
 
       } catch (error) {
         console.error(
@@ -72,7 +72,7 @@ const Home = () => {
       try {
         const response = await getAgencyRide();
         setAgencyRides(response.data);
-        console.log("Agency Ride Data:", response);
+        //console.log("Agency Ride Data:", response);
 
       } catch (error) {
         console.error(

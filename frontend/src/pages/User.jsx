@@ -248,13 +248,13 @@ const User = () => {
 
   // Example user data
   const userData = {
-    firstName: "Aswin",
-    lastName: "Babu",
-    email: "aswin@gmail.com",
+    firstName: "User",
+    lastName: "Name",
+    email: "username@gmail.com",
     phone: "+91 9876543210",
-    totalRides: 28,
-    joinedRides: 14,
-    offeredRides: 9
+    totalRides: 10,
+    joinedRides: 4,
+    offeredRides: 6
   };
 
   return (

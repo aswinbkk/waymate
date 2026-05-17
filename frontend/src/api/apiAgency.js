@@ -21,11 +21,33 @@ export const loginAgency = async (postData) => {
     }
 };
 
-export const registerAgency = async () => {
-    try {
-        const response = await fetch(`${baseUrl}/view-all-ride`);
-        return await response.json();
-    } catch (error) {
-        console.error("Error:", error);
-    }
+export const registerAgency = async (agencyData) => {
+
+  try {
+
+    const response = await fetch(
+      `${baseUrl}/register`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify(agencyData)
+      }
+    );
+
+    return await response.json();
+
+  } catch (error) {
+
+    console.error(
+      "Register User Error:",
+      error
+    );
+
+  }
+
 };

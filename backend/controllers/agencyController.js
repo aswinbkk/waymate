@@ -9,7 +9,7 @@ const saltRounds = 10;
 const registerAgency = async (req, res) => {
     const { agencyName, address, gst, email, password, phone } = req.body;
 
-    if (!agencyName || !address.street || !address.city || !address?.state || !address.pincode || !gst.gstin || !gst.legalName || !gst.tradeName || !email || !password || !phone) {
+    if (!agencyName || !address.street || !address.city || !address.state || !address.pincode || !gst.gstin || !gst.legalName || !gst.tradeName || !email || !password || !phone) {
         return res.status(400).json({ msg: "Required fields missing" });
     }
 
@@ -29,8 +29,7 @@ const registerAgency = async (req, res) => {
             phone
         });
         await createdAgency.save();
-
-        res.status(201).json({ msg: "Agency created successfully", data: createdAgency });
+        res.status(201).json({ success:true, msg: "Agency registration successfully" });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error ${error}` });
@@ -44,7 +43,7 @@ const loginAgency = async (req, res) => {
         const existingAgency = await Agency.findOne({ email });
 
         if (!existingAgency) {
-            return res.status(404).json({ msg: "No agency registered" });
+            return res.status(404).json({ msg: "Agency not found" });
         }
         const isPasswordMatch = await bcrypt.compare(password, existingAgency.password);
 

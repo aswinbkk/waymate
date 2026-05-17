@@ -19,7 +19,6 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ msg: "User already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-
         const createdUser = new User({
             fullName: { firstName: fullName.firstName, lastName: fullName.lastName },
             email,
@@ -27,16 +26,7 @@ const registerUser = async (req, res) => {
             phone
         });
         await createdUser.save();
-
-        res.status(201).json({
-            msg: "User created successfully",
-            data: {
-                id: createdUser._id,
-                fullName: createdUser.fullName,
-                email: createdUser.email,
-                phone: createdUser.phone
-            }
-        });
+        res.status(201).json({ success:true, msg: "User registration successfully" });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error ${error}` });
@@ -50,7 +40,7 @@ const loginUser = async (req, res) => {
         const existingUser = await User.findOne({ email });
 
         if (!existingUser) {
-            return res.status(404).json({ msg: "No user registered" });
+            return res.status(404).json({ msg: "User not found" });
         }
         const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
 

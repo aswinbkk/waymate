@@ -21,11 +21,38 @@ export const loginUser = async (postData) => {
     }
 };
 
-export const registerUser = async () => {
-    try {
-        const response = await fetch(`${baseUrl}/view-all-ride`);
-        return await response.json();
-    } catch (error) {
-        console.error("Error:", error);
-    }
+export const registerUser = async (userData) => {
+
+  try {
+
+    const response = await fetch(
+      `${baseUrl}/register`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify(userData)
+      }
+    );
+
+    const data =
+      await response.json();
+
+    console.log("Response:", data);
+
+    return data;
+
+  } catch (error) {
+
+    console.error(
+      "Register User Error:",
+      error
+    );
+
+  }
+
 };

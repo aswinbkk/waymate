@@ -32,9 +32,9 @@ const Card = styled.div`
   padding: 18px;
   border: 1px solid
     ${({ $type }) =>
-      $type === "success"
-        ? "#bbf7d0"
-        : "#fecaca"};
+    $type === "success"
+      ? "#bbf7d0"
+      : "#fecaca"};
   box-shadow:
     0 10px 30px rgba(15,23,42,0.08);
   display: flex;
@@ -53,14 +53,14 @@ const Icon = styled.div`
   font-weight: 700;
   background:
     ${({ $type }) =>
-      $type === "success"
-        ? "#dcfce7"
-        : "#fee2e2"};
+    $type === "success"
+      ? "#dcfce7"
+      : "#fee2e2"};
   color:
     ${({ $type }) =>
-      $type === "success"
-        ? "#16a34a"
-        : "#dc2626"};
+    $type === "success"
+      ? "#16a34a"
+      : "#dc2626"};
 `;
 
 const Content = styled.div`
@@ -92,15 +92,8 @@ const CloseButton = styled.button`
   }
 `;
 
-const Popup = ({
-  show,
-  type = "success",
-  title,
-  message,
-  onClose
-}) => {
+const Popup = ({ show, type = "success", title, message, onClose }) => {
   if (!show) return null;
-
   return (
     <Overlay>
       <Card $type={type}>

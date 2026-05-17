@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
@@ -53,74 +53,67 @@ const Home = () => {
   const [userRides, setUserRides] = useState([]);
   const [agencyRides, setAgencyRides] = useState([]);
 
+  // Fetch User Rides
+  const fetchUserRides = async () => {
+    try {
+      const response = await getUserRide();
+      setUserRides(response.data);
+      // console.log("User Ride Data:", response);
+
+    } catch (error) {
+      console.error( "Error fetching user rides:",error);
+    }
+  };
+
+  // Fetch Agency Rides
+  const fetchAgencyRides = async () => {
+    try {
+      const response = await getAgencyRide();
+      setAgencyRides(response.data);
+      // console.log("Agency Ride Data:", response);
+    } catch (error) {
+      console.error("Error fetching agency rides:",error);
+    }
+  };
+
   useEffect(() => {
-    const fetchUserRides = async () => {
-      try {
-        const response = await getUserRide();
-        setUserRides(response.data);
-        //console.log("User Ride Data:", response);
-
-      } catch (error) {
-        console.error(
-          "Error fetching user rides:",
-          error
-        );
-      }
-    };
-
-    const fetchAgencyRides = async () => {
-      try {
-        const response = await getAgencyRide();
-        setAgencyRides(response.data);
-        //console.log("Agency Ride Data:", response);
-
-      } catch (error) {
-        console.error(
-          "Error fetching agency rides:",
-          error
-        );
-      }
-    };
-
     fetchUserRides();
     fetchAgencyRides();
-
   }, []);
 
   return (
-     <Layout>
-    <PageContainer>
-      <ContentWrapper>
-        <HeroSection>
-          <Title>
-            Find Your Perfect User Ride
-          </Title>
-          <Subtitle>
-            Connect with riders travelling
-            on the same route and enjoy
-            affordable, comfortable and
-            smart carpooling with WayMate.
-          </Subtitle>
-        </HeroSection>
+    <Layout>
+      <PageContainer>
+        <ContentWrapper>
+          <HeroSection>
+            <Title>
+              Find Your Perfect User Ride
+            </Title>
+            <Subtitle>
+              Connect with riders travelling
+              on the same route and enjoy
+              affordable, comfortable and
+              smart carpooling with WayMate.
+            </Subtitle>
+          </HeroSection>
         <RideGrid rides={userRides} />
-      </ContentWrapper>
+        </ContentWrapper>
 
-
-      <ContentWrapper>
-        <HeroSection>
-          <Title>
-            Find Your Perfect Agency Ride
-          </Title>
-          <Subtitle>
-            Book reliable agency rides with
-            premium comfort, verified drivers
-            and affordable pricing for your
-            daily and long-distance travel.
-          </Subtitle>
-        </HeroSection>
+        <ContentWrapper>
+          <HeroSection>
+            <Title>
+              Find Your Perfect Agency Ride
+            </Title>
+            <Subtitle>
+              Book reliable agency rides with
+              premium comfort, verified drivers
+              and affordable pricing for your
+              daily and long-distance travel.
+            </Subtitle>
+          </HeroSection>
         <RideGrid rides={agencyRides} />
-      </ContentWrapper>
-    </PageContainer>
+        </ContentWrapper>
+      </PageContainer>
     </Layout>
   );
 };

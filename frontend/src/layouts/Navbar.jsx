@@ -231,7 +231,7 @@ const Navbar = () => {
                   </LoginButton>
                 </StyledLink>
 
-                <StyledLink to="/signUp">
+                <StyledLink to="/register">
                   <SignupButton>
                     Get Started
                   </SignupButton>

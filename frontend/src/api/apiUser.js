@@ -20,3 +20,12 @@ export const loginUser = async (postData) => {
 
     }
 };
+
+export const registerUser = async () => {
+    try {
+        const response = await fetch(`${baseUrl}/view-all-ride`);
+        return await response.json();
+    } catch (error) {
+        console.error("Error:", error);
+    }
+};

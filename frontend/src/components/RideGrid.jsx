@@ -137,11 +137,15 @@ const JoinButton = styled.button`
 `;
 
 const RideGrid = ({ rides }) => {
+  const handleJoinRide = async (id) => {
+      const res = await userJoinRide(id);
+  }
 
   return (
     <GridContainer>
       {
         rides.map((ride) => (
+          console.log("Ride ID:", ride.id),
           <RideCard key={ride.id}>
             <RideRoute>
               {ride.origin} {" → "} {ride.destination}
@@ -185,7 +189,7 @@ const RideGrid = ({ rides }) => {
                 </span>
               </Price>
 
-              <JoinButton> Join Ride </JoinButton>
+              <JoinButton onClick={() => handleJoinRide(ride.id)}> Join Ride </JoinButton>
             </BottomSection>
           </RideCard>
         ))

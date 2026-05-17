@@ -1,12 +1,13 @@
-const baseUrl = "http://localhost:3000";
+const baseUrl = "http://localhost:3000/user";
 
 export const loginUser = async (postData) => {
     try {
-        const response = await fetch(`${baseUrl}/user/login`, {
+        const response = await fetch(`${baseUrl}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
+            credentials: "include",
             body: JSON.stringify(postData)
         });
         console.log("Login response", response);

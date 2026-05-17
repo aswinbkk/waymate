@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api/apiUser";
+import Layout from "../layouts/Layout";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -191,6 +192,7 @@ const Login = () => {
   };
 
   return (
+    <Layout>
     <PageContainer>
 
       <LoginCard>
@@ -243,6 +245,7 @@ const Login = () => {
         </BottomText>
       </LoginCard>
     </PageContainer>
+    </Layout>
   );
 };
 

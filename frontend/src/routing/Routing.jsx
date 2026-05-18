@@ -4,7 +4,8 @@ import Login from "../auth/Login";
 import Register from "../auth/Register";
 import About from "../pages/About";
 import Help from "../pages/Help";
-import User from "../pages/User";
+import Profile from "../pages/Profile";
+import MyTrip from "../pages/MyTrip";
 
 
 const Routing = () => {
@@ -16,7 +17,8 @@ const Routing = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/help" element={<Help />} />
-                <Route path="/user" element={<User />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/my-trip" element={<MyTrip />} />
             </Routes>
         </>
     )

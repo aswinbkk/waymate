@@ -1,25 +1,32 @@
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import {
+  Link,
+  useNavigate
+} from "react-router-dom";
+
+import { useState, useRef, useEffect }
+from "react";
 
 import Search from "../components/Search";
 
 const NavbarContainer = styled.nav`
   width: 100%;
   height: 80px;
+
   padding: 0 50px;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255,255,255,0.92);
 
   backdrop-filter: blur(18px);
 
-  border-bottom: 1px solid rgba(0, 119, 255, 0.08);
+  border-bottom: 1px solid rgba(0,119,255,0.08);
 
-  box-shadow: 0 4px 30px rgba(15, 23, 42, 0.06);
+  box-shadow:
+    0 4px 30px rgba(15,23,42,0.06);
 
   position: sticky;
   top: 0;
@@ -36,7 +43,6 @@ const NavbarLeft = styled.div`
 
   img {
     height: 42px;
-    object-fit: contain;
     cursor: pointer;
   }
 `;
@@ -64,8 +70,6 @@ const NavLinks = styled.div`
     font-size: 15px;
     font-weight: 600;
 
-    position: relative;
-
     transition: 0.3s;
 
     &:hover {
@@ -84,7 +88,7 @@ const NavbarSearch = styled.div`
 
   border-radius: 14px;
 
-  background: rgba(241, 245, 249, 0.9);
+  background: #f1f5f9;
 
   cursor: pointer;
 
@@ -94,7 +98,7 @@ const NavbarSearch = styled.div`
     background: white;
 
     box-shadow:
-      0 0 0 4px rgba(56, 189, 248, 0.12);
+      0 0 0 4px rgba(56,189,248,0.12);
   }
 
   img {
@@ -115,31 +119,43 @@ const NavbarRight = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+
+  position: relative;
 `;
 
 const StyledLink = styled(Link)`
   text-decoration: none;
 `;
 
-const LoginButton = styled.button`
+const OutlineButton = styled.button`
   padding: 10px 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(2, 132, 199, 0.18);
-  background: white;
-  color: #0369a1;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-  &:hover { 
-  background: rgba(14, 165, 233, 0.08);
-  border-color: #38bdf8;
-  } 
-  `;
 
-const SignupButton = styled.button`
-  padding: 10px 20px;
-  border: none;
   border-radius: 12px;
+
+  border: 1px solid rgba(2,132,199,0.18);
+
+  background: white;
+
+  color: #0369a1;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  &:hover {
+    background: rgba(14,165,233,0.08);
+  }
+`;
+
+const GradientButton = styled.button`
+  padding: 10px 20px;
+
+  border: none;
+
+  border-radius: 12px;
+
   background:
     linear-gradient(
       135deg,
@@ -149,24 +165,132 @@ const SignupButton = styled.button`
     );
 
   color: white;
+
   font-weight: 700;
+
   cursor: pointer;
-  &:hover { 
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24); 
+
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
+const MenuContainer = styled.div`
+  position: relative;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+
+  top: 55px;
+  right: 0;
+
+  width: 200px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 10px;
+
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 14px 40px rgba(15,23,42,0.12);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  animation: fadeIn 0.2s ease;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const MenuItem = styled(Link)`
+  text-decoration: none;
+
+  padding: 12px 14px;
+
+  border-radius: 12px;
+
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: 0.3s;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #0284c7;
   }
 `;
 
 const Navbar = () => {
 
-  const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const menuRef = useRef();
+
+  const [showSearch, setShowSearch] =
+    useState(false);
+
+  const [showMenu, setShowMenu] =
+    useState(false);
+
+  const isLoggedIn =
+    localStorage.getItem("isLoggedIn");
+
   const handleLogout = () => {
+
     localStorage.removeItem("isLoggedIn");
+
     navigate("/login");
   };
+
+  // Close menu when clicked outside
+  useEffect(() => {
+
+    const handleClickOutside = (event) => {
+
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+
+        setShowMenu(false);
+
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+    };
+
+  }, []);
 
   return (
     <>
@@ -174,23 +298,45 @@ const Navbar = () => {
 
         <NavbarLeft>
 
-          <img src="/waymate_wordmark_logo.png" alt="waymate Logo" />
+          <img
+            src="/waymate_wordmark_logo.png"
+            alt="waymate"
+          />
 
         </NavbarLeft>
 
         <NavbarCenter>
 
           <NavLinks>
-            <Link to="/">Home</Link>
-            <Link to="/">User Ride</Link>
-            <Link to="/">Agency Ride</Link>
-            <Link to="/help">Help</Link>
-            <Link to="/about">About</Link>
+
+            <Link to="/">
+              Home
+            </Link>
+
+            <Link to="/">
+              User Ride
+            </Link>
+
+            <Link to="/">
+              Agency Ride
+            </Link>
+
+            <Link to="/help">
+              Help
+            </Link>
+
+            <Link to="/about">
+              About
+            </Link>
+
           </NavLinks>
 
           <NavbarSearch
-            onClick={() => setShowSearch(true)}
+            onClick={() =>
+              setShowSearch(true)
+            }
           >
+
             <img
               src="/search_icon.png"
               alt="search"
@@ -199,6 +345,7 @@ const Navbar = () => {
             <span>
               Search ride...
             </span>
+
           </NavbarSearch>
 
         </NavbarCenter>
@@ -209,32 +356,58 @@ const Navbar = () => {
             isLoggedIn ? (
               <>
 
-                <StyledLink to="/user">
-                  <LoginButton>
-                    Profile
-                  </LoginButton>
-                </StyledLink>
+                <MenuContainer ref={menuRef}>
 
-                <SignupButton
+                  <OutlineButton
+                    onClick={() =>
+                      setShowMenu(!showMenu)
+                    }
+                  >
+                    Menu
+                  </OutlineButton>
+
+                  {
+                    showMenu && (
+                      <DropdownMenu>
+
+                        <MenuItem to="/profile">
+                          My Profile
+                        </MenuItem>
+
+                        <MenuItem to="/my-trip">
+                          My Trips
+                        </MenuItem>
+
+                      </DropdownMenu>
+                    )
+                  }
+
+                </MenuContainer>
+
+                <GradientButton
                   onClick={handleLogout}
                 >
                   Logout
-                </SignupButton>
+                </GradientButton>
 
               </>
             ) : (
               <>
 
                 <StyledLink to="/login">
-                  <LoginButton>
+
+                  <OutlineButton>
                     Login
-                  </LoginButton>
+                  </OutlineButton>
+
                 </StyledLink>
 
                 <StyledLink to="/register">
-                  <SignupButton>
+
+                  <GradientButton>
                     Get Started
-                  </SignupButton>
+                  </GradientButton>
+
                 </StyledLink>
 
               </>

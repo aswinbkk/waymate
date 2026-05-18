@@ -1,151 +1,87 @@
 import React from "react";
-
 import styled from "styled-components";
+
 import Layout from "../layouts/Layout";
 
-const PageContainer = styled.div`
+const Page = styled.div`
   min-height: 100vh;
-
-  background:
-    linear-gradient(
-      180deg,
-      #f8fbff 0%,
-      #ffffff 100%
-    );
+  background: #f8fafc;
 `;
 
-const HeroSection = styled.section`
-  width: 100%;
-  max-width: 1400px;
-
+const Container = styled.div`
+  max-width: 1200px;
   margin: auto;
+  padding: 70px 20px;
+`;
 
-  padding: 90px 50px 70px;
-
+const HeroSection = styled.div`
   display: grid;
-
   grid-template-columns: 1fr 1fr;
-
-  gap: 60px;
-
+  gap: 50px;
   align-items: center;
+
+  margin-bottom: 90px;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-
-    padding: 70px 20px 50px;
-
     text-align: center;
   }
 `;
 
 const HeroContent = styled.div``;
 
-const HeroBadge = styled.div`
-  width: fit-content;
+const Badge = styled.div`
+  display: inline-block;
 
   padding: 10px 18px;
 
   border-radius: 999px;
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(34,197,94,0.12),
-      rgba(6,182,212,0.12),
-      rgba(37,99,235,0.12)
-    );
+  background: #e0f2fe;
 
   color: #0284c7;
 
   font-size: 13px;
   font-weight: 700;
 
-  margin-bottom: 24px;
-
-  @media (max-width: 900px) {
-    margin-inline: auto;
-  }
+  margin-bottom: 22px;
 `;
 
-const HeroTitle = styled.h1`
-  font-size: 58px;
+const Title = styled.h1`
+  font-size: 56px;
   font-weight: 800;
 
   color: #0f172a;
 
-  line-height: 1.15;
+  line-height: 1.2;
 
-  margin-bottom: 24px;
-
-  letter-spacing: -1.5px;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 10px;
-
-  span {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: wrap;
-
-    gap: 14px;
-  }
-
-  img {
-    height: 58px;
-    object-fit: contain;
-  }
+  margin-bottom: 22px;
 
   @media (max-width: 768px) {
-    font-size: 42px;
-
-    gap: 8px;
-
-    img {
-      height: 42px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    font-size: 34px;
-
-    span {
-      flex-direction: column;
-      align-items: center;
-
-      gap: 10px;
-    }
-
-    img {
-      height: 36px;
-    }
+    font-size: 38px;
   }
 `;
 
 const GradientText = styled.span`
-  background:
-    linear-gradient(
-      135deg,
-      #22c55e,
-      #06b6d4,
-      #2563eb
-    );
+  background: linear-gradient(
+    135deg,
+    #22c55e,
+    #06b6d4,
+    #2563eb
+  );
 
   -webkit-background-clip: text;
-
   -webkit-text-fill-color: transparent;
 `;
 
-const HeroDescription = styled.p`
+const Description = styled.p`
   color: #64748b;
 
-  font-size: 17px;
+  font-size: 16px;
 
-  line-height: 1.9;
+  line-height: 1.8;
 
-  max-width: 620px;
+  max-width: 600px;
 
   @media (max-width: 900px) {
     margin: auto;
@@ -155,69 +91,40 @@ const HeroDescription = styled.p`
 const HeroImage = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
 
   img {
     width: 100%;
-    max-width: 380px;
+    max-width: 340px;
 
-    object-fit: contain;
-
-    animation: float 4s ease-in-out infinite;
-
-    filter:
-      drop-shadow(
-        0 25px 50px rgba(37,99,235,0.18)
-      );
-  }
-
-  @keyframes float {
-    0% {
-      transform: translateY(0px);
-    }
-
-    50% {
-      transform: translateY(-12px);
-    }
-
-    100% {
-      transform: translateY(0px);
-    }
+    filter: drop-shadow(
+      0 20px 40px rgba(37,99,235,0.18)
+    );
   }
 `;
 
-const Section = styled.section`
-  width: 100%;
-  max-width: 1400px;
-
-  margin: auto;
-
-  padding: 20px 50px 90px;
-
-  @media (max-width: 768px) {
-    padding: 20px 20px 70px;
-  }
+const Section = styled.div`
+  margin-bottom: 90px;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 42px;
-  font-weight: 800;
-
   text-align: center;
+
+  font-size: 40px;
+  font-weight: 800;
 
   color: #0f172a;
 
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 
   @media (max-width: 768px) {
     font-size: 32px;
   }
 `;
 
-const SectionSubtitle = styled.p`
-  max-width: 720px;
+const SectionText = styled.p`
+  max-width: 700px;
 
-  margin: auto;
+  margin: auto auto 50px;
 
   text-align: center;
 
@@ -226,8 +133,6 @@ const SectionSubtitle = styled.p`
   font-size: 16px;
 
   line-height: 1.8;
-
-  margin-bottom: 60px;
 `;
 
 const FeatureGrid = styled.div`
@@ -235,81 +140,68 @@ const FeatureGrid = styled.div`
 
   grid-template-columns: repeat(3, 1fr);
 
-  gap: 28px;
+  gap: 24px;
 
-  @media (max-width: 1000px) {
+  @media (max-width: 992px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `;
 
 const FeatureCard = styled.div`
-  background: rgba(255,255,255,0.95);
+  background: white;
 
-  border-radius: 28px;
+  padding: 30px;
 
-  padding: 34px;
-
-  border: 1px solid rgba(37,99,235,0.08);
-
-  box-shadow:
-    0 10px 30px rgba(15,23,42,0.06);
-
-  transition: 0.35s;
+  border-radius: 24px;
 
   text-align: center;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border: 1px solid #e2e8f0;
+
+  box-shadow: 0 10px 30px rgba(15,23,42,0.05);
+
+  transition: 0.3s;
 
   &:hover {
-    transform: translateY(-6px);
-
-    box-shadow:
-      0 18px 40px rgba(15,23,42,0.12);
+    transform: translateY(-4px);
   }
 `;
 
-const FeatureIcon = styled.div`
+const Icon = styled.div`
   width: 70px;
   height: 70px;
 
-  border-radius: 22px;
+  margin: auto auto 20px;
+
+  border-radius: 20px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  margin-bottom: 24px;
+  font-size: 28px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #22c55e,
-      #06b6d4,
-      #2563eb
-    );
+  background: linear-gradient(
+    135deg,
+    #22c55e,
+    #06b6d4,
+    #2563eb
+  );
 
   color: white;
-
-  font-size: 28px;
-  font-weight: 700;
-
-  box-shadow:
-    0 12px 24px rgba(37,99,235,0.18);
 `;
 
 const FeatureTitle = styled.h3`
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
 
   color: #0f172a;
 
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 `;
 
 const FeatureText = styled.p`
@@ -317,23 +209,21 @@ const FeatureText = styled.p`
 
   font-size: 15px;
 
-  line-height: 1.8;
+  line-height: 1.7;
 `;
 
-const StatsSection = styled.div`
-  margin-top: 90px;
-
+const StatsGrid = styled.div`
   display: grid;
 
   grid-template-columns: repeat(4, 1fr);
 
   gap: 24px;
 
-  @media (max-width: 900px) {
+  @media (max-width: 992px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -341,34 +231,31 @@ const StatsSection = styled.div`
 const StatCard = styled.div`
   background: white;
 
-  border-radius: 24px;
+  padding: 34px 20px;
 
-  padding: 36px 20px;
+  border-radius: 24px;
 
   text-align: center;
 
-  border: 1px solid rgba(37,99,235,0.08);
+  border: 1px solid #e2e8f0;
 
-  box-shadow:
-    0 10px 30px rgba(15,23,42,0.05);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.05);
 `;
 
 const StatNumber = styled.h2`
-  font-size: 44px;
+  font-size: 42px;
   font-weight: 800;
 
   margin-bottom: 10px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #22c55e,
-      #06b6d4,
-      #2563eb
-    );
+  background: linear-gradient(
+    135deg,
+    #22c55e,
+    #06b6d4,
+    #2563eb
+  );
 
   -webkit-background-clip: text;
-
   -webkit-text-fill-color: transparent;
 `;
 
@@ -376,194 +263,200 @@ const StatLabel = styled.p`
   color: #64748b;
 
   font-size: 15px;
-
   font-weight: 600;
 `;
 
 const About = () => {
-
   return (
-
     <Layout>
-    <PageContainer>
 
+      <Page>
 
-      <HeroSection>
+        <Container>
 
-        <HeroContent>
+          <HeroSection>
 
-          <HeroBadge>
-            Smart Carpooling Platform
-          </HeroBadge>
+            <HeroContent>
 
-          <HeroTitle>
-            <span>
-              Travel Smarter With
-            </span>
+              <Badge>
+                Smart Ride Sharing Platform
+              </Badge>
 
-            <GradientText>
-              waymate
-            </GradientText>
-          </HeroTitle>
+              <Title>
+                Travel Smarter With{" "}
+                <GradientText>
+                  WayMate
+                </GradientText>
+              </Title>
 
-          <HeroDescription>
-            waymate is a modern carpooling
-            platform that connects people
-            travelling on the same route.
+              <Description>
+                WayMate is a modern ride-sharing
+                platform that helps users and
+                agencies connect easily for
+                affordable, comfortable and
+                eco-friendly travel.
+              </Description>
 
-            Our mission is to make travel
-            affordable, eco-friendly and
-            convenient through smart
-            ride-sharing technology.
-          </HeroDescription>
+            </HeroContent>
 
-        </HeroContent>
+            <HeroImage>
 
-        <HeroImage>
+              <img
+                src="/waymate_standalone_icon.png"
+                alt="WayMate"
+              />
 
-          <img
-            src="/waymate_standalone_icon.png"
-            alt="WayMate Icon"
-          />
+            </HeroImage>
 
-        </HeroImage>
+          </HeroSection>
 
-      </HeroSection>
+          <Section>
 
-      <Section>
+            <SectionTitle>
+              Why Choose{" "}
+              <GradientText>
+                WayMate
+              </GradientText>
+              ?
+            </SectionTitle>
 
-        <SectionTitle>
-          Why Choose{" "}
-          <GradientText>
-            waymate
-          </GradientText>
-          ?
-        </SectionTitle>
+            <SectionText>
+              Enjoy secure ride-sharing,
+              smart route matching and
+              affordable travel with
+              a simple and modern platform.
+            </SectionText>
 
-        <SectionSubtitle>
-          We provide a secure and intelligent
-          ride-sharing experience for both
-          riders and agencies with advanced
-          matching and comfort preferences.
-        </SectionSubtitle>
+            <FeatureGrid>
 
-        <FeatureGrid>
+              <FeatureCard>
 
-          <FeatureCard>
+                <Icon>
+                  🚗
+                </Icon>
 
-            <FeatureIcon>
-              🚗
-            </FeatureIcon>
+                <FeatureTitle>
+                  Smart Matching
+                </FeatureTitle>
 
-            <FeatureTitle>
-              Smart Ride Matching
-            </FeatureTitle>
+                <FeatureText>
+                  Find people travelling
+                  on the same route and
+                  reduce travel costs.
+                </FeatureText>
 
-            <FeatureText>
-              Instantly connect with people
-              travelling on the same route
-              and save travel costs together.
-            </FeatureText>
+              </FeatureCard>
 
-          </FeatureCard>
+              <FeatureCard>
 
-          <FeatureCard>
+                <Icon>
+                  🛡️
+                </Icon>
 
-            <FeatureIcon>
-              🛡️
-            </FeatureIcon>
+                <FeatureTitle>
+                  Safe Travel
+                </FeatureTitle>
 
-            <FeatureTitle>
-              Safe & Trusted
-            </FeatureTitle>
+                <FeatureText>
+                  Verified profiles and
+                  trusted ride providers
+                  for secure journeys.
+                </FeatureText>
 
-            <FeatureText>
-              Verified profiles, trusted
-              ride providers and secure
-              ride-sharing experience for
-              every passenger.
-            </FeatureText>
+              </FeatureCard>
 
-          </FeatureCard>
+              <FeatureCard>
 
-          <FeatureCard>
+                <Icon>
+                  🌍
+                </Icon>
 
-            <FeatureIcon>
-              🌍
-            </FeatureIcon>
+                <FeatureTitle>
+                  Eco Friendly
+                </FeatureTitle>
 
-            <FeatureTitle>
-              Eco Friendly
-            </FeatureTitle>
+                <FeatureText>
+                  Share rides and help
+                  reduce traffic and
+                  pollution together.
+                </FeatureText>
 
-            <FeatureText>
-              Reduce traffic congestion
-              and carbon emissions by
-              sharing rides with other
-              commuters.
-            </FeatureText>
+              </FeatureCard>
 
-          </FeatureCard>
+            </FeatureGrid>
 
-        </FeatureGrid>
+          </Section>
 
-        <StatsSection>
+          <Section>
 
-          <StatCard>
+            <SectionTitle>
+              WayMate In Numbers
+            </SectionTitle>
 
-            <StatNumber>
-              10K+
-            </StatNumber>
+            <SectionText>
+              Thousands of riders trust
+              WayMate every day for
+              comfortable ride-sharing.
+            </SectionText>
 
-            <StatLabel>
-              Active Users
-            </StatLabel>
+            <StatsGrid>
 
-          </StatCard>
+              <StatCard>
 
-          <StatCard>
+                <StatNumber>
+                  10K+
+                </StatNumber>
 
-            <StatNumber>
-              5K+
-            </StatNumber>
+                <StatLabel>
+                  Active Users
+                </StatLabel>
 
-            <StatLabel>
-              Daily Rides
-            </StatLabel>
+              </StatCard>
 
-          </StatCard>
+              <StatCard>
 
-          <StatCard>
+                <StatNumber>
+                  5K+
+                </StatNumber>
 
-            <StatNumber>
-              98%
-            </StatNumber>
+                <StatLabel>
+                  Daily Rides
+                </StatLabel>
 
-            <StatLabel>
-              Satisfaction Rate
-            </StatLabel>
+              </StatCard>
 
-          </StatCard>
+              <StatCard>
 
-          <StatCard>
+                <StatNumber>
+                  98%
+                </StatNumber>
 
-            <StatNumber>
-              20+
-            </StatNumber>
+                <StatLabel>
+                  Satisfaction Rate
+                </StatLabel>
 
-            <StatLabel>
-              Cities Connected
-            </StatLabel>
+              </StatCard>
 
-          </StatCard>
+              <StatCard>
 
-        </StatsSection>
+                <StatNumber>
+                  20+
+                </StatNumber>
 
-      </Section>
+                <StatLabel>
+                  Cities Connected
+                </StatLabel>
 
-      <Footer />
+              </StatCard>
 
-    </PageContainer>
+            </StatsGrid>
+
+          </Section>
+
+        </Container>
+
+      </Page>
+
     </Layout>
   );
 };

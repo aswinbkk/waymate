@@ -68,7 +68,7 @@ const createUserRide = async (req, res) => {
             preferences
         });
         await userRide.save();
-        res.status(201).json({ msg: "Ride created", data: userRide });
+        res.status(201).json({ success:true, msg: "Ride created", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -175,7 +175,7 @@ const updateUserRide = async (req, res) => {
         const totalCost = BASE_FARE + distance * (PER_KM_RATE + acCharge);
         userRide.autoPricePerSeat = Math.ceil(totalCost / userRide.totalSeats);
         await userRide.save();
-        res.status(200).json({ msg: "Ride updated successfully", data: userRide });
+        res.status(200).json({ success:true, msg: "Ride updated successfully", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error, ${error.message}` });
@@ -191,7 +191,7 @@ const deleteUserRide = async (req, res) => {
         if (!userRide) {
             return res.status(404).json({ msg: "Ride not found or unauthorized" });
         }
-        res.status(200).json({ msg: "Ride deleted successfully" });
+        res.status(200).json({ success:true, msg: "Ride deleted successfully" });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error, ${error}` });
@@ -239,7 +239,7 @@ const addPassenger = async (req, res) => {
             userRide.status = "full";
         }
         await userRide.save();
-        res.status(200).json({ msg: "Passenger added", data: userRide });
+        res.status(200).json({ success:true, msg: "Passenger added", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -274,7 +274,7 @@ const removePassenger = async (req, res) => {
             userRide.status = "open";
         }
         await userRide.save();
-        res.status(200).json({ msg: "Passenger removed", data: userRide });
+        res.status(200).json({ success:true, msg: "Passenger removed", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -350,7 +350,7 @@ const userleaveRide = async (req, res) => {
         };
 
         await userRide.save();
-        res.status(201).json({ msg: "Left ride successfully", data: userRide });
+        res.status(201).json({ success:true, msg: "Left ride successfully", data: userRide });
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
@@ -361,7 +361,7 @@ const userDashboard = async (req, res) => {
     try {
         const userCreatedRides = await UserRide.countDocuments({ createdBy: req.auth.id });
         const userJoinedRides = await UserRide.countDocuments({ "passengers.user": req.auth.id });
-        res.status(200).json({ userCreatedRides, userJoinedRides });
+        res.status(200).json({ success:true, userCreatedRides, userJoinedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -372,7 +372,7 @@ const userDashboard = async (req, res) => {
 const viewUserCreatedRides = async (req, res) => {
     try {
         const userCreatedRides = await UserRide.find({ createdBy: req.auth.id }).sort({ createdAt: -1 });
-        res.status(200).json({ count: userCreatedRides.length, data: userCreatedRides });
+        res.status(200).json({ success:true, count: userCreatedRides.length, data: userCreatedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -383,7 +383,7 @@ const viewUserCreatedRides = async (req, res) => {
 const viewUserJoinedRides = async (req, res) => {
     try {
         const userJoinedRides = await UserRide.find({ "passengers.user": req.auth.id })
-        res.status(200).json({ count: userJoinedRides.length, data: userJoinedRides });
+        res.status(200).json({ success:true, count: userJoinedRides.length, data: userJoinedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

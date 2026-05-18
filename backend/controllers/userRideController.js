@@ -317,7 +317,7 @@ const userJoinRide = async (req, res) => {
         }
 
         await userRide.save();
-        res.status(201).json({ msg: "Joined ride successfully", data: userRide });
+        res.status(201).json({ success:true, msg: "Joined ride successfully", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

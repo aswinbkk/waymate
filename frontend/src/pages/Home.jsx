@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
-import { getUserRide } from "../api/apiUserRide";
+import Popup from "../components/Popup";
+
+import { getUserRide, userJoinRide } from "../api/apiUserRide";
 import { getAgencyRide } from "../api/apiAgencyRide";
 
 const PageContainer = styled.div`
@@ -35,7 +38,6 @@ const Title = styled.h1`
   font-weight: 800;
   color: #0f172a;
   margin-bottom: 14px;
-  line-height: 1.2;
 
   @media (max-width: 768px) {
     font-size: 32px;
@@ -52,16 +54,26 @@ const Subtitle = styled.p`
 const Home = () => {
   const [userRides, setUserRides] = useState([]);
   const [agencyRides, setAgencyRides] = useState([]);
+  const [popup, setPopup] = useState({ show: false, type: "", title: "", message: "" });
+
+  const showPopup = ( type, title, message ) => {
+    setPopup({
+      show: true,
+      type,
+      title,
+      message
+    });
+    setTimeout(() => { setPopup((prev) => ({ ...prev, show: false })); }, 2000);
+  };
 
   // Fetch User Rides
   const fetchUserRides = async () => {
     try {
       const response = await getUserRide();
       setUserRides(response.data);
-      // console.log("User Ride Data:", response);
 
     } catch (error) {
-      console.error( "Error fetching user rides:",error);
+      console.error(error);
     }
   };
 
@@ -70,25 +82,51 @@ const Home = () => {
     try {
       const response = await getAgencyRide();
       setAgencyRides(response.data);
-      // console.log("Agency Ride Data:", response);
+
     } catch (error) {
-      console.error("Error fetching agency rides:",error);
+      console.error(error);
     }
   };
 
-  useEffect(() => {
-    fetchUserRides();
-    fetchAgencyRides();
-  }, []);
+  // Join Ride
+  const handleJoinRide = async (rideId) => {
+    try {
+      const response = await userJoinRide(rideId);
+      if (response.success) {
+        showPopup(
+          "success",
+          "Ride Joined",
+          "Successfully joined ride"
+        );
+        fetchUserRides();
+
+      } else {
+        showPopup(
+          "error",
+          "Join Failed",
+          response.msg
+        );
+      }
+
+    } catch (error) {
+      console.error(error);
+      showPopup(
+        "error",
+        "Server Error",
+        "Something went wrong"
+      );
+
+    }
+  };
+
+  useEffect(() => { fetchUserRides(); fetchAgencyRides(); }, []);
 
   return (
     <Layout>
       <PageContainer>
         <ContentWrapper>
           <HeroSection>
-            <Title>
-              Find Your Perfect User Ride
-            </Title>
+            <Title> Find Your Perfect User Ride </Title>
             <Subtitle>
               Connect with riders travelling
               on the same route and enjoy
@@ -96,24 +134,40 @@ const Home = () => {
               smart carpooling with WayMate.
             </Subtitle>
           </HeroSection>
-        <RideGrid rides={userRides} />
-        </ContentWrapper>
 
+          <RideGrid
+            rides={userRides}
+            onJoinRide={handleJoinRide}
+          />
+
+        </ContentWrapper>
         <ContentWrapper>
           <HeroSection>
-            <Title>
-              Find Your Perfect Agency Ride
-            </Title>
+            <Title> Find Your Perfect Agency Ride </Title>
             <Subtitle>
               Book reliable agency rides with
               premium comfort, verified drivers
-              and affordable pricing for your
-              daily and long-distance travel.
+              and affordable pricing.
             </Subtitle>
           </HeroSection>
-        <RideGrid rides={agencyRides} />
+          <RideGrid
+            rides={agencyRides}
+            onJoinRide={handleJoinRide}
+          />
         </ContentWrapper>
       </PageContainer>
+      <Popup
+        show={popup.show}
+        type={popup.type}
+        title={popup.title}
+        message={popup.message}
+        onClose={() =>
+          setPopup({
+            ...popup,
+            show: false
+          })
+        }
+      />
     </Layout>
   );
 };

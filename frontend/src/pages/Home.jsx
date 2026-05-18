@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import Popup from "../components/Popup";
-
+import RideDetailsPopup from "../components/RideDetailsPopup";
 import { getUserRide, userJoinRide } from "../api/apiUserRide";
 import { getAgencyRide } from "../api/apiAgencyRide";
 
@@ -168,6 +167,7 @@ const Home = () => {
           })
         }
       />
+      
     </Layout>
   );
 };

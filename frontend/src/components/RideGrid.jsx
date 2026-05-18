@@ -90,7 +90,7 @@ const Price = styled.h3`
   }
 `;
 
-const JoinButton = styled.button`
+const ViewButton = styled.button`
   padding: 12px 20px;
   border: none;
   border-radius: 12px;
@@ -147,7 +147,7 @@ const RideGrid = ({  rides, onJoinRide }) => {
                 ₹{ride.pricePerSeat}
                 <span> {" / seat"} </span>
               </Price>
-              <JoinButton onClick={() => onJoinRide(ride.id) }> Join Ride </JoinButton>
+              <ViewButton onClick={() => onJoinRide(ride.id) }> View Ride </ViewButton>
             </BottomSection>
           </RideCard>
         ))

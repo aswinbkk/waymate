@@ -156,8 +156,6 @@ const RideDetailsPopup = ({
   ride,
   type,
   onClose,
-  onUpdate,
-  onDelete,
   onLeave,
   onJoin
 }) => {

@@ -4,7 +4,7 @@ import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import Popup from "../components/Popup";
 import RideDetailsPopup from "../components/RideDetailsPopup";
-import { getUserRide, userJoinRide } from "../api/apiUserRide";
+import { getUserRide, userJoinRide, userLeaveRide } from "../api/apiUserRide";
 import { getAgencyRide } from "../api/apiAgencyRide";
 
 const PageContainer = styled.div`
@@ -57,7 +57,7 @@ const Home = () => {
   const [showRidePopup, setShowRidePopup] = useState(false);
   const [selectedRide, setSelectedRide] = useState(null);
   const [rideType, setRideType] = useState("available");
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  //const isLoggedIn = localStorage.getItem("isLoggedIn");
 
   const showPopup = (type, title, message) => {
     setPopup({ show: true, type, title, message });
@@ -96,7 +96,7 @@ const Home = () => {
   // Join Ride
   const handleJoinRide = async () => {
     try {
-      const response = await userJoinRide(selectedRide._id || selectedRide.id);
+      const response = await userJoinRide(selectedRide.id);
       if (response.success) {
         showPopup(
           "success",
@@ -124,15 +124,7 @@ const Home = () => {
     }
   };
 
-  // Dummy handlers
-  const handleUpdateRide = () => {
-    console.log("Update Ride");
-  };
-
-  const handleDeleteRide = () => {
-    console.log("Delete Ride");
-  };
-
+    // Leave Ride
   const handleLeaveRide = () => {
     console.log("Leave Ride");
   };
@@ -192,8 +184,6 @@ const Home = () => {
         type={rideType}
         onClose={() => setShowRidePopup(false)}
         onJoin={handleJoinRide}
-        onUpdate={handleUpdateRide}
-        onDelete={handleDeleteRide}
         onLeave={handleLeaveRide}
       />
     </Layout>

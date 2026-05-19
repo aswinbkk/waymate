@@ -5,7 +5,7 @@ const Overlay = styled.div`
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 3000;
+  z-index: 4000;
   animation: fadeIn 0.3s ease;
   @keyframes fadeIn {
     from {
@@ -35,8 +35,7 @@ const Card = styled.div`
     $type === "success"
       ? "#bbf7d0"
       : "#fecaca"};
-  box-shadow:
-    0 10px 30px rgba(15,23,42,0.08);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08);
   display: flex;
   align-items: flex-start;
   gap: 14px;

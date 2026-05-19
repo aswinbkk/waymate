@@ -11,7 +11,8 @@ const authMiddleware = async (req, res, next) => {
         const token = req.cookies.token
         //const token = header.split(" ")[1];
         if (!token) {
-            return res.status(400).json({ msg: "No token provided" });
+            return res.status(400).json({ msg: "Login to proceed" });
+            // msg: "Login to proceed" = "No token provided"
         }
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         req.auth = decodedToken;

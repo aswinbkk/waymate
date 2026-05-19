@@ -53,16 +53,7 @@ const Subtitle = styled.p`
 const Home = () => {
   const [userRides, setUserRides] = useState([]);
   const [agencyRides, setAgencyRides] = useState([]);
-  const [popup, setPopup] = useState({ show: false, type: "", title: "", message: "" });
-  const [showRidePopup, setShowRidePopup] = useState(false);
-  const [selectedRide, setSelectedRide] = useState(null);
-  const [rideType, setRideType] = useState("available");
-  //const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-  const showPopup = (type, title, message) => {
-    setPopup({ show: true, type, title, message });
-    setTimeout(() => { setPopup((prev) => ({ ...prev, show: false })); }, 2000);
-  };
 
   // Fetch User Rides
   const fetchUserRides = async () => {
@@ -86,49 +77,6 @@ const Home = () => {
     }
   };
 
-  // Open Ride Popup
-  const handleViewRide = (ride, type = "available") => {
-    setSelectedRide(ride);
-    setRideType(type);
-    setShowRidePopup(true);
-  };
-
-  // Join Ride
-  const handleJoinRide = async () => {
-    try {
-      const response = await userJoinRide(selectedRide.id);
-      if (response.success) {
-        showPopup(
-          "success",
-          "Ride Joined",
-          "Successfully joined ride"
-        );
-        setShowRidePopup(false);
-        fetchUserRides();
-
-      } else {
-        showPopup(
-          "error",
-          "Join Failed",
-          response.msg
-        );
-      }
-
-    } catch (error) {
-      console.error(error);
-      showPopup(
-        "error",
-        "Server Error",
-        "Something went wrong"
-      );
-    }
-  };
-
-    // Leave Ride
-  const handleLeaveRide = () => {
-    console.log("Leave Ride");
-  };
-
   useEffect(() => {
     fetchUserRides();
     fetchAgencyRides();
@@ -149,7 +97,6 @@ const Home = () => {
           </HeroSection>
           <RideGrid
             rides={userRides}
-            onViewRide={(ride) => handleViewRide(ride, "available")}
           />
         </ContentWrapper>
 
@@ -164,28 +111,9 @@ const Home = () => {
           </HeroSection>
           <RideGrid
             rides={agencyRides}
-            onViewRide={(ride) => handleViewRide(ride, "available")}
           />
         </ContentWrapper>
       </PageContainer>
-
-      <Popup
-        show={popup.show}
-        type={popup.type}
-        title={popup.title}
-        message={popup.message}
-        onClose={() => setPopup({ ...popup, show: false })
-        }
-      />
-
-      <RideDetailsPopup
-        show={showRidePopup}
-        ride={selectedRide}
-        type={rideType}
-        onClose={() => setShowRidePopup(false)}
-        onJoin={handleJoinRide}
-        onLeave={handleLeaveRide}
-      />
     </Layout>
   );
 };

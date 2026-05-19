@@ -26,7 +26,6 @@ const NavbarContainer = styled.nav`
 const NavbarLeft = styled.div`
   display: flex;
   align-items: center;
-
   img {
     height: 42px;
     cursor: pointer;
@@ -47,17 +46,12 @@ const NavLinks = styled.div`
   display: flex;
   align-items: center;
   gap: 24px;
-
   a {
     text-decoration: none;
-
     color: #0f172a;
-
     font-size: 15px;
     font-weight: 600;
-
     transition: 0.3s;
-
     &:hover {
       color: #0284c7;
     }
@@ -67,36 +61,24 @@ const NavLinks = styled.div`
 const NavbarSearch = styled.div`
   display: flex;
   align-items: center;
-
   width: 250px;
-
   padding: 10px 14px;
-
   border-radius: 14px;
-
   background: #f1f5f9;
-
   cursor: pointer;
-
   transition: 0.3s;
-
   &:hover {
     background: white;
-
     box-shadow:
       0 0 0 4px rgba(56,189,248,0.12);
   }
-
   img {
     width: 16px;
     opacity: 0.55;
   }
-
   span {
     margin-left: 10px;
-
     font-size: 14px;
-
     color: #64748b;
   }
 `;
@@ -105,7 +87,6 @@ const NavbarRight = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-
   position: relative;
 `;
 
@@ -115,21 +96,13 @@ const StyledLink = styled(Link)`
 
 const OutlineButton = styled.button`
   padding: 10px 18px;
-
   border-radius: 12px;
-
   border: 1px solid rgba(2,132,199,0.18);
-
   background: white;
-
   color: #0369a1;
-
   font-weight: 600;
-
   cursor: pointer;
-
   transition: 0.3s;
-
   &:hover {
     background: rgba(14,165,233,0.08);
   }
@@ -137,11 +110,8 @@ const OutlineButton = styled.button`
 
 const GradientButton = styled.button`
   padding: 10px 20px;
-
   border: none;
-
   border-radius: 12px;
-
   background:
     linear-gradient(
       135deg,
@@ -149,15 +119,10 @@ const GradientButton = styled.button`
       #06b6d4,
       #2563eb
     );
-
   color: white;
-
   font-weight: 700;
-
   cursor: pointer;
-
   transition: 0.3s;
-
   &:hover {
     transform: translateY(-2px);
   }
@@ -169,35 +134,24 @@ const MenuContainer = styled.div`
 
 const DropdownMenu = styled.div`
   position: absolute;
-
   top: 55px;
   right: 0;
-
   width: 200px;
-
   background: white;
-
   border-radius: 18px;
-
   padding: 10px;
-
   border: 1px solid #e2e8f0;
-
   box-shadow:
     0 14px 40px rgba(15,23,42,0.12);
-
   display: flex;
   flex-direction: column;
   gap: 6px;
-
   animation: fadeIn 0.2s ease;
-
   @keyframes fadeIn {
     from {
       opacity: 0;
       transform: translateY(-10px);
     }
-
     to {
       opacity: 1;
       transform: translateY(0);
@@ -207,18 +161,12 @@ const DropdownMenu = styled.div`
 
 const MenuItem = styled(Link)`
   text-decoration: none;
-
   padding: 12px 14px;
-
   border-radius: 12px;
-
   color: #0f172a;
-
   font-size: 14px;
   font-weight: 600;
-
   transition: 0.3s;
-
   &:hover {
     background: #f1f5f9;
     color: #0284c7;
@@ -243,17 +191,10 @@ const Navbar = () => {
         setShowMenu(false);
       }
     };
-
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
+    document.addEventListener( "mousedown", handleClickOutside );
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener( "mousedown", handleClickOutside );
     };
   }, []);
 
@@ -265,117 +206,49 @@ const Navbar = () => {
         </NavbarLeft>
 
         <NavbarCenter>
-          <NavLinks>
-            <Link to="/">
-              Home
-            </Link>
-            <Link to="/">
-              User Ride
-            </Link>
-            <Link to="/">
-              Agency Ride
-            </Link>
-            <Link to="/help">
-              Help
-            </Link>
-            <Link to="/about">
-              About
-            </Link>
+          <NavLinks> <Link to="/"> Home </Link>
+            <Link to="/"> User Ride </Link>
+            <Link to="/"> Agency Ride </Link>
+            <Link to="/help"> Help </Link>
+            <Link to="/about"> About </Link>
           </NavLinks>
 
-          <NavbarSearch
-            onClick={() =>
-              setShowSearch(true)
-            }
-          >
-
-            <img
-              src="/search_icon.png"
-              alt="search"
-            />
-
-            <span>
-              Search ride...
-            </span>
-
+          <NavbarSearch onClick={() => setShowSearch(true) } >
+            <img src="/search_icon.png" alt="search" />
+            <span> Search ride... </span>
           </NavbarSearch>
-
         </NavbarCenter>
-
         <NavbarRight>
-
           {
             isLoggedIn ? (
               <>
-
                 <MenuContainer ref={menuRef}>
-
-                  <OutlineButton
-                    onClick={() =>
-                      setShowMenu(!showMenu)
-                    }
-                  >
-                    Menu
-                  </OutlineButton>
-
+                  <OutlineButton onClick={() => setShowMenu(!showMenu) } > Menu </OutlineButton>
                   {
                     showMenu && (
                       <DropdownMenu>
-
-                        <MenuItem to="/profile">
-                          My Profile
-                        </MenuItem>
-
-                        <MenuItem to="/my-trip">
-                          My Trips
-                        </MenuItem>
-
-                      </DropdownMenu>
-                    )
-                  }
-
+                        <MenuItem to="/profile"> My Profile </MenuItem>
+                        <MenuItem to="/my-trip"> My Trips </MenuItem>
+                      </DropdownMenu> ) }
                 </MenuContainer>
-
-                <GradientButton
-                  onClick={handleLogout}
-                >
-                  Logout
-                </GradientButton>
-
+                <GradientButton onClick={handleLogout} > Logout </GradientButton>
               </>
             ) : (
               <>
-
                 <StyledLink to="/login">
-
-                  <OutlineButton>
-                    Login
-                  </OutlineButton>
-
+                  <OutlineButton> Login </OutlineButton>
                 </StyledLink>
 
                 <StyledLink to="/register">
-
-                  <GradientButton>
-                    Get Started
-                  </GradientButton>
-
+                  <GradientButton> Get Started </GradientButton>
                 </StyledLink>
-
               </>
             )
           }
-
         </NavbarRight>
-
       </NavbarContainer>
-
       {
-        showSearch && (
-          <Search
-            setShowSearch={setShowSearch}
-          />
-        )
+        showSearch && ( <Search setShowSearch={setShowSearch} /> )
       }
     </>
   );

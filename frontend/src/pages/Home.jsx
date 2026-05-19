@@ -57,6 +57,7 @@ const Home = () => {
   const [showRidePopup, setShowRidePopup] = useState(false);
   const [selectedRide, setSelectedRide] = useState(null);
   const [rideType, setRideType] = useState("available");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
   const showPopup = (type, title, message) => {
     setPopup({ show: true, type, title, message });

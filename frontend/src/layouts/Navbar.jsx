@@ -1,33 +1,19 @@
 import styled from "styled-components";
-import {
-  Link,
-  useNavigate
-} from "react-router-dom";
-
-import { useState, useRef, useEffect }
-from "react";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import Search from "../components/Search";
 
 const NavbarContainer = styled.nav`
   width: 100%;
   height: 80px;
-
   padding: 0 50px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   background: rgba(255,255,255,0.92);
-
   backdrop-filter: blur(18px);
-
   border-bottom: 1px solid rgba(0,119,255,0.08);
-
-  box-shadow:
-    0 4px 30px rgba(15,23,42,0.06);
-
+  box-shadow: 0 4px 30px rgba(15,23,42,0.06);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -240,39 +226,21 @@ const MenuItem = styled(Link)`
 `;
 
 const Navbar = () => {
-
   const navigate = useNavigate();
-
   const menuRef = useRef();
-
-  const [showSearch, setShowSearch] =
-    useState(false);
-
-  const [showMenu, setShowMenu] =
-    useState(false);
-
-  const isLoggedIn =
-    localStorage.getItem("isLoggedIn");
-
+  const [showSearch, setShowSearch] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
   const handleLogout = () => {
-
     localStorage.removeItem("isLoggedIn");
-
     navigate("/login");
   };
 
   // Close menu when clicked outside
   useEffect(() => {
-
     const handleClickOutside = (event) => {
-
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target)
-      ) {
-
+      if ( menuRef.current && !menuRef.current.contains(event.target) ) {
         setShowMenu(false);
-
       }
     };
 
@@ -282,53 +250,37 @@ const Navbar = () => {
     );
 
     return () => {
-
       document.removeEventListener(
         "mousedown",
         handleClickOutside
       );
-
     };
-
   }, []);
 
   return (
     <>
       <NavbarContainer>
-
         <NavbarLeft>
-
-          <img
-            src="/waymate_wordmark_logo.png"
-            alt="waymate"
-          />
-
+          <img src="/waymate_wordmark_logo.png" alt="waymate" />
         </NavbarLeft>
 
         <NavbarCenter>
-
           <NavLinks>
-
             <Link to="/">
               Home
             </Link>
-
             <Link to="/">
               User Ride
             </Link>
-
             <Link to="/">
               Agency Ride
             </Link>
-
             <Link to="/help">
               Help
             </Link>
-
             <Link to="/about">
               About
             </Link>
-
           </NavLinks>
 
           <NavbarSearch

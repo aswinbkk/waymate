@@ -11,11 +11,8 @@ export const createAgencyRide = async (rideData) => {
       credentials: "include",
       body: JSON.stringify(rideData)
     });
-
     const data = await response.json();
-
     console.log("Create Agency Ride:", data);
-
     return data;
 
   } catch (error) {
@@ -35,11 +32,8 @@ export const updateAgencyRide = async (id, updatedData) => {
       credentials: "include",
       body: JSON.stringify(updatedData)
     });
-
     const data = await response.json();
-
     console.log("Update Agency Ride:", data);
-
     return data;
 
   } catch (error) {
@@ -55,11 +49,8 @@ export const deleteAgencyRide = async (id) => {
       method: "DELETE",
       credentials: "include"
     });
-
     const data = await response.json();
-
     console.log("Delete Agency Ride:", data);
-
     return data;
 
   } catch (error) {
@@ -79,11 +70,8 @@ export const addPassenger = async (id, userId) => {
       credentials: "include",
       body: JSON.stringify({ userId })
     });
-
     const data = await response.json();
-
     console.log("Add Passenger:", data);
-
     return data;
 
   } catch (error) {
@@ -103,11 +91,8 @@ export const removePassenger = async (id, userId) => {
       credentials: "include",
       body: JSON.stringify({ userId })
     });
-
     const data = await response.json();
-
     console.log("Remove Passenger:", data);
-
     return data;
 
   } catch (error) {
@@ -122,11 +107,8 @@ export const agencyDashboard = async () => {
     const response = await fetch(`${baseUrl}/dashboard`, {
       credentials: "include"
     });
-
     const data = await response.json();
-
     console.log("Agency Dashboard:", data);
-
     return data;
 
   } catch (error) {
@@ -141,11 +123,8 @@ export const viewAgencyCreatedRides = async () => {
     const response = await fetch(`${baseUrl}/view-created-rides`, {
       credentials: "include"
     });
-
     const data = await response.json();
-
     console.log("View Agency Created Rides:", data);
-
     return data;
 
   } catch (error) {
@@ -164,11 +143,8 @@ export const searchAgencyRides = async (searchData) => {
       },
       body: JSON.stringify(searchData)
     });
-
     const data = await response.json();
-
     console.log("Search Agency Rides:", data);
-
     return data;
 
   } catch (error) {
@@ -181,11 +157,8 @@ export const searchAgencyRides = async (searchData) => {
 export const getAgencyRide = async () => {
   try {
     const response = await fetch(`${baseUrl}/view-all-ride`);
-
     const data = await response.json();
-
     console.log("Get Agency Ride:", data);
-
     return data;
 
   } catch (error) {

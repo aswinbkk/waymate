@@ -51,7 +51,7 @@ const loginAgency = async (req, res) => {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
         const token = jwt.sign({ id: existingAgency._id, role: existingAgency.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
-        res.status(200).json({ msg: 'Login successful', token: token });
+        res.status(200).json({ success:true, msg: 'Login successful', token: token, user: existingAgency.agencyName });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

@@ -10,11 +10,8 @@ export const registerAgency = async (agencyData) => {
       },
       body: JSON.stringify(agencyData)
     });
-
     const data = await response.json();
-
     console.log("Register Agency:", data);
-
     return data;
 
   } catch (error) {
@@ -25,6 +22,7 @@ export const registerAgency = async (agencyData) => {
 
 // Login agency
 export const loginAgency = async (postData) => {
+
   try {
     const response = await fetch(`${baseUrl}/login`, {
       method: "POST",
@@ -34,11 +32,8 @@ export const loginAgency = async (postData) => {
       credentials: "include",
       body: JSON.stringify(postData)
     });
-
     const data = await response.json();
-
     console.log("Login Agency:", data);
-
     return data;
 
   } catch (error) {
@@ -57,11 +52,8 @@ export const forgotPassword = async (emailData) => {
       },
       body: JSON.stringify(emailData)
     });
-
     const data = await response.json();
-
     console.log("Forgot Password:", data);
-
     return data;
 
   } catch (error) {
@@ -80,11 +72,8 @@ export const resetPassword = async (resetData) => {
       },
       body: JSON.stringify(resetData)
     });
-
     const data = await response.json();
-
     console.log("Reset Password:", data);
-
     return data;
 
   } catch (error) {
@@ -100,11 +89,8 @@ export const getProfile = async () => {
       method: "GET",
       credentials: "include"
     });
-
     const data = await response.json();
-
     console.log("Get Profile:", data);
-
     return data;
 
   } catch (error) {
@@ -124,11 +110,8 @@ export const updateProfile = async (updatedData) => {
       credentials: "include",
       body: JSON.stringify(updatedData)
     });
-
     const data = await response.json();
-
     console.log("Update Profile:", data);
-
     return data;
 
   } catch (error) {

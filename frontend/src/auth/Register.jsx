@@ -1,34 +1,34 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Layout from "../layouts/Layout";
 import { registerUser } from "../api/apiUser";
 import { registerAgency } from "../api/apiAgency";
 
+
 const Page = styled.div`
   min-height: 100vh;
+  padding: 40px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px;
-  background:
-    linear-gradient(
-      135deg,
-      #f8fafc,
-      #eff6ff,
-      #ffffff
-    );
+  background: linear-gradient(
+    135deg,
+    #f8fafc,
+    #eff6ff,
+    #ffffff
+  );
 `;
 
 const Card = styled.div`
   width: 100%;
   max-width: 700px;
-  background: white;
   padding: 40px 30px;
+  background: white;
   border-radius: 24px;
   border: 1px solid #e2e8f0;
-  box-shadow:
-    0 10px 30px rgba(15,23,42,0.08);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 
   @media (max-width: 768px) {
     padding: 30px 20px;
@@ -43,18 +43,18 @@ const Logo = styled.img`
 
 const ToggleContainer = styled.div`
   display: flex;
-  background: #f1f5f9;
-  border-radius: 14px;
   padding: 4px;
   margin-bottom: 28px;
+  background: #f1f5f9;
+  border-radius: 14px;
 `;
 
 const ToggleButton = styled.button`
   flex: 1;
   padding: 12px;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   transition: 0.3s;
@@ -65,9 +65,7 @@ const ToggleButton = styled.button`
       : "transparent"};
 
   color: ${({ $active }) =>
-    $active
-      ? "white"
-      : "#64748b"};
+    $active ? "white" : "#64748b"};
 `;
 
 const Title = styled.h1`
@@ -80,9 +78,9 @@ const Title = styled.h1`
 
 const Description = styled.p`
   text-align: center;
-  color: #64748b;
   font-size: 14px;
   line-height: 1.6;
+  color: #64748b;
   margin-bottom: 30px;
 `;
 
@@ -109,7 +107,6 @@ const InputGroup = styled.div`
   label {
     font-size: 14px;
     font-weight: 600;
-
     color: #0f172a;
   }
 `;
@@ -123,8 +120,7 @@ const Input = styled.input`
   transition: 0.3s;
   &:focus {
     border-color: #2563eb;
-    box-shadow:
-      0 0 0 4px rgba(37,99,235,0.1);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
   }
 `;
 
@@ -132,18 +128,17 @@ const Button = styled.button`
   margin-top: 10px;
   padding: 14px;
   border: none;
-  border-radius: 12px;
   cursor: pointer;
+  border-radius: 12px;
   font-size: 15px;
   font-weight: 700;
   color: white;
-  background:
-    linear-gradient(
-      135deg,
-      #22c55e,
-      #06b6d4,
-      #2563eb
-    );
+  background: linear-gradient(
+    135deg,
+    #22c55e,
+    #06b6d4,
+    #2563eb
+  );
   transition: 0.3s;
   &:hover {
     transform: translateY(-2px);
@@ -153,13 +148,13 @@ const Button = styled.button`
 const BottomText = styled.p`
   margin-top: 24px;
   text-align: center;
-  color: #64748b;
   font-size: 14px;
+  color: #64748b;
   a {
+    margin-left: 4px;
     color: #0284c7;
     font-weight: 700;
     text-decoration: none;
-    margin-left: 4px;
   }
 `;
 
@@ -167,23 +162,14 @@ const Register = () => {
   const navigate = useNavigate();
   const [registerRole, setRegisterRole] = useState("user");
 
-  // const [popup, setPopup] =
-  //   useState({
-  //     show: false,
-  //     type: "",
-  //     title: "",
-  //     message: ""
-  //   });
-
-  const [userForm, setUserForm] =
-    useState({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      phone: ""
-    });
+  const [userForm, setUserForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+  });
 
   const [agencyForm, setAgencyForm] =
     useState({
@@ -198,109 +184,123 @@ const Register = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      phone: ""
+      phone: "",
     });
-
-  const showPopup = ( type, title, message ) => {
-    setPopup({ show: true, type, title, message});
-  };
 
   const handleUserChange = (e) => {
     setUserForm({
       ...userForm,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-
   };
 
   const handleAgencyChange = (e) => {
     setAgencyForm({
       ...agencyForm,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (registerRole === "user") {
+        if (
+          userForm.password !==
+          userForm.confirmPassword
+        ) {
+          toast.error(
+            "Passwords do not match"
+          );
 
-        if ( userForm.password !== userForm.confirmPassword ) {
-          showPopup( "error", "Password Error", "Passwords do not match" );
           return;
         }
 
         const userData = {
           fullName: {
             firstName: userForm.firstName,
-            lastName: userForm.lastName
+            lastName: userForm.lastName,
           },
+
           email: userForm.email,
           password: userForm.password,
-          phone: userForm.phone
+          phone: userForm.phone,
         };
 
-        const response = await registerUser(userData);
+        const response =
+          await registerUser(userData);
 
-        if (response.success) { 
-          // showPopup(
-          //   "success",
-          //   "Registration Successful",
-          //   "User account created successfully" );
-          setTimeout(() => { navigate("/login"); }, 1200);
+        if (response.success) {
+          toast.success(
+            "User account created successfully"
+          );
+
+          navigate("/login");
         } else {
-          // showPopup(
-          //   "error",
-          //   "Registration Failed",
-          //   response.msg );
+          toast.error(
+            response.msg ||
+              "Registration Failed"
+          );
         }
+      }
 
-      } else {
-        if ( agencyForm.password !== agencyForm.confirmPassword ) {
-          // showPopup(
-          //   "error",
-          //   "Password Error",
-          //   "Passwords do not match" );
+      else {
+        if (
+          agencyForm.password !==
+          agencyForm.confirmPassword
+        ) {
+          toast.error(
+            "Passwords do not match"
+          );
+
           return;
         }
 
         const agencyData = {
           agencyName: agencyForm.agencyName,
+
           address: {
             street: agencyForm.street,
             city: agencyForm.city,
             state: agencyForm.state,
-            pincode: agencyForm.pincode
+            pincode: agencyForm.pincode,
           },
+
           gst: {
             gstin: agencyForm.gstin,
             legalName: agencyForm.legalName,
-            tradeName: agencyForm.tradeName
+            tradeName: agencyForm.tradeName,
           },
+
           email: agencyForm.email,
           password: agencyForm.password,
-          phone: agencyForm.phone
+          phone: agencyForm.phone,
         };
 
-        const response = await registerAgency(agencyData);
+        const response =
+          await registerAgency(agencyData);
 
         if (response.success) {
-          // showPopup(
-          //   "success",
-          //   "Registration Successful",
-          //   "Agency account created successfully" );
+          toast.success(
+            "Agency account created successfully"
+          );
 
-          setTimeout(() => { navigate("/login"); }, 1200);
+          navigate("/login");
+        } else {
+          toast.error(
+            response.msg ||
+              "Registration Failed"
+          );
         }
       }
-
     } catch (error) {
       console.error(error);
-      // showPopup(
-      //   "error",
-      //   "Registration Failed",
-      //   "Something went wrong" );
+
+      toast.error(
+        "Server Error, Something went wrong"
+      );
     }
   };
 
@@ -308,95 +308,81 @@ const Register = () => {
     <Layout>
       <Page>
         <Card>
-          <Logo src="/waymate_full_logo.png" alt="waymate" />
+          <Logo
+            src="/waymate_full_logo.png"
+            alt="waymate"
+          />
+
+
           <ToggleContainer>
             <ToggleButton
               type="button"
-              $active={ registerRole === "user" }
-              onClick={() => setRegisterRole("user") } >
+              $active={registerRole === "user"}
+              onClick={() =>
+                setRegisterRole("user")
+              }
+            >
               User
             </ToggleButton>
 
             <ToggleButton
               type="button"
-              $active={
-                registerRole === "agency"
-              }
+              $active={registerRole === "agency"}
               onClick={() =>
                 setRegisterRole("agency")
               }
             >
               Agency
             </ToggleButton>
-
           </ToggleContainer>
 
+
           <Title>
-
-            {
-              registerRole === "user"
-                ? "User Register"
-                : "Agency Register"
-            }
-
+            {registerRole === "user"
+              ? "User Register"
+              : "Agency Register"}
           </Title>
 
           <Description>
-            Create your WayMate account
-            and start ride sharing.
+            Create your WayMate account and
+            start ride sharing.
           </Description>
 
+
           <Form onSubmit={handleSubmit}>
+            {registerRole === "user" && (
+              <>
+                <InputGrid>
+                  <InputGroup>
+                    <label>First Name</label>
 
-            {
-              registerRole === "user" && (
-                <>
-
-                  <InputGrid>
-
-                    <InputGroup>
-
-                      <label>
-                        First Name
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="firstName"
-                        placeholder="Enter first name"
-                        value={userForm.firstName}
-                        onChange={handleUserChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                    <InputGroup>
-
-                      <label>
-                        Last Name
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="lastName"
-                        placeholder="Enter last name"
-                        value={userForm.lastName}
-                        onChange={handleUserChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                  </InputGrid>
-
-                  <InputGrid>
+                    <Input
+                      type="text"
+                      name="firstName"
+                      placeholder="Enter first name"
+                      value={userForm.firstName}
+                      onChange={handleUserChange}
+                      required
+                    />
+                  </InputGroup>
 
                   <InputGroup>
+                    <label>Last Name</label>
 
-                    <label>
-                      Email
-                    </label>
+                    <Input
+                      type="text"
+                      name="lastName"
+                      placeholder="Enter last name"
+                      value={userForm.lastName}
+                      onChange={handleUserChange}
+                      required
+                    />
+                  </InputGroup>
+                </InputGrid>
+
+                <InputGrid>
+                  <InputGroup>
+                    <label>Email</label>
 
                     <Input
                       type="email"
@@ -406,14 +392,10 @@ const Register = () => {
                       onChange={handleUserChange}
                       required
                     />
-
                   </InputGroup>
 
                   <InputGroup>
-
-                    <label>
-                      Phone
-                    </label>
+                    <label>Phone</label>
 
                     <Input
                       type="text"
@@ -423,310 +405,231 @@ const Register = () => {
                       onChange={handleUserChange}
                       required
                     />
-
                   </InputGroup>
-                  </InputGrid>
+                </InputGrid>
 
-                  <InputGrid>
+                <InputGrid>
+                  <InputGroup>
+                    <label>Password</label>
 
-                    <InputGroup>
-
-                      <label>
-                        Password
-                      </label>
-
-                      <Input
-                        type="password"
-                        name="password"
-                        placeholder="Enter password"
-                        value={userForm.password}
-                        onChange={handleUserChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                    <InputGroup>
-
-                      <label>
-                        Confirm Password
-                      </label>
-
-                      <Input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm password"
-                        value={
-                          userForm.confirmPassword
-                        }
-                        onChange={handleUserChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                  </InputGrid>
-
-                  
-
-                </>
-              )
-            }
-
-            {
-              registerRole === "agency" && (
-                <>
+                    <Input
+                      type="password"
+                      name="password"
+                      placeholder="Enter password"
+                      value={userForm.password}
+                      onChange={handleUserChange}
+                      required
+                    />
+                  </InputGroup>
 
                   <InputGroup>
-
                     <label>
-                      Agency Name
+                      Confirm Password
                     </label>
 
                     <Input
-                      type="text"
-                      name="agencyName"
-                      placeholder="Enter agency name"
-                      value={agencyForm.agencyName}
-                      onChange={handleAgencyChange}
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm password"
+                      value={
+                        userForm.confirmPassword
+                      }
+                      onChange={handleUserChange}
                       required
                     />
-
                   </InputGroup>
+                </InputGrid>
+              </>
+            )}
 
-                  <InputGrid>
+            {registerRole === "agency" && (
+              <>
+                <InputGroup>
+                  <label>Agency Name</label>
 
-                    <InputGroup>
+                  <Input
+                    type="text"
+                    name="agencyName"
+                    placeholder="Enter agency name"
+                    value={agencyForm.agencyName}
+                    onChange={handleAgencyChange}
+                    required
+                  />
+                </InputGroup>
 
-                      <label>
-                        Street
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="street"
-                        placeholder="Enter street"
-                        value={agencyForm.street}
-                        onChange={handleAgencyChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                    <InputGroup>
-
-                      <label>
-                        City
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="city"
-                        placeholder="Enter city"
-                        value={agencyForm.city}
-                        onChange={handleAgencyChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                  </InputGrid>
-
-                  <InputGrid>
-
-                    <InputGroup>
-
-                      <label>
-                        State
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="state"
-                        placeholder="Enter state"
-                        value={agencyForm.state}
-                        onChange={handleAgencyChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                    <InputGroup>
-
-                      <label>
-                        Pincode
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="pincode"
-                        placeholder="Enter pincode"
-                        value={agencyForm.pincode}
-                        onChange={handleAgencyChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                  </InputGrid>
-
-                  <InputGrid>
-
-                    <InputGroup>
-
-                      <label>
-                        GSTIN
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="gstin"
-                        placeholder="Enter GSTIN"
-                        value={agencyForm.gstin}
-                        onChange={handleAgencyChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                    <InputGroup>
-
-                      <label>
-                        Legal Name
-                      </label>
-
-                      <Input
-                        type="text"
-                        name="legalName"
-                        placeholder="Enter legal name"
-                        value={agencyForm.legalName}
-                        onChange={handleAgencyChange}
-                        required
-                      />
-
-                    </InputGroup>
-
-                  </InputGrid>
-
+                <InputGrid>
                   <InputGroup>
-
-                    <label>
-                      Trade Name
-                    </label>
+                    <label>Street</label>
 
                     <Input
                       type="text"
-                      name="tradeName"
-                      placeholder="Enter trade name"
-                      value={agencyForm.tradeName}
+                      name="street"
+                      placeholder="Enter street"
+                      value={agencyForm.street}
                       onChange={handleAgencyChange}
                       required
                     />
-
                   </InputGroup>
 
-                  <InputGrid>
+                  <InputGroup>
+                    <label>City</label>
 
-                    <InputGroup>
+                    <Input
+                      type="text"
+                      name="city"
+                      placeholder="Enter city"
+                      value={agencyForm.city}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
+                </InputGrid>
 
-                      <label>
-                        Email
-                      </label>
+                <InputGrid>
+                  <InputGroup>
+                    <label>State</label>
 
-                      <Input
-                        type="email"
-                        name="email"
-                        placeholder="Enter email"
-                        value={agencyForm.email}
-                        onChange={handleAgencyChange}
-                        required
-                      />
+                    <Input
+                      type="text"
+                      name="state"
+                      placeholder="Enter state"
+                      value={agencyForm.state}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
 
-                    </InputGroup>
+                  <InputGroup>
+                    <label>Pincode</label>
 
-                    <InputGroup>
+                    <Input
+                      type="text"
+                      name="pincode"
+                      placeholder="Enter pincode"
+                      value={agencyForm.pincode}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
+                </InputGrid>
 
-                      <label>
-                        Phone
-                      </label>
+                <InputGrid>
+                  <InputGroup>
+                    <label>GSTIN</label>
 
-                      <Input
-                        type="text"
-                        name="phone"
-                        placeholder="Enter phone"
-                        value={agencyForm.phone}
-                        onChange={handleAgencyChange}
-                        required
-                      />
+                    <Input
+                      type="text"
+                      name="gstin"
+                      placeholder="Enter GSTIN"
+                      value={agencyForm.gstin}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
 
-                    </InputGroup>
+                  <InputGroup>
+                    <label>Legal Name</label>
 
-                  </InputGrid>
+                    <Input
+                      type="text"
+                      name="legalName"
+                      placeholder="Enter legal name"
+                      value={agencyForm.legalName}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
+                </InputGrid>
 
-                  <InputGrid>
+                <InputGroup>
+                  <label>Trade Name</label>
 
-                    <InputGroup>
+                  <Input
+                    type="text"
+                    name="tradeName"
+                    placeholder="Enter trade name"
+                    value={agencyForm.tradeName}
+                    onChange={handleAgencyChange}
+                    required
+                  />
+                </InputGroup>
 
-                      <label>
-                        Password
-                      </label>
+                <InputGrid>
+                  <InputGroup>
+                    <label>Email</label>
 
-                      <Input
-                        type="password"
-                        name="password"
-                        placeholder="Enter password"
-                        value={agencyForm.password}
-                        onChange={handleAgencyChange}
-                        required
-                      />
+                    <Input
+                      type="email"
+                      name="email"
+                      placeholder="Enter email"
+                      value={agencyForm.email}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
 
-                    </InputGroup>
+                  <InputGroup>
+                    <label>Phone</label>
 
-                    <InputGroup>
+                    <Input
+                      type="text"
+                      name="phone"
+                      placeholder="Enter phone"
+                      value={agencyForm.phone}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
+                </InputGrid>
 
-                      <label>
-                        Confirm Password
-                      </label>
+                <InputGrid>
+                  <InputGroup>
+                    <label>Password</label>
 
-                      <Input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm password"
-                        value={
-                          agencyForm.confirmPassword
-                        }
-                        onChange={handleAgencyChange}
-                        required
-                      />
+                    <Input
+                      type="password"
+                      name="password"
+                      placeholder="Enter password"
+                      value={agencyForm.password}
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
 
-                    </InputGroup>
+                  <InputGroup>
+                    <label>
+                      Confirm Password
+                    </label>
 
-                  </InputGrid>
-
-                </>
-              )
-            }
+                    <Input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm password"
+                      value={
+                        agencyForm.confirmPassword
+                      }
+                      onChange={handleAgencyChange}
+                      required
+                    />
+                  </InputGroup>
+                </InputGrid>
+              </>
+            )}
 
             <Button type="submit">
               Register
             </Button>
-
           </Form>
 
           <BottomText>
-
             Already have an account?
 
             <Link to="/login">
               Login
             </Link>
-
           </BottomText>
-
         </Card>
-
       </Page>
-
     </Layout>
   );
 };

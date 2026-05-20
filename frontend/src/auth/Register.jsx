@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../layouts/Layout";
-import Popup from "../components/Popup";
 import { registerUser } from "../api/apiUser";
 import { registerAgency } from "../api/apiAgency";
 
@@ -168,13 +167,13 @@ const Register = () => {
   const navigate = useNavigate();
   const [registerRole, setRegisterRole] = useState("user");
 
-  const [popup, setPopup] =
-    useState({
-      show: false,
-      type: "",
-      title: "",
-      message: ""
-    });
+  // const [popup, setPopup] =
+  //   useState({
+  //     show: false,
+  //     type: "",
+  //     title: "",
+  //     message: ""
+  //   });
 
   const [userForm, setUserForm] =
     useState({
@@ -245,24 +244,24 @@ const Register = () => {
         const response = await registerUser(userData);
 
         if (response.success) { 
-          showPopup(
-            "success",
-            "Registration Successful",
-            "User account created successfully" );
+          // showPopup(
+          //   "success",
+          //   "Registration Successful",
+          //   "User account created successfully" );
           setTimeout(() => { navigate("/login"); }, 1200);
         } else {
-          showPopup(
-            "error",
-            "Registration Failed",
-            response.msg );
+          // showPopup(
+          //   "error",
+          //   "Registration Failed",
+          //   response.msg );
         }
 
       } else {
         if ( agencyForm.password !== agencyForm.confirmPassword ) {
-          showPopup(
-            "error",
-            "Password Error",
-            "Passwords do not match" );
+          // showPopup(
+          //   "error",
+          //   "Password Error",
+          //   "Passwords do not match" );
           return;
         }
 
@@ -287,10 +286,10 @@ const Register = () => {
         const response = await registerAgency(agencyData);
 
         if (response.success) {
-          showPopup(
-            "success",
-            "Registration Successful",
-            "Agency account created successfully" );
+          // showPopup(
+          //   "success",
+          //   "Registration Successful",
+          //   "Agency account created successfully" );
 
           setTimeout(() => { navigate("/login"); }, 1200);
         }
@@ -298,10 +297,10 @@ const Register = () => {
 
     } catch (error) {
       console.error(error);
-      showPopup(
-        "error",
-        "Registration Failed",
-        "Something went wrong" );
+      // showPopup(
+      //   "error",
+      //   "Registration Failed",
+      //   "Something went wrong" );
     }
   };
 
@@ -727,19 +726,6 @@ const Register = () => {
         </Card>
 
       </Page>
-
-      <Popup
-        show={popup.show}
-        type={popup.type}
-        title={popup.title}
-        message={popup.message}
-        onClose={() =>
-          setPopup({
-            ...popup,
-            show: false
-          })
-        }
-      />
 
     </Layout>
   );

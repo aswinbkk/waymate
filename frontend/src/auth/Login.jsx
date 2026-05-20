@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Layout from "../layouts/Layout";
-import Popup from "../components/Popup";
 import { loginUser } from "../api/apiUser";
 import { loginAgency } from "../api/apiAgency";
+import { AuthProvider } from "../context/AuthContext";
 
 const Page = styled.div`
   min-height: 100vh;
+  padding: 40px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px;
   background: linear-gradient(
     135deg,
     #f8fafc,
@@ -23,8 +24,8 @@ const Page = styled.div`
 const Card = styled.div`
   width: 100%;
   max-width: 420px;
-  background: white;
   padding: 35px;
+  background: white;
   border-radius: 20px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
@@ -42,18 +43,18 @@ const Logo = styled.img`
 
 const Toggle = styled.div`
   display: flex;
-  background: #f1f5f9;
-  border-radius: 12px;
   padding: 4px;
   margin-bottom: 25px;
+  background: #f1f5f9;
+  border-radius: 12px;
 `;
 
 const ToggleButton = styled.button`
   flex: 1;
   border: none;
   padding: 12px;
-  border-radius: 10px;
   cursor: pointer;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   transition: 0.3s;
@@ -74,8 +75,8 @@ const Title = styled.h1`
 
 const Description = styled.p`
   text-align: center;
-  color: #64748b;
   font-size: 14px;
+  color: #64748b;
   margin-bottom: 30px;
 `;
 
@@ -89,7 +90,6 @@ const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-
   label {
     font-size: 14px;
     font-weight: 600;
@@ -124,8 +124,8 @@ const ForgotPassword = styled(Link)`
 const Button = styled.button`
   border: none;
   padding: 14px;
-  border-radius: 12px;
   cursor: pointer;
+  border-radius: 12px;
   color: white;
   font-size: 15px;
   font-weight: 700;
@@ -144,72 +144,59 @@ const Button = styled.button`
 const BottomText = styled.p`
   margin-top: 24px;
   text-align: center;
-  color: #64748b;
   font-size: 14px;
+  color: #64748b;
   a {
+    margin-left: 4px;
     color: #0284c7;
     font-weight: 700;
     text-decoration: none;
-    margin-left: 4px;
   }
 `;
 
+
 const Login = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthProvider);
   const [accountType, setAccountType] = useState("user");
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [popup, setPopup] = useState({ show: false, type: "", title: "", message: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
+  // Handle Input
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const showPopup = (type, title, message) => {
-    setPopup({ show: true, type, title, message });
-  };
-
+  // Handle Login
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      let response;
-      if (accountType === "user") {
-        response = await loginUser(formData);
-
-      } else {
-        response = await loginAgency(formData);
-      }
+      const response =
+        accountType === "user"
+          ? await loginUser(formData)
+          : await loginAgency(formData);
 
       if (response.success) {
-        localStorage.setItem(
-          "isLoggedIn", "true"
-        );
+        setUser(response.user);
+        toast.success("Login Successful");
+        navigate("/");
 
-        localStorage.setItem(
-          "accountType", accountType
-        );
-
-        showPopup(
-          "success",
-          "Login Successful",
-          "Welcome to waymate"
-        );
-        setTimeout(() => { navigate("/"); }, 1200);
       } else {
-        showPopup(
-          "error",
-          "Login Failed",
-          response.msg ||
-          "Invalid credentials"
+        toast.error(
+          response.msg || "Invalid email or password"
         );
       }
 
     } catch (error) {
       console.error(error);
-      showPopup(
-        "error",
-        "Server Error",
-        "Something went wrong"
+      toast.error(
+        "Server Error, Please try again later"
       );
     }
   };
@@ -226,6 +213,7 @@ const Login = () => {
               onClick={() => setAccountType("user")}
             > User
             </ToggleButton>
+
             <ToggleButton
               type="button"
               $active={accountType === "agency"}
@@ -233,6 +221,7 @@ const Login = () => {
             > Agency
             </ToggleButton>
           </Toggle>
+
           <Title>Login</Title>
           <Description>Continue your smart ride journey.</Description>
 
@@ -245,7 +234,8 @@ const Login = () => {
                 placeholder="Enter email"
                 value={formData.email}
                 onChange={handleChange}
-                required />
+                required
+              />
             </InputGroup>
 
             <InputGroup>
@@ -256,30 +246,27 @@ const Login = () => {
                 placeholder="Enter password"
                 value={formData.password}
                 onChange={handleChange}
-                required />
+                required
+              />
             </InputGroup>
-            <ForgotPassword to="/">Forgot Password?</ForgotPassword>
-            <Button type="submit">Login</Button>
+
+            <ForgotPassword to="/">
+              Forgot Password?
+            </ForgotPassword>
+
+            <Button type="submit">
+              Login
+            </Button>
           </Form>
 
-          <BottomText>Don’t have an account?
-            <Link to="/register">Register</Link>
+          <BottomText>
+            Don’t have an account?
+            <Link to="/register">
+              Register
+            </Link>
           </BottomText>
         </Card>
       </Page>
-
-      <Popup
-        show={popup.show}
-        type={popup.type}
-        title={popup.title}
-        message={popup.message}
-        onClose={() =>
-          setPopup({
-            ...popup,
-            show: false
-          })
-        }
-      />
     </Layout>
   );
 };

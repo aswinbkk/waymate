@@ -1,23 +1,31 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect, useContext } from "react";
+
 import Search from "../components/Search";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
+
+/* ========================= STYLES ========================= */
 
 const NavbarContainer = styled.nav`
   width: 100%;
   height: 80px;
   padding: 0 50px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   position: sticky;
   top: 0;
   z-index: 1000;
+
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(18px);
+
   border-bottom: 1px solid rgba(0, 119, 255, 0.08);
   box-shadow: 0 4px 30px rgba(15, 23, 42, 0.06);
+
   @media (max-width: 992px) {
     padding: 0 20px;
   }
@@ -26,6 +34,7 @@ const NavbarContainer = styled.nav`
 const NavbarLeft = styled.div`
   display: flex;
   align-items: center;
+
   img {
     height: 42px;
     cursor: pointer;
@@ -46,12 +55,14 @@ const NavLinks = styled.div`
   display: flex;
   align-items: center;
   gap: 24px;
+
   a {
     text-decoration: none;
     color: #0f172a;
     font-size: 15px;
     font-weight: 600;
     transition: 0.3s;
+
     &:hover {
       color: #0284c7;
     }
@@ -61,20 +72,26 @@ const NavLinks = styled.div`
 const NavbarSearch = styled.div`
   width: 250px;
   padding: 10px 14px;
+
   display: flex;
   align-items: center;
+
   border-radius: 14px;
   background: #f1f5f9;
+
   cursor: pointer;
   transition: 0.3s;
+
   &:hover {
     background: white;
     box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
   }
+
   img {
     width: 16px;
     opacity: 0.55;
   }
+
   span {
     margin-left: 10px;
     font-size: 14px;
@@ -86,6 +103,7 @@ const NavbarRight = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+
   position: relative;
 `;
 
@@ -95,13 +113,18 @@ const StyledLink = styled(Link)`
 
 const OutlineButton = styled.button`
   padding: 10px 18px;
+
   border-radius: 12px;
   border: 1px solid rgba(2, 132, 199, 0.18);
+
   background: white;
   color: #0369a1;
+
   font-weight: 600;
   cursor: pointer;
+
   transition: 0.3s;
+
   &:hover {
     background: rgba(14, 165, 233, 0.08);
   }
@@ -109,18 +132,23 @@ const OutlineButton = styled.button`
 
 const GradientButton = styled.button`
   padding: 10px 20px;
+
   border: none;
   border-radius: 12px;
+
   background: linear-gradient(
     135deg,
     #22c55e,
     #06b6d4,
     #2563eb
   );
+
   color: white;
   font-weight: 700;
+
   cursor: pointer;
   transition: 0.3s;
+
   &:hover {
     transform: translateY(-2px);
   }
@@ -134,21 +162,28 @@ const DropdownMenu = styled.div`
   position: absolute;
   top: 55px;
   right: 0;
+
   width: 200px;
   padding: 10px;
+
   display: flex;
   flex-direction: column;
   gap: 6px;
+
   background: white;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
+
   box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+
   animation: fadeIn 0.2s ease;
+
   @keyframes fadeIn {
     from {
       opacity: 0;
       transform: translateY(-10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -158,32 +193,45 @@ const DropdownMenu = styled.div`
 
 const MenuItem = styled(Link)`
   padding: 12px 14px;
+
   text-decoration: none;
   border-radius: 12px;
+
   color: #0f172a;
   font-size: 14px;
   font-weight: 600;
+
   transition: 0.3s;
+
   &:hover {
     background: #f1f5f9;
     color: #0284c7;
   }
 `;
 
+/* ========================= COMPONENT ========================= */
+
 const Navbar = () => {
-  const { user, setUser } = useContext(AuthProvider);
+  const { user, setUser } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const menuRef = useRef(null);
+
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  // Logout
+  /* ---------- Logout ---------- */
+
   const handleLogout = () => {
     setUser(null);
+
+    localStorage.removeItem("user");
+
     navigate("/login");
   };
 
-  // Close menu outside click
+  /* ---------- Close Menu Outside Click ---------- */
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -193,7 +241,9 @@ const Navbar = () => {
         setShowMenu(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener(
         "mousedown",
@@ -205,6 +255,7 @@ const Navbar = () => {
   return (
     <>
       <NavbarContainer>
+        {/* LEFT */}
         <NavbarLeft>
           <img
             src="/waymate_wordmark_logo.png"
@@ -213,6 +264,7 @@ const Navbar = () => {
           />
         </NavbarLeft>
 
+        {/* CENTER */}
         <NavbarCenter>
           <NavLinks>
             <Link to="/">Home</Link>
@@ -228,6 +280,7 @@ const Navbar = () => {
           </NavbarSearch>
         </NavbarCenter>
 
+        {/* RIGHT */}
         <NavbarRight>
           {user ? (
             <>

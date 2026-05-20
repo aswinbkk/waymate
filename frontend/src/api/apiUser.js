@@ -1,12 +1,8 @@
 const baseUrl = "http://localhost:3000/user";
 
-// =========================
 // Register User
-// =========================
 export const registerUser = async (userData) => {
-
     try {
-
         const response = await fetch(
             `${baseUrl}/register`,
             {
@@ -19,11 +15,8 @@ export const registerUser = async (userData) => {
                 body: JSON.stringify(userData)
             }
         );
-
         const data = await response.json();
-
         console.log("Register Response:", data);
-
         return data;
 
     } catch (error) {

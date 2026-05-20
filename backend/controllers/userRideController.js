@@ -71,6 +71,8 @@ const createUserRide = async (req, res) => {
         res.status(201).json({ success:true, msg: "Ride created", data: userRide });
 
     } catch (error) {
+        console.log(error);
+        
         res.status(500).json({ msg: `Server error,${error}` });
     }
 };

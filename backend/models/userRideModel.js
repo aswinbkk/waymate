@@ -66,8 +66,8 @@ const userRideSchema = new mongoose.Schema(
     preferences: {
       gender: {
         type: String,
-        enum: ["male", "female", "any"],
-        default: "any"
+        enum: ["Male", "Female", "Any"],
+        default: "Any"
       },
       ac: {
         type: Boolean,

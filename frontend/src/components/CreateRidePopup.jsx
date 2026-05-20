@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 
 const Overlay = styled.div`
   position: fixed;
@@ -239,15 +240,13 @@ const CreateRidePopup = ({
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
     setRideData({
       ...rideData,
-      [name]: value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     onCreateRide(rideData);

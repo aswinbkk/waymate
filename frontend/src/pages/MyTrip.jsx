@@ -4,6 +4,9 @@ import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import CreateRidePopup from "../components/CreateRidePopup";
 import RideDetailsPopup from "../components/RideDetailsPopup";
+import { createUserRide } from "../api/apiUserRide"
+import { toast } from "react-toastify";
+
 
 const Page = styled.div`
   min-height: 100vh;
@@ -133,13 +136,42 @@ const MyTrip = () => {
   ];
 
   // Create Ride
-  const handleCreateRide = (rideData) => {
+  const handleCreateRide = async (rideData) => {
 
     console.log("Ride Data:", rideData);
 
-    // API call here
+    try {
 
-    setShowCreatePopup(false);
+      const response = await createUserRide(rideData);
+
+      console.log("response:", response);
+
+      if (response?.success) {
+
+        toast.success(
+          "Ride created successfully"
+        );
+
+        setShowCreatePopup(false);
+
+      } else {
+
+        toast.error(
+          response?.msg ||
+          "Ride creation failed"
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error(
+        "Something went wrong"
+      );
+
+    }
   };
 
   // Click Offered Ride

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import CreateRidePopup from "../components/CreateRidePopup";
 import RideDetailsPopup from "../components/RideDetailsPopup";
+import { viewUserCreatedRides } from "../api/apiUserRide"
 import { createUserRide } from "../api/apiUserRide"
 import { toast } from "react-toastify";
 
@@ -89,32 +90,29 @@ const AddRideButton = styled.button`
 
 const MyTrip = () => {
 
+  const [userRides, setUserRides] = useState([]);
   const [showCreatePopup, setShowCreatePopup] = useState(false);
-
   const [showRidePopup, setShowRidePopup] = useState(false);
-
   const [selectedRide, setSelectedRide] = useState(null);
-
   const [rideType, setRideType] = useState("");
 
-  // Example Offered Rides
-  const offeredRides = [
-    {
-      id: 1,
-      origin: "Pathanamthitta",
-      destination: "Kottayam",
-      date: new Date(),
-      availableSeats: 3,
-      totalSeats: 5,
-      vehicleNumber: "KL 02 CD 5678",
-      status: "Active",
-      pricePerSeat: 300,
-      preferences: {
-        gender: "Male",
-        ac: false
-      }
+  // Fetch Offered Rides
+  const fetchOfferedRides = async () => {
+    try {
+      const response = await viewUserCreatedRides();
+      console.log("gnn", response);
+      setUserRides(response.data);
+
+    } catch (error) {
+      console.error(error);
     }
-  ];
+  };
+
+  useEffect(() => {
+
+    fetchOfferedRides();
+
+  }, []);
 
   // Example Joined Rides
   const joinedRides = [
@@ -137,40 +135,28 @@ const MyTrip = () => {
 
   // Create Ride
   const handleCreateRide = async (rideData) => {
-
     console.log("Ride Data:", rideData);
 
     try {
-
       const response = await createUserRide(rideData);
-
       console.log("response:", response);
 
       if (response.success) {
-
-        toast.success(
-          "Ride created successfully"
-        );
-
+        toast.success("Ride created successfully");
         setShowCreatePopup(false);
 
       } else {
-
         toast.error(
           response.message ||
           "Ride creation failed"
         );
-
       }
 
     } catch (error) {
-
       console.error(error);
-
       toast.error(
         "Something went wrong"
       );
-
     }
   };
 
@@ -258,7 +244,7 @@ const MyTrip = () => {
             </TopBar>
 
             <RideGrid
-              rides={offeredRides}
+              rides={userRides}
               onRideClick={handleOfferedRideClick}
             />
 

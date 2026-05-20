@@ -116,7 +116,7 @@ const RideGrid = ({ rides, onViewRide }) => {
     <GridContainer>
       {
         rides.map((ride) => (
-          <RideCard key={ride._id || ride.id}>
+          <RideCard key={ride.id}>
             <RideRoute>{ride.origin}{" → "}{ride.destination} </RideRoute>
             <InfoSection>
               <InfoItem>

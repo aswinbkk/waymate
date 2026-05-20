@@ -146,7 +146,7 @@ const MyTrip = () => {
 
       console.log("response:", response);
 
-      if (response?.success) {
+      if (response.success) {
 
         toast.success(
           "Ride created successfully"
@@ -157,7 +157,7 @@ const MyTrip = () => {
       } else {
 
         toast.error(
-          response?.msg ||
+          response.message ||
           "Ride creation failed"
         );
 

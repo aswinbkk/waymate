@@ -62,6 +62,22 @@ const loginUser = async (req, res) => {
     }
 };
 
+// Logout user.
+const logoutUser = async (req, res) => {
+    try {
+
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict"
+        });
+        res.status(200).json({ success: true, msg: "Logout successful" });
+
+    } catch (error) {
+        res.status(500).json({ success: false, msg: `Server error ${error.message}` });
+    }
+};
+
 // ForgotPassword
 const forgotPassword = async (req, res) => {
     try {
@@ -163,6 +179,7 @@ const updateProfile = async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
+    logoutUser,
     forgotPassword,
     resetPassword,
     getProfile,

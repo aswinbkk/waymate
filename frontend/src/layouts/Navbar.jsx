@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect, useContext } from "react";
 import Search from "../components/Search";
 import { AuthProvider } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import {logoutUser} from "../api/apiUser"
 
 const NavbarContainer = styled.nav`
   width: 100%;
@@ -177,11 +179,27 @@ const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  // Logout
-  const handleLogout = () => {
-    setUser(null);
-    navigate("/login");
-  };
+// Logout
+const handleLogout = async () => {
+
+  try {
+    const response = await logoutUser();
+    if (response.success) {
+      setUser(null);
+      toast.success( "Logout Successful");
+      navigate("/login");
+
+    } else {
+      toast.error(
+        response.msg || "Logout Failed"
+      );
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast.error( "Something went wrong" );
+  }
+};
 
   // Close menu outside click
   useEffect(() => {

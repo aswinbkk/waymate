@@ -51,6 +51,32 @@ export const loginUser = async (postData) => {
     }
 };
 
+// Logout User
+export const logoutUser = async () => {
+
+    try {
+        const response = await fetch( `${baseUrl}/logout`,
+            {
+                method: "POST",
+                credentials: "include",
+            }
+        );
+        if (!response.ok) {
+            throw new Error( `HTTP Error ${response.status}`);
+        }
+        const data = await response.json();
+        console.log( "Logout Response:", data);
+        return data;
+
+    } catch (error) {
+        console.error(
+            "Logout User Error:",
+            error
+        );
+        return null;
+    }
+};
+
 // Forgot Password
 export const forgotPassword = async (emailData) => {
 

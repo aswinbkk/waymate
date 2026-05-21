@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 
 const GridContainer = styled.div`
@@ -111,7 +112,7 @@ const ViewButton = styled.button`
   }
 `;
 
-const RideGrid = ({ rides, onViewRide }) => {
+const RideGrid = ({ rides = [], onViewRide = () => {} }) => {
   return (
     <GridContainer>
       {

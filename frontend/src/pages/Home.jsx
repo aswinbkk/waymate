@@ -5,6 +5,7 @@ import RideGrid from "../components/RideGrid";
 import RideDetailsPopup from "../components/RideDetailsPopup";
 import { getUserRide, userJoinRide, userLeaveRide } from "../api/apiUserRide";
 import { getAgencyRide } from "../api/apiAgencyRide";
+import useRideActions from "../hooks/useRideActions";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -52,7 +53,15 @@ const Subtitle = styled.p`
 const Home = () => {
   const [userRides, setUserRides] = useState([]);
   const [agencyRides, setAgencyRides] = useState([]);
-
+  const fetchAllRides = () => { fetchUserRides(); fetchAgencyRides(); };
+  const {
+    showRidePopup,
+    selectedRide,
+    rideType,
+    openRidePopup,
+    closeRidePopup,
+    handleJoinRide
+  } = useRideActions({ fetchRides: fetchAllRides });
 
   // Fetch User Rides
   const fetchUserRides = async () => {
@@ -96,6 +105,9 @@ const Home = () => {
           </HeroSection>
           <RideGrid
             rides={userRides}
+            onViewRide={(ride) =>
+              openRidePopup(ride, "available")
+            }
           />
         </ContentWrapper>
 
@@ -110,9 +122,19 @@ const Home = () => {
           </HeroSection>
           <RideGrid
             rides={agencyRides}
+            onViewRide={(ride) =>
+              openRidePopup(ride, "available")
+            }
           />
         </ContentWrapper>
       </PageContainer>
+      <RideDetailsPopup
+        show={showRidePopup}
+        ride={selectedRide}
+        type={rideType}
+        onClose={closeRidePopup}
+        onJoin={handleJoinRide}
+      />
     </Layout>
   );
 };

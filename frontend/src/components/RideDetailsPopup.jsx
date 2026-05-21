@@ -26,7 +26,6 @@ const PopupContainer = styled.div`
       opacity: 0;
       transform: scale(0.95);
     }
-
     to {
       opacity: 1;
       transform: scale(1);
@@ -139,9 +138,9 @@ const ActionButton = styled.button`
 
   background:
     ${({ $variant }) =>
-      $variant === "delete"
-        ? "#ef4444"
-        : $variant === "leave"
+    $variant === "delete"
+      ? "#ef4444"
+      : $variant === "leave"
         ? "#f59e0b"
         : "linear-gradient(135deg,#22c55e,#06b6d4,#2563eb)"};
 
@@ -152,29 +151,22 @@ const ActionButton = styled.button`
 `;
 
 const RideDetailsPopup = ({
-  show,
-  ride,
-  type,
-  onClose,
-  onLeave,
-  onJoin
+  show, ride, type, onClose, onJoin, onLeave, onUpdate, onDelete
 }) => {
 
   if (!show || !ride) return null;
-
   return (
     <Overlay>
       <PopupContainer>
         <Header>
-          <Title> Ride Details </Title>
-          <CloseButton onClick={onClose} > × </CloseButton>
+          <Title>Ride Details</Title>
+          <CloseButton onClick={onClose}> × </CloseButton>
         </Header>
         <Route> {ride.origin} {" → "} {ride.destination} </Route>
-
         <InfoGrid>
           <InfoCard>
             <Label>Date</Label>
-            <Value> { new Date( ride.date ).toLocaleDateString() } </Value>
+            <Value> {new Date(ride.date).toLocaleDateString()} </Value>
           </InfoCard>
 
           <InfoCard>
@@ -183,40 +175,45 @@ const RideDetailsPopup = ({
           </InfoCard>
 
           <InfoCard>
-            <Label> Vehicle </Label>
+            <Label>Vehicle</Label>
             <Value> {ride.vehicleNumber} </Value>
           </InfoCard>
 
           <InfoCard>
-            <Label> Price </Label>
+            <Label>Price</Label>
             <Value> ₹{ride.pricePerSeat} {" / seat"} </Value>
           </InfoCard>
 
           <InfoCard>
-            <Label> Status </Label>
+            <Label>Status</Label>
             <Value> {ride.status} </Value>
           </InfoCard>
         </InfoGrid>
-
         <PreferenceContainer>
           <PreferenceTag> {ride.preferences.gender} </PreferenceTag>
-          <PreferenceTag> { ride.preferences.ac ? "AC" : "Non AC" }
-          </PreferenceTag>
+          <PreferenceTag> {ride.preferences.ac ? "AC" : "Non AC"} </PreferenceTag>
         </PreferenceContainer>
-        <ButtonContainer> { type === "offered" && (
-              <>
-                <ActionButton onClick={onUpdate}>  Update Ride </ActionButton>
-                <ActionButton $variant="delete" onClick={onDelete}> Delete Ride </ActionButton>
-              </>
-              )}
 
-          { type === "joined" && (
-              <ActionButton variant="leave" onClick={onLeave} > Leave Ride </ActionButton>
-            )}
+        <ButtonContainer>
+          {type === "available" && (
+            <ActionButton onClick={onJoin}>
+              Join Ride
+              </ActionButton> )}
+          {type === "joined" && (
+            <ActionButton $variant="leave" onClick={onLeave}>
+              Leave Ride
+              </ActionButton>)}
+          {type === "offered" && (
+            <>
+              <ActionButton onClick={onUpdate}>
+                Update Ride
+                </ActionButton>
 
-          { type === "available" && (
-              <ActionButton onClick={onJoin} > Join Ride </ActionButton>
-            )}
+              <ActionButton $variant="delete" onClick={onDelete}>
+                Delete Ride
+              </ActionButton>
+            </>
+          )}
         </ButtonContainer>
       </PopupContainer>
     </Overlay>

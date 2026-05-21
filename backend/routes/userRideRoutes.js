@@ -17,7 +17,7 @@ router.post("/leave/:id", authMiddleware, userRideController.userleaveRide);
 
 router.get("/dashboard", authMiddleware, userRideController.userDashboard);
 router.get("/created-rides", authMiddleware, userRideController.viewUserCreatedRides);
-router.get("/dashboard/joined", authMiddleware, userRideController.viewUserJoinedRides);
+router.get("/joined-rides", authMiddleware, userRideController.viewUserJoinedRides);
 
 router.get("/search", userRideController.searchUserRides);
 router.get("/view-all-ride", userRideController.getUserRide);

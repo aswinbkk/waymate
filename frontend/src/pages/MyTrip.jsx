@@ -4,7 +4,7 @@ import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import CreateRidePopup from "../components/CreateRidePopup";
 import RideDetailsPopup from "../components/RideDetailsPopup";
-import { viewUserCreatedRides } from "../api/apiUserRide"
+import { viewUserCreatedRides, viewUserJoinedRides } from "../api/apiUserRide"
 import { createUserRide } from "../api/apiUserRide"
 import { toast } from "react-toastify";
 
@@ -90,7 +90,8 @@ const AddRideButton = styled.button`
 
 const MyTrip = () => {
 
-  const [userRides, setUserRides] = useState([]);
+  const [offeredRides, setOfferedRides] = useState([]);
+  const [joinedRides, setJoinedRides] = useState([]);
   const [showCreatePopup, setShowCreatePopup] = useState(false);
   const [showRidePopup, setShowRidePopup] = useState(false);
   const [selectedRide, setSelectedRide] = useState(null);
@@ -100,8 +101,19 @@ const MyTrip = () => {
   const fetchOfferedRides = async () => {
     try {
       const response = await viewUserCreatedRides();
+      setOfferedRides(response.data);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+    // Fetch Joined Rides
+  const fetchJoinedRides = async () => {
+    try {
+      const response = await viewUserJoinedRides();
       console.log("gnn", response);
-      setUserRides(response.data);
+      setJoinedRides(response.data);
 
     } catch (error) {
       console.error(error);
@@ -111,27 +123,9 @@ const MyTrip = () => {
   useEffect(() => {
 
     fetchOfferedRides();
+    fetchJoinedRides();
 
   }, []);
-
-  // Example Joined Rides
-  const joinedRides = [
-    {
-      id: 2,
-      origin: "Kochi",
-      destination: "Trivandrum",
-      date: new Date(),
-      availableSeats: 2,
-      totalSeats: 4,
-      vehicleNumber: "KL 01 AB 1234",
-      status: "Joined",
-      pricePerSeat: 450,
-      preferences: {
-        gender: "Any",
-        ac: true
-      }
-    }
-  ];
 
   // Create Ride
   const handleCreateRide = async (rideData) => {
@@ -244,7 +238,7 @@ const MyTrip = () => {
             </TopBar>
 
             <RideGrid
-              rides={userRides}
+              rides={offeredRides}
               onRideClick={handleOfferedRideClick}
             />
 

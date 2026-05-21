@@ -402,7 +402,21 @@ const viewUserCreatedRides = async (req, res) => {
 const viewUserJoinedRides = async (req, res) => {
     try {
         const userJoinedRides = await UserRide.find({ "passengers.user": req.auth.id })
-        res.status(200).json({ success:true, count: userJoinedRides.length, data: userJoinedRides });
+        const formattedRides = userJoinedRides.map((ride) => ({
+            id: ride._id,
+            origin: ride.origin.name,
+            destination: ride.destination.name,
+            date: ride.date,
+            availableSeats: ride.availableSeats,
+            totalSeats: ride.totalSeats,
+            status: ride.status,
+            preferences: {
+                gender: ride.preferences.gender,
+                ac: ride.preferences.ac
+            },
+            pricePerSeat: ride.pricePerSeat
+        }));
+        res.status(200).json({ success:true, count: userJoinedRides.length, data: formattedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

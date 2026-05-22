@@ -1,64 +1,83 @@
 const User = require('../models/userModel');
 const sendEmail = require('../utils/sendEmail')
 const { otpTemplate } = require("../utils/template/OtpEmailTemplates");
+const { userValidation } = require("../validators/userValidation");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
-// Register user.
+// Register user
 const registerUser = async (req, res) => {
+
+  try {
+    const { error } = userValidation.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ success: false, msg: error.details[0].message, });
+    }
     const { fullName, email, password, phone } = req.body;
+    const existingUser = await User.findOne({ email });
 
-    if (!fullName.firstName || !email || !password || !phone) {
-        return res.status(400).json({ msg: "Required fields missing" });
+    if (existingUser) {
+      return res.status(400).json({ success: false, msg: "User already exists", });
     }
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const createdUser = new User({
+      fullName: {
+        firstName: fullName.firstName,
+        lastName: fullName.lastName,
+      },
+      email,
+      password: hashedPassword,
+      phone,
+    });
+    await createdUser.save();
+    res.status(201).json({ success: true, msg: "User registration successful", });
 
-    try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ msg: "User already exists" });
-        }
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const createdUser = new User({
-            fullName: { firstName: fullName.firstName, lastName: fullName.lastName },
-            email,
-            password: hashedPassword,
-            phone
-        });
-        await createdUser.save();
-        res.status(201).json({ success:true, msg: "User registration successfully" });
-
-    } catch (error) {
-        res.status(500).json({ msg: `Server error ${error}` });
-    }
+  } catch (error) {
+    res.status(500).json({ success: false, msg: `Server error: ${error.message}`, });
+  }
 };
 
 // Login user.
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
+
     try {
         const existingUser = await User.findOne({ email });
 
         if (!existingUser) {
-            return res.status(404).json({ msg: "User not found" });
+            return res.status(404).json({ success: false, msg: "User not found" });
         }
-        const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
+        const isPasswordMatch = await bcrypt.compare( password, existingUser.password );
 
         if (!isPasswordMatch) {
-            return res.status(401).json({ msg: "Invalid credentials" });
+            return res.status(401).json({ success: false, msg: "Invalid credentials"
+            });
         }
-        const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, { expiresIn: '24h' });
-        //cookie settings
+
+        const token = jwt.sign( { id: existingUser._id, role: existingUser.role },
+            process.env.SECRET_KEY, { expiresIn: "24h" });
+
         res.cookie("token", token, {
             httpOnly: true,
             secure: true,
-            sameSite:"strict",
+            sameSite: "strict",
             maxAge: 24 * 60 * 60 * 1000
         });
-        res.status(200).json({success:true, msg: 'Login successful', token:token, user:{name:existingUser.fullName.firstName}});
+
+        res.status(200).json({
+            success: true,
+            msg: "Login successful",
+            user: {
+                name: existingUser.fullName.firstName,
+                email: existingUser.email
+            }
+        });
 
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+
+        res.status(500).json({ success: false, msg: `Server error ${error}` });
     }
 };
 
@@ -149,14 +168,20 @@ const resetPassword = async (req, res) => {
     }
 };
 
-// Get Profile.
+// Get profile
 const getProfile = async (req, res) => {
+
     try {
-        const user = await User.findById(req.auth.id).select("-password");
-        res.status(200).json({ msg: "Profile fetched", data: user });
+        const user = await User.findById(req.auth.id) .select("-password");
+        res.status(200).json({ success: true,
+            user: {
+                name: user.fullName.firstName,
+                email: user.email
+            }
+        });
 
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+        res.status(500).json({ success: false, msg: `Server error ${error}` });
     }
 };
 

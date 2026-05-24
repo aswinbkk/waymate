@@ -213,22 +213,37 @@ export const viewUserJoinedRides = async () => {
 };
 
 // Search rides
+// export const searchUserRides = async (searchData) => {
+//     try {
+//         const response = await fetch(`${baseUrl}/search`,
+//             {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 },
+//                 body: JSON.stringify(searchData)
+//             }
+//         );
+//         const data = await response.json();
+//         return data;
+
+//     } catch (error) {
+//         console.error("Error:", error);
+//         return null;
+//     }
+// };
+
 export const searchUserRides = async (searchData) => {
+
     try {
-        const response = await fetch(`${baseUrl}/search`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(searchData)
-            }
-        );
-        const data = await response.json();
-        return data;
+        const query = new URLSearchParams(searchData).toString();
+        const response = await fetch( `${baseUrl}/search?${query}` );
+        console.log(response);
+        
+        return await response.json();
 
     } catch (error) {
-        console.error("Error:", error);
+        console.error(error);
         return null;
     }
 };

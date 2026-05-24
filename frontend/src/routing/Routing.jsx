@@ -6,6 +6,7 @@ import About from "../pages/About";
 import Help from "../pages/Help";
 import Profile from "../pages/Profile";
 import MyTrip from "../pages/MyTrip";
+import SearchResults from "../pages/SearchResults";
 
 
 const Routing = () => {
@@ -19,6 +20,7 @@ const Routing = () => {
                 <Route path="/help" element={<Help />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/my-trip" element={<MyTrip />} />
+                <Route path="/search-results" element={<SearchResults />} />
             </Routes>
         </>
     )

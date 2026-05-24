@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import React, { useEffect, useState } from 'react';
-import { getUserRide } from '../api/apiUserRide';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Overlay = styled.div`
   position: fixed;
@@ -217,9 +217,40 @@ const SearchButton = styled.button`
 `;
 
 const Search = ({ setShowSearch }) => {
+
+  const navigate = useNavigate();
+
+  const [searchData, setSearchData] = useState({
+    originName: "",
+    destinationName: "",
+    range: "",
+    status: "open"
+  });
+
+  const handleChange = (e) => {
+    setSearchData({
+      ...searchData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+
+    const query = new URLSearchParams({
+      originName: searchData.originName,
+      destinationName: searchData.destinationName,
+      range: searchData.range,
+      status: searchData.status
+    }).toString();
+
+    setShowSearch(false);
+
+    navigate(`/search-results?${query}`);
+  };
+
   return (
     <Overlay>
-
       <PopupWrapper>
 
         <SearchPopup>
@@ -239,7 +270,7 @@ const Search = ({ setShowSearch }) => {
             destination, route and preferences.
           </PopupSubtext>
 
-          <SearchForm>
+          <SearchForm onSubmit={handleSearch}>
 
             <InputGroup>
               <label>
@@ -248,7 +279,10 @@ const Search = ({ setShowSearch }) => {
 
               <Input
                 type="text"
+                name="originName"
                 placeholder="Enter pickup location"
+                value={searchData.originName}
+                onChange={handleChange}
               />
             </InputGroup>
 
@@ -259,7 +293,10 @@ const Search = ({ setShowSearch }) => {
 
               <Input
                 type="text"
+                name="destinationName"
                 placeholder="Enter destination"
+                value={searchData.destinationName}
+                onChange={handleChange}
               />
             </InputGroup>
 
@@ -270,7 +307,10 @@ const Search = ({ setShowSearch }) => {
 
               <Input
                 type="number"
+                name="range"
                 placeholder="Enter range"
+                value={searchData.range}
+                onChange={handleChange}
               />
             </InputGroup>
 
@@ -279,20 +319,23 @@ const Search = ({ setShowSearch }) => {
                 Ride Status
               </label>
 
-              <Select>
-
-                <option>
+              <Select
+                name="status"
+                value={searchData.status}
+                onChange={handleChange}
+              >
+                <option value="open">
                   Open
                 </option>
 
-                <option>
+                <option value="completed">
                   Completed
                 </option>
 
               </Select>
             </InputGroup>
 
-            <SearchButton>
+            <SearchButton type="submit">
               Search Available Rides
             </SearchButton>
 

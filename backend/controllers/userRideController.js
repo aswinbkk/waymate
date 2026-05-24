@@ -68,14 +68,14 @@ const createUserRide = async (req, res) => {
             preferences
         });
         await userRide.save();
-        res.status(201).json({ success:true, msg: "Ride created", data: userRide });
+        res.status(201).json({ success: true, msg: "Ride created", data: userRide });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
             message: error.message
-         });
+        });
     }
 };
 
@@ -179,7 +179,7 @@ const updateUserRide = async (req, res) => {
         const totalCost = BASE_FARE + distance * (PER_KM_RATE + acCharge);
         userRide.autoPricePerSeat = Math.ceil(totalCost / userRide.totalSeats);
         await userRide.save();
-        res.status(200).json({ success:true, msg: "Ride updated successfully", data: userRide });
+        res.status(200).json({ success: true, msg: "Ride updated successfully", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error, ${error.message}` });
@@ -195,7 +195,7 @@ const deleteUserRide = async (req, res) => {
         if (!userRide) {
             return res.status(404).json({ msg: "Ride not found or unauthorized" });
         }
-        res.status(200).json({ success:true, msg: "Ride deleted successfully" });
+        res.status(200).json({ success: true, msg: "Ride deleted successfully" });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error, ${error}` });
@@ -243,7 +243,7 @@ const addPassenger = async (req, res) => {
             userRide.status = "full";
         }
         await userRide.save();
-        res.status(200).json({ success:true, msg: "Passenger added", data: userRide });
+        res.status(200).json({ success: true, msg: "Passenger added", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -278,7 +278,7 @@ const removePassenger = async (req, res) => {
             userRide.status = "open";
         }
         await userRide.save();
-        res.status(200).json({ success:true, msg: "Passenger removed", data: userRide });
+        res.status(200).json({ success: true, msg: "Passenger removed", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -321,7 +321,7 @@ const userJoinRide = async (req, res) => {
         }
 
         await userRide.save();
-        res.status(201).json({ success:true, msg: "Joined ride successfully", data: userRide });
+        res.status(201).json({ success: true, msg: "Joined ride successfully", data: userRide });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -354,7 +354,7 @@ const userleaveRide = async (req, res) => {
         };
 
         await userRide.save();
-        res.status(201).json({ success:true, msg: "Left ride successfully", data: userRide });
+        res.status(201).json({ success: true, msg: "Left ride successfully", data: userRide });
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
     }
@@ -365,7 +365,7 @@ const userDashboard = async (req, res) => {
     try {
         const userCreatedRides = await UserRide.countDocuments({ createdBy: req.auth.id });
         const userJoinedRides = await UserRide.countDocuments({ "passengers.user": req.auth.id });
-        res.status(200).json({ success:true, userCreatedRides, userJoinedRides });
+        res.status(200).json({ success: true, userCreatedRides, userJoinedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -391,7 +391,7 @@ const viewUserCreatedRides = async (req, res) => {
             pricePerSeat: ride.pricePerSeat
         }));
 
-        res.status(200).json({ success:true, count: userCreatedRides.length, data: formattedRides });
+        res.status(200).json({ success: true, count: userCreatedRides.length, data: formattedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -416,7 +416,7 @@ const viewUserJoinedRides = async (req, res) => {
             },
             pricePerSeat: ride.pricePerSeat
         }));
-        res.status(200).json({ success:true, count: userJoinedRides.length, data: formattedRides });
+        res.status(200).json({ success: true, count: userJoinedRides.length, data: formattedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -424,53 +424,53 @@ const viewUserJoinedRides = async (req, res) => {
 };
 
 // Search user ride.
-const searchUserRides = async (req, res) => {
-    try {
-        const {
-            originName,
-            destinationName,
-            range = 1,
-            status = "open"
-        } = req.body;
+// const searchUserRides = async (req, res) => {
+//     try {
+//         const {
+//             originName,
+//             destinationName,
+//             range = 1,
+//             status = "open"
+//         } = req.body;
 
-        if (originName && destinationName) {
-            const originCoords = await geocodeAddress(originName);
-            const destCoords = await geocodeAddress(destinationName);
+//         if (originName && destinationName) {
+//             const originCoords = await geocodeAddress(originName);
+//             const destCoords = await geocodeAddress(destinationName);
 
-            if (!originCoords || !destCoords) {
-                return res.status(400).json({
-                    msg: "Invalid or unrecognized location. Please enter a valid place."
-                });
-            }
+//             if (!originCoords || !destCoords) {
+//                 return res.status(400).json({
+//                     msg: "Invalid or unrecognized location. Please enter a valid place."
+//                 });
+//             }
 
-            const originLat = originCoords.lat;
-            const originLng = originCoords.lng;
-            const destLat = destCoords.lat;
-            const destLng = destCoords.lng;
-            // Approx: 1 degree ≈ 111 km
-            const radius = range / 111;
+//             const originLat = originCoords.lat;
+//             const originLng = originCoords.lng;
+//             const destLat = destCoords.lat;
+//             const destLng = destCoords.lng;
+//             // Approx: 1 degree ≈ 111 km
+//             const radius = range / 111;
 
-            const userRide = await UserRide.find({
-                // Origin match
-                "origin.coordinates.lat": { $gte: originLat - radius, $lte: originLat + radius },
-                "origin.coordinates.lng": { $gte: originLng - radius, $lte: originLng + radius },
-                // Destination match
-                "destination.coordinates.lat": { $gte: destLat - radius, $lte: destLat + radius },
-                "destination.coordinates.lng": { $gte: destLng - radius, $lte: destLng + radius },
-                status: status
-            });
-            res.status(200).json({ msg: "Matching rides found", count: userRide.length, data: userRide });
+//             const userRide = await UserRide.find({
+//                 // Origin match
+//                 "origin.coordinates.lat": { $gte: originLat - radius, $lte: originLat + radius },
+//                 "origin.coordinates.lng": { $gte: originLng - radius, $lte: originLng + radius },
+//                 // Destination match
+//                 "destination.coordinates.lat": { $gte: destLat - radius, $lte: destLat + radius },
+//                 "destination.coordinates.lng": { $gte: destLng - radius, $lte: destLng + radius },
+//                 status: status
+//             });
+//             res.status(200).json({ msg: "Matching rides found", count: userRide.length, data: userRide });
 
-        } else {
-            // view all user ride
-            const allUserRide = await UserRide.find({ status: status }).sort({ createdAt: -1 })
-            res.status(200).json({ msg: "All ride", count: allUserRide.length, data: allUserRide });
-        }
+//         } else {
+//             // view all user ride
+//             const allUserRide = await UserRide.find({ status: status }).sort({ createdAt: -1 })
+//             res.status(200).json({ msg: "All ride", count: allUserRide.length, data: allUserRide });
+//         }
 
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
-    }
-};
+//     } catch (error) {
+//         res.status(500).json({ msg: `Server error,${error}` });
+//     }
+// };
 
 const getUserRide = async (req, res) => {
     try {
@@ -500,6 +500,61 @@ const getUserRide = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             msg: `Server Error ${error.message}`
+        });
+    }
+};
+
+const searchUserRides = async (req, res) => {
+
+    try {
+
+        const {
+            originName = "",
+            destinationName = "",
+            status = "open"
+        } = req.query;
+
+        const searchFilter = {
+            status,
+            "origin.name": {
+                $regex: originName,
+                $options: "i"
+            },
+            "destination.name": {
+                $regex: destinationName,
+                $options: "i"
+            }
+        };
+
+        const searchRides = await UserRide.find(searchFilter)
+            .sort({ createdAt: -1 });
+
+        const formattedRides = searchRides.map((ride) => ({
+            id: ride._id,
+            origin: ride.origin.name,
+            destination: ride.destination.name,
+            date: ride.date,
+            availableSeats: ride.availableSeats,
+            totalSeats: ride.totalSeats,
+            status: ride.status,
+            preferences: {
+                gender: ride.preferences.gender,
+                ac: ride.preferences.ac
+            },
+            pricePerSeat: ride.pricePerSeat
+        }));
+
+        res.status(200).json({
+            success: true,
+            count: formattedRides.length,
+            data: formattedRides
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            msg: error.message
         });
     }
 };

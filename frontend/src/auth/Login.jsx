@@ -159,6 +159,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(AuthProvider);
   const [accountType, setAccountType] = useState("user");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -175,29 +176,28 @@ const Login = () => {
   // Handle Login
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const response =
-        accountType === "user"
+      const response = accountType === "user"
           ? await loginUser(formData)
           : await loginAgency(formData);
 
-      if (response.success) {
+      if (response?.success) {
         setUser(response.user);
-        toast.success("Login Successful");
+        toast.success( "Login Successful" );
         navigate("/");
 
       } else {
-        toast.error(
-          response.msg || "Invalid email or password"
-        );
+        toast.error( response?.msg || "Invalid email or password" );
       }
 
     } catch (error) {
       console.error(error);
-      toast.error(
-        "Server Error, Please try again later"
-      );
+      toast.error( "Server Error, Please try again later" );
+      
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -254,8 +254,12 @@ const Login = () => {
               Forgot Password?
             </ForgotPassword>
 
-            <Button type="submit">
-              Login
+            <Button type="submit" disabled={loading}>
+              {
+                loading
+                  ? "Logging in..."
+                  : "Login"
+              }
             </Button>
           </Form>
 

@@ -183,21 +183,35 @@ const Navbar = () => {
 const handleLogout = async () => {
 
   try {
-    const response = await logoutUser();
+
+    const response =
+      await logoutUser();
+
     if (response.success) {
+
       setUser(null);
-      toast.success( "Logout Successful");
+
+      toast.success(
+        "Logout Successful"
+      );
+
       navigate("/login");
 
     } else {
+
       toast.error(
-        response.msg || "Logout Failed"
+        response.msg ||
+        "Logout Failed"
       );
     }
 
   } catch (error) {
+
     console.error(error);
-    toast.error( "Something went wrong" );
+
+    toast.error(
+      "Something went wrong"
+    );
   }
 };
 

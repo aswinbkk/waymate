@@ -42,12 +42,10 @@ export const loginUser = async (postData) => {
         const data = await response.json();
         console.log("Login Response:", data);
         return data;
+        
     } catch (error) {
-        console.error(
-            "Login User Error:",
-            error
-        );
-        return null;
+        console.error( "Login User Error:", error );
+        return { success: false, msg: "Network error" };
     }
 };
 
@@ -145,9 +143,7 @@ export const getProfile = async () => {
 
     } catch (error) {
         console.error(
-            "Get Profile Error:",
-            error
-        );
+            "Get Profile Error:", error );
         return null;
     }
 };

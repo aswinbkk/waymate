@@ -1,25 +1,20 @@
 const jwt = require("jsonwebtoken");
 
-const authMiddleware = async (req, res, next) => {
-    //const header = req.header("Authorization");
-
-    // if (!header) {
-    //     return res.status(400).json({ msg: "No token provided" });
-    // }
+const authMiddleware = (req, res, next) => {
 
     try {
-        const token = req.cookies.token
-        //const token = header.split(" ")[1];
+        const token = req.cookies.token;
+
         if (!token) {
-            return res.status(400).json({ msg: "Login to proceed" });
-            // msg: "Login to proceed" = "No token provided"
+            return res.status(401).json({ success: false, msg: "Unauthorized" });
         }
-        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+
+        const decodedToken = jwt.verify( token, process.env.SECRET_KEY );
         req.auth = decodedToken;
         next();
 
     } catch (error) {
-        return res.status(401).json({ msg: "Invalid token" });
+        res.status(401).json({ success: false, msg: "Invalid token" });
     }
 };
 

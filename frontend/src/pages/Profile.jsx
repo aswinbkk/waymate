@@ -1,5 +1,18 @@
-import React from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
+
 import styled from "styled-components";
+
+import {
+  getProfile
+} from "../api/apiUser";
+
+import {
+  viewUserCreatedRides,
+  viewUserJoinedRides
+} from "../api/apiUserRide";
 
 import Layout from "../layouts/Layout";
 
@@ -53,6 +66,7 @@ const TopSection = styled.div`
 const ProfileInfo = styled.div`
   display: flex;
   align-items: center;
+
   gap: 20px;
 `;
 
@@ -123,6 +137,7 @@ const Button = styled.button`
 
 const SectionTitle = styled.h2`
   font-size: 22px;
+
   color: #0f172a;
 
   margin-bottom: 20px;
@@ -163,6 +178,7 @@ const Label = styled.p`
 
 const Value = styled.h3`
   font-size: 18px;
+
   color: #0f172a;
 
   word-break: break-word;
@@ -194,6 +210,7 @@ const StatCard = styled.div`
 
 const StatNumber = styled.h1`
   font-size: 38px;
+
   margin-bottom: 10px;
 
   background:
@@ -210,21 +227,128 @@ const StatNumber = styled.h1`
 
 const StatLabel = styled.p`
   color: #64748b;
+
   font-size: 14px;
   font-weight: 600;
 `;
 
+const LoadingText = styled.p`
+  text-align: center;
+
+  font-size: 18px;
+
+  color: #64748b;
+`;
+
 const Profile = () => {
 
-  const userData = {
-    firstName: "User",
-    lastName: "Name",
-    email: "username@gmail.com",
-    phone: "+91 9876543210",
-    totalRides: 10,
-    joinedRides: 4,
-    offeredRides: 6
+  const [userData, setUserData] =
+    useState(null);
+
+  const [userRideData, setUserRideData] =
+    useState({
+      joinedRides: 0,
+      offeredRides: 0
+    });
+
+  const [loading, setLoading] =
+    useState(true);
+
+  // Fetch Profile + Ride Stats
+  const fetchProfile = async () => {
+
+    try {
+
+      setLoading(true);
+
+      // Run all APIs together
+      const [
+        profileResponse,
+        createdRidesResponse,
+        joinedRidesResponse
+      ] = await Promise.all([
+        getProfile(),
+        viewUserCreatedRides(),
+        viewUserJoinedRides()
+      ]);
+
+      console.log(
+        "Profile Response:",
+        profileResponse
+      );
+
+      console.log(
+        "Created Rides:",
+        createdRidesResponse
+      );
+
+      console.log(
+        "Joined Rides:",
+        joinedRidesResponse
+      );
+
+      // Profile Data
+      if (profileResponse?.success) {
+
+        setUserData({
+          firstName:
+            profileResponse.user.name.firstName || "",
+
+          lastName:
+            profileResponse.user.name.lastName || "",
+
+          email:
+            profileResponse.user.email || "",
+
+          phone:
+            profileResponse.user.phone || ""
+        });
+      }
+
+      // Ride Counts
+      const offeredRidesCount =
+        createdRidesResponse?.data?.length || 0;
+
+      const joinedRidesCount =
+        joinedRidesResponse?.data?.length || 0;
+
+      setUserRideData({
+        offeredRides: offeredRidesCount,
+        joinedRides: joinedRidesCount
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+
+    fetchProfile();
+
+  }, []);
+
+  if (loading) {
+
+    return (
+      <Layout>
+
+        <Page>
+
+          <LoadingText>
+            Loading Profile...
+          </LoadingText>
+
+        </Page>
+
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -240,15 +364,21 @@ const Profile = () => {
               <ProfileInfo>
 
                 <Avatar>
-                  {userData.firstName.charAt(0)}
+
+                  {userData?.firstName
+                    ?.charAt(0)
+                    ?.toUpperCase()}
+
                 </Avatar>
 
                 <UserDetails>
 
                   <h1>
-                    {userData.firstName}
+
+                    {userData?.firstName}
                     {" "}
-                    {userData.lastName}
+                    {userData?.lastName}
+
                   </h1>
 
                   <p>
@@ -278,7 +408,7 @@ const Profile = () => {
                 </Label>
 
                 <Value>
-                  {userData.email}
+                  {userData?.email}
                 </Value>
 
               </Card>
@@ -290,7 +420,7 @@ const Profile = () => {
                 </Label>
 
                 <Value>
-                  {userData.phone}
+                  {userData?.phone}
                 </Value>
 
               </Card>
@@ -306,7 +436,10 @@ const Profile = () => {
               <StatCard>
 
                 <StatNumber>
-                  {userData.totalRides}
+                  {
+                    userRideData.joinedRides +
+                    userRideData.offeredRides
+                  }
                 </StatNumber>
 
                 <StatLabel>
@@ -318,7 +451,7 @@ const Profile = () => {
               <StatCard>
 
                 <StatNumber>
-                  {userData.joinedRides}
+                  {userRideData.joinedRides}
                 </StatNumber>
 
                 <StatLabel>
@@ -330,7 +463,7 @@ const Profile = () => {
               <StatCard>
 
                 <StatNumber>
-                  {userData.offeredRides}
+                  {userRideData.offeredRides}
                 </StatNumber>
 
                 <StatLabel>

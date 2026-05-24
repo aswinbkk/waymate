@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../auth/Login";
 import Register from "../auth/Register";
+import ForgotPassword from "../auth/ForgotPassword";
 import About from "../pages/About";
 import Help from "../pages/Help";
 import Profile from "../pages/Profile";
@@ -16,6 +17,7 @@ const Routing = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/profile" element={<Profile />} />

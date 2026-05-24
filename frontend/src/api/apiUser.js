@@ -76,7 +76,7 @@ export const logoutUser = async () => {
 };
 
 // Forgot Password
-export const forgotPassword = async (emailData) => {
+export const forgotUserPassword = async (emailData) => {
 
     try {
         const response = await fetch(`${baseUrl}/forgot-password`,
@@ -102,7 +102,7 @@ export const forgotPassword = async (emailData) => {
 };
 
 // Reset Password
-export const resetPassword = async (resetData) => {
+export const resetUserPassword = async (resetData) => {
 
     try {
         const response = await fetch(`${baseUrl}/reset-password`,

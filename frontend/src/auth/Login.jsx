@@ -250,7 +250,7 @@ const Login = () => {
               />
             </InputGroup>
 
-            <ForgotPassword to="/">
+            <ForgotPassword to="/forgot-password">
               Forgot Password?
             </ForgotPassword>
 

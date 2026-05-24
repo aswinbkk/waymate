@@ -175,8 +175,9 @@ const getProfile = async (req, res) => {
         const user = await User.findById(req.auth.id) .select("-password");
         res.status(200).json({ success: true,
             user: {
-                name: user.fullName.firstName,
-                email: user.email
+                name: user.fullName,
+                email: user.email,
+                phone: user.phone
             }
         });
 

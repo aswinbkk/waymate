@@ -391,7 +391,7 @@ const viewUserCreatedRides = async (req, res) => {
             pricePerSeat: ride.pricePerSeat
         }));
 
-        res.status(200).json({ success: true, count: userCreatedRides.length, data: formattedRides });
+        res.status(200).json({ success: true, count: formattedRides.length, data: formattedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });
@@ -416,7 +416,7 @@ const viewUserJoinedRides = async (req, res) => {
             },
             pricePerSeat: ride.pricePerSeat
         }));
-        res.status(200).json({ success: true, count: userJoinedRides.length, data: formattedRides });
+        res.status(200).json({ success: true, count: formattedRides.length, data: formattedRides });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

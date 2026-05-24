@@ -43,7 +43,7 @@ export const loginAgency = async (postData) => {
 };
 
 // Forgot password
-export const forgotPassword = async (emailData) => {
+export const forgotAgencyPassword = async (emailData) => {
   try {
     const response = await fetch(`${baseUrl}/forgot-password`, {
       method: "POST",
@@ -63,7 +63,7 @@ export const forgotPassword = async (emailData) => {
 };
 
 // Reset password
-export const resetPassword = async (resetData) => {
+export const resetAgencyPassword = async (resetData) => {
   try {
     const response = await fetch(`${baseUrl}/reset-password`, {
       method: "POST",

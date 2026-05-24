@@ -98,6 +98,44 @@ const PopupSubtext = styled.p`
   margin-bottom: 28px;
 `;
 
+const ToggleWrapper = styled.div`
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 25px;
+`;
+
+const ToggleButton = styled.button`
+  flex: 1;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  border: none;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  transition: 0.3s;
+
+  background: ${({ $active }) =>
+    $active
+      ? "linear-gradient(135deg,#22c55e,#2563eb)"
+      : "#f1f5f9"};
+
+  color: ${({ $active }) =>
+    $active ? "#fff" : "#0f172a"};
+
+  box-shadow: ${({ $active }) =>
+    $active
+      ? "0 10px 20px rgba(37,99,235,0.18)"
+      : "none"};
+`;
+
 const SearchForm = styled.form`
   display: grid;
 
@@ -220,29 +258,40 @@ const Search = ({ setShowSearch }) => {
 
   const navigate = useNavigate();
 
-  const [searchData, setSearchData] = useState({
-    originName: "",
-    destinationName: "",
-    range: "",
-    status: "open"
-  });
+  const [rideType, setRideType] =
+    useState("user");
 
+  const [searchData, setSearchData] =
+    useState({
+      originName: "",
+      destinationName: "",
+      range: "",
+      status: "open"
+    });
+
+  // Handle Input
   const handleChange = (e) => {
+
     setSearchData({
       ...searchData,
       [e.target.name]: e.target.value
     });
   };
 
+  // Handle Search
   const handleSearch = async (e) => {
+
     e.preventDefault();
 
-    const query = new URLSearchParams({
-      originName: searchData.originName,
-      destinationName: searchData.destinationName,
-      range: searchData.range,
-      status: searchData.status
-    }).toString();
+    const query =
+      new URLSearchParams({
+        originName: searchData.originName,
+        destinationName:
+          searchData.destinationName,
+        range: searchData.range,
+        status: searchData.status,
+        type: rideType
+      }).toString();
 
     setShowSearch(false);
 
@@ -251,6 +300,7 @@ const Search = ({ setShowSearch }) => {
 
   return (
     <Overlay>
+
       <PopupWrapper>
 
         <SearchPopup>
@@ -270,9 +320,35 @@ const Search = ({ setShowSearch }) => {
             destination, route and preferences.
           </PopupSubtext>
 
+          {/* Toggle Switch */}
+          <ToggleWrapper>
+
+            <ToggleButton
+              type="button"
+              $active={rideType === "user"}
+              onClick={() =>
+                setRideType("user")
+              }
+            >
+              User Ride
+            </ToggleButton>
+
+            <ToggleButton
+              type="button"
+              $active={rideType === "agency"}
+              onClick={() =>
+                setRideType("agency")
+              }
+            >
+              Agency Ride
+            </ToggleButton>
+
+          </ToggleWrapper>
+
           <SearchForm onSubmit={handleSearch}>
 
             <InputGroup>
+
               <label>
                 Origin Location
               </label>
@@ -284,9 +360,11 @@ const Search = ({ setShowSearch }) => {
                 value={searchData.originName}
                 onChange={handleChange}
               />
+
             </InputGroup>
 
             <InputGroup>
+
               <label>
                 Destination Location
               </label>
@@ -298,9 +376,11 @@ const Search = ({ setShowSearch }) => {
                 value={searchData.destinationName}
                 onChange={handleChange}
               />
+
             </InputGroup>
 
             <InputGroup>
+
               <label>
                 Search Range (KM)
               </label>
@@ -312,9 +392,11 @@ const Search = ({ setShowSearch }) => {
                 value={searchData.range}
                 onChange={handleChange}
               />
+
             </InputGroup>
 
             <InputGroup>
+
               <label>
                 Ride Status
               </label>
@@ -333,6 +415,7 @@ const Search = ({ setShowSearch }) => {
                 </option>
 
               </Select>
+
             </InputGroup>
 
             <SearchButton type="submit">

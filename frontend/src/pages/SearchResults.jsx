@@ -3,93 +3,55 @@ import React, {
   useState
 } from "react";
 
+import {
+  useSearchParams
+} from "react-router-dom";
+
 import styled from "styled-components";
 
-import { useSearchParams } from "react-router-dom";
-
 import Layout from "../layouts/Layout";
-
 import RideGrid from "../components/RideGrid";
-
 import RideDetailsPopup from "../components/RideDetailsPopup";
 
 import {
   searchUserRides
 } from "../api/apiUserRide";
 
+import {
+  searchAgencyRides
+} from "../api/apiAgencyRide";
+
 import useRideActions from "../hooks/useRideActions";
 
-const Page = styled.div`
-  min-height: 100vh;
-
-  padding: 40px 20px;
-
-  background: #f8fafc;
-`;
-
 const Container = styled.div`
+  padding: 40px;
   max-width: 1300px;
-
   margin: auto;
-`;
-
-const Header = styled.div`
-  margin-bottom: 35px;
 `;
 
 const Title = styled.h1`
   font-size: 34px;
   font-weight: 800;
 
-  color: #0f172a;
+  margin-bottom: 10px;
 
-  margin-bottom: 12px;
+  color: #0f172a;
 `;
 
 const Description = styled.p`
-  font-size: 15px;
-
   color: #64748b;
 
-  line-height: 1.7;
+  margin-bottom: 30px;
+
+  font-size: 15px;
 `;
 
 const LoadingText = styled.p`
-  font-size: 16px;
-
-  color: #334155;
-
-  padding: 30px 0;
-`;
-
-const EmptyState = styled.div`
-  background: white;
-
-  padding: 40px 20px;
-
-  border-radius: 24px;
-
-  text-align: center;
-
-  border: 1px solid #e2e8f0;
-
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.05);
-`;
-
-const EmptyTitle = styled.h2`
-  font-size: 24px;
-  font-weight: 700;
-
-  color: #0f172a;
-
-  margin-bottom: 10px;
+  color: #2563eb;
 `;
 
 const EmptyText = styled.p`
   color: #64748b;
-
-  font-size: 15px;
 `;
 
 const SearchResults = () => {
@@ -106,17 +68,24 @@ const SearchResults = () => {
   const [count, setCount] =
     useState(0);
 
+  const type =
+    searchParams.get("type") ||
+    "user";
+
   const originName =
-    searchParams.get("originName") || "";
+    searchParams.get("originName") ||
+    "";
 
   const destinationName =
-    searchParams.get("destinationName") || "";
+    searchParams.get("destinationName") ||
+    "";
 
   const range =
     searchParams.get("range") || "";
 
   const status =
-    searchParams.get("status") || "open";
+    searchParams.get("status") ||
+    "open";
 
   const {
     showRidePopup,
@@ -125,56 +94,65 @@ const SearchResults = () => {
     openRidePopup,
     closeRidePopup,
     handleJoinRide
-  } = useRideActions({
-    fetchRides: fetchSearchResults
-  });
+  } = useRideActions({});
 
   // Fetch Search Results
-  async function fetchSearchResults() {
+  const fetchSearchResults =
+    async () => {
 
-    try {
+      try {
 
-      setLoading(true);
+        setLoading(true);
 
-      const response =
-        await searchUserRides({
+        const searchData = {
           originName,
           destinationName,
           range,
           status
-        });
+        };
 
-      console.log(
-        "Search Response:",
-        response
-      );
+        const response =
+          type === "agency"
+            ? await searchAgencyRides(
+                searchData
+              )
+            : await searchUserRides(
+                searchData
+              );
 
-      if (response?.success) {
+        console.log(
+          "Search Response:",
+          response
+        );
 
-        setRides(response.data);
+        if (response?.success) {
 
-        setCount(response.count);
+          setRides(response.data);
 
-      } else {
+          setCount(
+            response.data.length
+          );
+
+        } else {
+
+          setRides([]);
+
+          setCount(0);
+        }
+
+      } catch (error) {
+
+        console.error(error);
 
         setRides([]);
 
         setCount(0);
+
+      } finally {
+
+        setLoading(false);
       }
-
-    } catch (error) {
-
-      console.error(error);
-
-      setRides([]);
-
-      setCount(0);
-
-    } finally {
-
-      setLoading(false);
-    }
-  }
+    };
 
   useEffect(() => {
 
@@ -185,61 +163,46 @@ const SearchResults = () => {
   return (
     <Layout>
 
-      <Page>
+      <Container>
 
-        <Container>
+        <Title>
+          {type === "agency"
+            ? "Agency Ride Results"
+            : "User Ride Results"}
+        </Title>
 
-          <Header>
+        <Description>
+          {count} rides found matching
+          your search
+        </Description>
 
-            <Title>
-              Search Results
-            </Title>
+        {loading ? (
 
-            <Description>
-              Available rides matching your
-              search ({count} rides found)
-            </Description>
+          <LoadingText>
+            Loading rides...
+          </LoadingText>
 
-          </Header>
+        ) : rides.length === 0 ? (
 
-          {loading ? (
+          <EmptyText>
+            No rides found
+          </EmptyText>
 
-            <LoadingText>
-              Loading rides...
-            </LoadingText>
+        ) : (
 
-          ) : rides.length === 0 ? (
+          <RideGrid
+            rides={rides}
+            onViewRide={(ride) =>
+              openRidePopup(
+                ride,
+                "available"
+              )
+            }
+          />
 
-            <EmptyState>
+        )}
 
-              <EmptyTitle>
-                No Rides Found
-              </EmptyTitle>
-
-              <EmptyText>
-                Try changing the origin,
-                destination or ride status.
-              </EmptyText>
-
-            </EmptyState>
-
-          ) : (
-
-            <RideGrid
-              rides={rides}
-              onViewRide={(ride) =>
-                openRidePopup(
-                  ride,
-                  "available"
-                )
-              }
-            />
-
-          )}
-
-        </Container>
-
-      </Page>
+      </Container>
 
       <RideDetailsPopup
         show={showRidePopup}

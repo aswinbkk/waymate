@@ -135,22 +135,18 @@ export const viewAgencyCreatedRides = async () => {
 
 // Search agency rides
 export const searchAgencyRides = async (searchData) => {
-  try {
-    const response = await fetch(`${baseUrl}/search`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(searchData)
-    });
-    const data = await response.json();
-    console.log("Search Agency Rides:", data);
-    return data;
 
-  } catch (error) {
-    console.error("Search Agency Rides Error:", error);
-    return null;
-  }
+    try {
+        const query = new URLSearchParams(searchData).toString();
+        const response = await fetch( `${baseUrl}/search?${query}` );
+        console.log(response);
+        
+        return await response.json();
+
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 };
 
 // Get all agency rides

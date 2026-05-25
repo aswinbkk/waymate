@@ -75,12 +75,11 @@ const loginUser = async (req, res) => {
             msg: "Login successful",
             user: {
                 name: existingUser.fullName.firstName,
-                email: existingUser.email
+                role: existingUser.role
             }
         });
 
     } catch (error) {
-
         res.status(500).json({ success: false, msg: `Server error ${error}` });
     }
 };

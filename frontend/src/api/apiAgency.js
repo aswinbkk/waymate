@@ -83,7 +83,7 @@ export const resetAgencyPassword = async (resetData) => {
 };
 
 // Get profile
-export const getProfile = async () => {
+export const getAgencyProfile = async () => {
   try {
     const response = await fetch(`${baseUrl}/profile`, {
       method: "GET",

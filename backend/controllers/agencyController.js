@@ -64,11 +64,24 @@ const loginAgency = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ msg: "Invalid credentials" });
         }
-        const token = jwt.sign({ id: existingAgency._id, role: existingAgency.role }, process.env.SECRET_KEY, { expiresIn: '100h' });
-        res.status(200).json({ success:true, msg: 'Login successful', token: token, user: existingAgency.agencyName });
+        const token = jwt.sign({ id: existingAgency._id, role: existingAgency.role }, process.env.SECRET_KEY, { expiresIn: '24h' });
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60 * 1000
+        });
+        res.status(200).json({
+            success: true,
+            msg: "Login successful",
+            user: {
+                name: existingAgency.agencyName,
+                role: existingAgency.role
+            }
+        });
 
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+        res.status(500).json({ success: false, msg: `Server error,${error}` });
     }
 };
 
@@ -141,14 +154,22 @@ const resetPassword = async (req, res) => {
     }
 };
 
-// Get Profile.
+// Get profile
 const getProfile = async (req, res) => {
+
     try {
         const agency = await Agency.findById(req.auth.id).select("-password");
-        res.status(200).json({ msg: "Profile fetched", data: agency });
+        res.status(200).json({
+            success: true,
+            agency: {
+                name: agency.fullName,
+                email: agency.email,
+                phone: agency.phone
+            }
+        });
 
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+        res.status(500).json({ success: false, msg: `Server error ${error}` });
     }
 };
 

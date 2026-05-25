@@ -10,7 +10,7 @@ router.post("/login", agencyController.loginAgency);
 router.post("/forgot-password", agencyController.forgotPassword);
 router.post("/reset-password", agencyController.resetPassword);
 
-router.get("/dashboard/profile", authMiddleware, agencyController.getProfile);
+router.get("/profile", authMiddleware, agencyController.getProfile);
 router.put("/dashboard/profile/update", authMiddleware, agencyController.updateProfile);
 
 module.exports = router;

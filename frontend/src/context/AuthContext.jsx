@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { getProfile } from "../api/apiUser";
+import { getAgencyProfile } from "../api/apiAgency";
 
 export const AuthProvider = createContext();
 
@@ -7,15 +8,26 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore login on refresh
+  // Restore Login
   useEffect(() => {
     const fetchUser = async () => {
 
       try {
-        const response = await getProfile();
+        // Check User Login
+        const userResponse = await getProfile();
+        console.log("1",userResponse);
         
-        if (response.success) {
-            setUser(response.user);
+
+        if (userResponse?.success) {
+          setUser({ ...userResponse.user, role: "user" });
+          return;
+        }
+
+        // Check Agency Login
+        const agencyResponse = await getAgencyProfile();
+        console.log("2",agencyResponse);
+        if (agencyResponse?.success) {
+          setUser({ ...agencyResponse.agency, role: "agency" });
 
         } else {
           setUser(null);
@@ -34,8 +46,7 @@ const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthProvider.Provider
-      value={{ user, setUser, loading }} >
+    <AuthProvider.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthProvider.Provider>
   );

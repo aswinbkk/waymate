@@ -184,7 +184,8 @@ const Login = () => {
           : await loginAgency(formData);
 
       if (response?.success) {
-        setUser(response.user);
+        const loggedInUser = response.user || response.agency;
+        setUser(loggedInUser);
         toast.success( "Login Successful" );
         navigate("/");
 

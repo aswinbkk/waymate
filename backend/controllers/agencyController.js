@@ -74,7 +74,7 @@ const loginAgency = async (req, res) => {
         res.status(200).json({
             success: true,
             msg: "Login successful",
-            user: {
+            agency: {
                 name: existingAgency.agencyName,
                 role: existingAgency.role
             }
@@ -155,21 +155,69 @@ const resetPassword = async (req, res) => {
 };
 
 // Get profile
+// Get Agency Profile
 const getProfile = async (req, res) => {
 
     try {
-        const agency = await Agency.findById(req.auth.id).select("-password");
+
+        const agency =
+            await Agency.findById(req.auth.id)
+            .select("-password");
+
+        if (!agency) {
+
+            return res.status(404).json({
+                success: false,
+                msg: "Agency not found"
+            });
+        }
+
         res.status(200).json({
             success: true,
+
             agency: {
-                name: agency.fullName,
-                email: agency.email,
-                phone: agency.phone
+                name:
+                    agency.agencyName,
+
+                email:
+                    agency.email,
+
+                phone:
+                    agency.phone,
+
+                address: {
+                    street:
+                        agency.address?.street || "",
+
+                    city:
+                        agency.address?.city || "",
+
+                    state:
+                        agency.address?.state || "",
+
+                    pincode:
+                        agency.address?.pincode || ""
+                },
+
+                gst: {
+                    gstin:
+                        agency.gst?.gstin || "",
+
+                    legalName:
+                        agency.gst?.legalName || "",
+
+                    tradeName:
+                        agency.gst?.tradeName || ""
+                }
             }
         });
 
     } catch (error) {
-        res.status(500).json({ success: false, msg: `Server error ${error}` });
+
+        res.status(500).json({
+            success: false,
+            msg: `Server error ${error.message}`
+        });
     }
 };
 

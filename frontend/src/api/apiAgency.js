@@ -100,7 +100,7 @@ export const getAgencyProfile = async () => {
 };
 
 // Update profile
-export const updateProfile = async (updatedData) => {
+export const updateAgencyProfile = async (updatedData) => {
   try {
     const response = await fetch(`${baseUrl}/update-profile`, {
       method: "PUT",

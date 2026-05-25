@@ -10,11 +10,7 @@ import useRideActions from "../hooks/useRideActions";
 const PageContainer = styled.div`
   min-height: 100vh;
   background:
-    linear-gradient(
-      180deg,
-      #f8fbff 0%,
-      #ffffff 100%
-    );
+    linear-gradient( 180deg, #f8fbff 0%, #ffffff 100% );
 `;
 
 const ContentWrapper = styled.div`

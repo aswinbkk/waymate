@@ -56,13 +56,7 @@ const AddRideButton = styled.button`
   font-size: 32px;
   font-weight: 500;
   color: white;
-
-  background: linear-gradient(
-    135deg,
-    #22c55e,
-    #06b6d4,
-    #2563eb
-  );
+  background: linear-gradient( 135deg, #22c55e, #06b6d4, #2563eb);
   box-shadow: 0 10px 25px rgba(37,99,235,0.18);
   transition: 0.3s;
   &:hover {

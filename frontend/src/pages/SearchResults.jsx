@@ -1,26 +1,11 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
-
-import {
-  useSearchParams
-} from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
-
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import RideDetailsPopup from "../components/RideDetailsPopup";
-
-import {
-  searchUserRides
-} from "../api/apiUserRide";
-
-import {
-  searchAgencyRides
-} from "../api/apiAgencyRide";
-
+import { searchUserRides } from "../api/apiUserRide";
+import { searchAgencyRides } from "../api/apiAgencyRide";
 import useRideActions from "../hooks/useRideActions";
 
 const Container = styled.div`
@@ -32,17 +17,13 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 34px;
   font-weight: 800;
-
   margin-bottom: 10px;
-
   color: #0f172a;
 `;
 
 const Description = styled.p`
   color: #64748b;
-
   margin-bottom: 30px;
-
   font-size: 15px;
 `;
 
@@ -55,37 +36,15 @@ const EmptyText = styled.p`
 `;
 
 const SearchResults = () => {
-
-  const [searchParams] =
-    useSearchParams();
-
-  const [rides, setRides] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [count, setCount] =
-    useState(0);
-
-  const type =
-    searchParams.get("type") ||
-    "user";
-
-  const originName =
-    searchParams.get("originName") ||
-    "";
-
-  const destinationName =
-    searchParams.get("destinationName") ||
-    "";
-
-  const range =
-    searchParams.get("range") || "";
-
-  const status =
-    searchParams.get("status") ||
-    "open";
+  const [searchParams] = useSearchParams();
+  const [rides, setRides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState(0);
+  const type = searchParams.get("type") || "user";
+  const originName = searchParams.get("originName") || "";
+  const destinationName = searchParams.get("destinationName") || "";
+  const range = searchParams.get("range") || "";
+  const status = searchParams.get("status") || "open";
 
   const {
     showRidePopup,
@@ -101,70 +60,44 @@ const SearchResults = () => {
     async () => {
 
       try {
-
         setLoading(true);
+        const searchData = { originName, destinationName, range, status };
 
-        const searchData = {
-          originName,
-          destinationName,
-          range,
-          status
-        };
-
-        const response =
-          type === "agency"
+        const response = type === "agency"
             ? await searchAgencyRides(
-                searchData
-              )
+              searchData
+            )
             : await searchUserRides(
-                searchData
-              );
-
-        console.log(
-          "Search Response:",
-          response
-        );
+              searchData
+            );
+        console.log( "Search Response:", response );
 
         if (response?.success) {
-
           setRides(response.data);
-
-          setCount(
-            response.data.length
-          );
+          setCount( response.data.length );
 
         } else {
-
           setRides([]);
-
           setCount(0);
         }
 
       } catch (error) {
-
         console.error(error);
-
         setRides([]);
-
         setCount(0);
 
       } finally {
-
         setLoading(false);
       }
     };
 
   useEffect(() => {
-
     fetchSearchResults();
-
   }, []);
 
   return (
     <Layout>
-
       <Container>
-
         <Title>
           {type === "agency"
             ? "Agency Ride Results"
@@ -172,22 +105,13 @@ const SearchResults = () => {
         </Title>
 
         <Description>
-          {count} rides found matching
-          your search
+          {count} rides found matching your search
         </Description>
 
         {loading ? (
-
-          <LoadingText>
-            Loading rides...
-          </LoadingText>
-
+          <LoadingText> Loading rides... </LoadingText>
         ) : rides.length === 0 ? (
-
-          <EmptyText>
-            No rides found
-          </EmptyText>
-
+          <EmptyText> No rides found </EmptyText>
         ) : (
 
           <RideGrid
@@ -199,11 +123,9 @@ const SearchResults = () => {
               )
             }
           />
-
         )}
 
       </Container>
-
       <RideDetailsPopup
         show={showRidePopup}
         ride={selectedRide}
@@ -211,7 +133,6 @@ const SearchResults = () => {
         onClose={closeRidePopup}
         onJoin={handleJoinRide}
       />
-
     </Layout>
   );
 };

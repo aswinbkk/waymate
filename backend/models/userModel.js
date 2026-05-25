@@ -4,44 +4,54 @@ const userSchema = new mongoose.Schema(
   {
     role: {
       type: String,
-      default: "user"
+      default: "user",
     },
 
     fullName: {
       firstName: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
       },
+
       lastName: {
-        type: String
+        type: String,
+        required: true,
+        trim: true,
       },
     },
 
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
 
     password: {
       type: String,
-      required: true
-    },
-
-    otp: {
-      type: String
-    },
-
-    otpExpire: {
-      type: Date
+      required: true,
     },
 
     phone: {
       type: String,
-    }
+      required: true,
+      unique: true,
+      trim: true,
+    },
+
+    otp: {
+      type: String,
+    },
+
+    otpExpire: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
 const User = mongoose.model("User", userSchema);
+
 module.exports = User;

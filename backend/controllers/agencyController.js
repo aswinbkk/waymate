@@ -1,23 +1,37 @@
 const Agency = require('../models/agencyModel');
 const sendEmail = require('../utils/sendEmail')
 const { otpTemplate } = require("../utils/template/OtpEmailTemplates");
+const { agencyValidation } = require("../validators/agencyValidation");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
 // Register agency.
 const registerAgency = async (req, res) => {
-    const { agencyName, address, gst, email, password, phone } = req.body;
-
-    if (!agencyName || !address.street || !address.city || !address.state || !address.pincode || !gst.gstin || !gst.legalName || !gst.tradeName || !email || !password || !phone) {
-        return res.status(400).json({ msg: "Required fields missing" });
-    }
 
     try {
-        const existingAgency = await Agency.findOne({ email });
-        if (existingAgency) {
-            return res.status(400).json({ msg: "Agency already exists" });
-        }
+
+    const { error } = agencyValidation.validate(req.body);
+    if (error) {
+      return res.status(400).json({ success: false, msg: error.details[0].message });
+    }
+
+    const { agencyName, address, gst, email, password, phone } = req.body;
+
+    const existingEmail = await Agency.findOne({ email });
+    if (existingEmail) {
+      return res.status(409).json({ success: false, msg: "Email already registered" });
+    }
+
+    const existingPhone = await Agency.findOne({ phone });
+    if (existingPhone) {
+      return res.status(409).json({ success: false, msg: "Phone already registered" });
+    }
+
+    const existingGST = await Agency.findOne({ "gst.gstin": gst.gstin });
+    if (existingGST) {
+        return res.status(409).json({ success: false, msg: "GST already registered" });
+    }
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const createdAgency = new Agency({

@@ -5,8 +5,11 @@ import React, {
 
 import styled from "styled-components";
 
+import Layout from "../layouts/Layout";
+
 import {
-  getProfile
+  getProfile,
+  updateProfile
 } from "../api/apiUser";
 
 import {
@@ -14,7 +17,7 @@ import {
   viewUserJoinedRides
 } from "../api/apiUserRide";
 
-import Layout from "../layouts/Layout";
+import { toast } from "react-toastify";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -31,6 +34,7 @@ const Page = styled.div`
 
 const Container = styled.div`
   max-width: 1100px;
+
   margin: auto;
 `;
 
@@ -53,6 +57,7 @@ const ProfileCard = styled.div`
 
 const TopSection = styled.div`
   display: flex;
+
   justify-content: space-between;
   align-items: center;
 
@@ -65,6 +70,7 @@ const TopSection = styled.div`
 
 const ProfileInfo = styled.div`
   display: flex;
+
   align-items: center;
 
   gap: 20px;
@@ -97,12 +103,15 @@ const Avatar = styled.div`
 const UserDetails = styled.div`
   h1 {
     font-size: 30px;
+
     color: #0f172a;
+
     margin-bottom: 6px;
   }
 
   p {
     color: #64748b;
+
     font-size: 15px;
   }
 `;
@@ -222,6 +231,7 @@ const StatNumber = styled.h1`
     );
 
   -webkit-background-clip: text;
+
   -webkit-text-fill-color: transparent;
 `;
 
@@ -240,6 +250,154 @@ const LoadingText = styled.p`
   color: #64748b;
 `;
 
+/* Popup */
+
+const Overlay = styled.div`
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(15,23,42,0.45);
+
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 2000;
+`;
+
+const Popup = styled.div`
+  width: 95%;
+  max-width: 500px;
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 20px 50px rgba(15,23,42,0.15);
+`;
+
+const PopupTitle = styled.h2`
+  font-size: 26px;
+
+  color: #0f172a;
+
+  margin-bottom: 25px;
+`;
+
+const Form = styled.form`
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #0f172a;
+  }
+`;
+
+const Input = styled.input`
+  padding: 14px;
+
+  border-radius: 12px;
+
+  border: 1px solid #cbd5e1;
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition: 0.3s;
+
+  &:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+      0 0 0 4px rgba(37,99,235,0.1);
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+
+  gap: 15px;
+
+  margin-top: 10px;
+`;
+
+const CancelButton = styled.button`
+  flex: 1;
+
+  border: none;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  background: #e2e8f0;
+
+  color: #0f172a;
+
+  transition: 0.3s;
+
+  &:hover {
+    background: #cbd5e1;
+  }
+`;
+
+const UpdateButton = styled.button`
+  flex: 1;
+
+  border: none;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #22c55e,
+      #06b6d4,
+      #2563eb
+    );
+
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
 const Profile = () => {
 
   const [userData, setUserData] =
@@ -254,14 +412,24 @@ const Profile = () => {
   const [loading, setLoading] =
     useState(true);
 
-  // Fetch Profile + Ride Stats
+  const [showEditPopup, setShowEditPopup] =
+    useState(false);
+
+  const [editData, setEditData] =
+    useState({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: ""
+    });
+
+  // Fetch Profile
   const fetchProfile = async () => {
 
     try {
 
       setLoading(true);
 
-      // Run all APIs together
       const [
         profileResponse,
         createdRidesResponse,
@@ -272,22 +440,6 @@ const Profile = () => {
         viewUserJoinedRides()
       ]);
 
-      console.log(
-        "Profile Response:",
-        profileResponse
-      );
-
-      console.log(
-        "Created Rides:",
-        createdRidesResponse
-      );
-
-      console.log(
-        "Joined Rides:",
-        joinedRidesResponse
-      );
-
-      // Profile Data
       if (profileResponse?.success) {
 
         setUserData({
@@ -305,7 +457,6 @@ const Profile = () => {
         });
       }
 
-      // Ride Counts
       const offeredRidesCount =
         createdRidesResponse?.data?.length || 0;
 
@@ -332,6 +483,74 @@ const Profile = () => {
     fetchProfile();
 
   }, []);
+
+  // Open Popup
+  const handleOpenEdit = () => {
+
+    setEditData({
+      firstName: userData?.firstName || "",
+      lastName: userData?.lastName || "",
+      email: userData?.email || "",
+      phone: userData?.phone || ""
+    });
+
+    setShowEditPopup(true);
+  };
+
+  // Handle Input
+  const handleChange = (e) => {
+
+    setEditData({
+      ...editData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Update Profile
+const handleUpdateProfile = async (e) => {
+
+  e.preventDefault();
+
+  try {
+
+    const response =
+      await updateProfile({
+        fullName: {
+          firstName: editData.firstName,
+          lastName: editData.lastName
+        },
+        email: editData.email,
+        phone: editData.phone
+      });
+
+    if (response?.success) {
+
+      setUserData(editData);
+
+      toast.success(
+        "Profile updated successfully"
+      );
+
+      setShowEditPopup(false);
+
+    } else {
+
+      toast.error(
+        Array.isArray(response?.msg)
+          ? response.msg[0]
+          : response?.msg || "Update failed"
+      );
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    toast.error(
+      "Something went wrong"
+    );
+  }
+};
 
   if (loading) {
 
@@ -389,7 +608,9 @@ const Profile = () => {
 
               </ProfileInfo>
 
-              <Button>
+              <Button
+                onClick={handleOpenEdit}
+              >
                 Edit Profile
               </Button>
 
@@ -479,6 +700,114 @@ const Profile = () => {
         </Container>
 
       </Page>
+
+      {
+        showEditPopup && (
+
+          <Overlay>
+
+            <Popup>
+
+              <PopupTitle>
+                Edit Profile
+              </PopupTitle>
+
+              <Form
+                onSubmit={
+                  handleUpdateProfile
+                }
+              >
+
+                <InputGroup>
+
+                  <label>
+                    First Name
+                  </label>
+
+                  <Input
+                    type="text"
+                    name="firstName"
+                    value={editData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </InputGroup>
+
+                <InputGroup>
+
+                  <label>
+                    Last Name
+                  </label>
+
+                  <Input
+                    type="text"
+                    name="lastName"
+                    value={editData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </InputGroup>
+
+                <InputGroup>
+
+                  <label>
+                    Email
+                  </label>
+
+                  <Input
+                    type="email"
+                    name="email"
+                    value={editData.email}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </InputGroup>
+
+                <InputGroup>
+
+                  <label>
+                    Phone
+                  </label>
+
+                  <Input
+                    type="text"
+                    name="phone"
+                    value={editData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </InputGroup>
+
+                <ButtonGroup>
+
+                  <CancelButton
+                    type="button"
+                    onClick={() =>
+                      setShowEditPopup(false)
+                    }
+                  >
+                    Cancel
+                  </CancelButton>
+
+                  <UpdateButton
+                    type="submit"
+                  >
+                    Update
+                  </UpdateButton>
+
+                </ButtonGroup>
+
+              </Form>
+
+            </Popup>
+
+          </Overlay>
+        )
+      }
 
     </Layout>
   );

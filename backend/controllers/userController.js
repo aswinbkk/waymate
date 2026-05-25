@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const sendEmail = require('../utils/sendEmail')
 const { otpTemplate } = require("../utils/template/OtpEmailTemplates");
-const { userValidation } = require("../validators/userValidation");
+const { userValidation, updateUserValidation } = require("../validators/userValidation");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
@@ -9,34 +9,39 @@ const saltRounds = 10;
 // Register user
 const registerUser = async (req, res) => {
 
-  try {
-    const { error } = userValidation.validate(req.body);
+    try {
+        const { error } = userValidation.validate(req.body);
 
-    if (error) {
-      return res.status(400).json({ success: false, msg: error.details[0].message, });
+        if (error) {
+            return res.status(400).json({ success: false, msg: error.details[0].message, });
+        }
+        const { fullName, email, password, phone } = req.body;
+
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(409).json({ success: false, msg: "Email already registered", });
+        }
+
+        const existingPhone = await User.findOne({ phone });
+        if (existingPhone) {
+            return res.status(409).json({ success: false, msg: "Phone already registered", });
+        }
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const createdUser = new User({
+            fullName: {
+                firstName: fullName.firstName,
+                lastName: fullName.lastName,
+            },
+            email,
+            password: hashedPassword,
+            phone,
+        });
+        await createdUser.save();
+        res.status(201).json({ success: true, msg: "User registration successful", });
+
+    } catch (error) {
+        res.status(500).json({ success: false, msg: `Server error: ${error.message}`, });
     }
-    const { fullName, email, password, phone } = req.body;
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      return res.status(400).json({ success: false, msg: "User already exists", });
-    }
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const createdUser = new User({
-      fullName: {
-        firstName: fullName.firstName,
-        lastName: fullName.lastName,
-      },
-      email,
-      password: hashedPassword,
-      phone,
-    });
-    await createdUser.save();
-    res.status(201).json({ success: true, msg: "User registration successful", });
-
-  } catch (error) {
-    res.status(500).json({ success: false, msg: `Server error: ${error.message}`, });
-  }
 };
 
 // Login user.
@@ -49,14 +54,13 @@ const loginUser = async (req, res) => {
         if (!existingUser) {
             return res.status(404).json({ success: false, msg: "User not found" });
         }
-        const isPasswordMatch = await bcrypt.compare( password, existingUser.password );
+        const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
 
         if (!isPasswordMatch) {
-            return res.status(401).json({ success: false, msg: "Invalid credentials"
-            });
+            return res.status(401).json({ success: false, msg: "Invalid credentials" });
         }
 
-        const token = jwt.sign( { id: existingUser._id, role: existingUser.role },
+        const token = jwt.sign({ id: existingUser._id, role: existingUser.role },
             process.env.SECRET_KEY, { expiresIn: "24h" });
 
         res.cookie("token", token, {
@@ -123,10 +127,10 @@ const forgotPassword = async (req, res) => {
             subject: "Password Reset OTP",
             html: otpTemplate(otp)
         });
-        res.json({ msg: "OTP sent to email" });
+        res.json({ success: true, msg: "OTP sent to email" });
 
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+        res.status(500).json({ success: false, msg: `Server error,${error}` });
     }
 };
 
@@ -161,10 +165,10 @@ const resetPassword = async (req, res) => {
         user.otp = undefined;
         user.otpExpire = undefined;
         await user.save();
-        res.status(200).json({ msg: "Password reset successful" });
+        res.status(200).json({ success: true, msg: "Password reset successful" });
 
     } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+        res.status(500).json({ success: false, msg: `Server error,${error}` });
     }
 };
 
@@ -172,8 +176,9 @@ const resetPassword = async (req, res) => {
 const getProfile = async (req, res) => {
 
     try {
-        const user = await User.findById(req.auth.id) .select("-password");
-        res.status(200).json({ success: true,
+        const user = await User.findById(req.auth.id).select("-password");
+        res.status(200).json({
+            success: true,
             user: {
                 name: user.fullName,
                 email: user.email,
@@ -186,20 +191,30 @@ const getProfile = async (req, res) => {
     }
 };
 
-// Update Profile
+// Update profile
 const updateProfile = async (req, res) => {
-    try {
-        const updates = req.body;
-        delete updates.password;
-        delete updates.role;
-        delete updates.otp;
-        delete updates.otpExpire;
-        const user = await User.findByIdAndUpdate(req.auth.id, updates, { returnDocument: "after", runValidators: true }).select("-password");
-        res.status(200).json({ msg: "Profile updated", data: user });
+  try {
 
-    } catch (error) {
-        res.status(500).json({ msg: `Server error,${error}` });
+    const { error } = updateUserValidation.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ msg: error.details.map(err => err.message) });
     }
+    const updates = req.body;
+    delete updates.password;
+    delete updates.role;
+
+    const user = await User.findByIdAndUpdate( req.auth.id, updates,
+      { returnDocument: "after", runValidators: true } ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.status(200).json({ success: true, msg: "Profile updated"});
+
+  } catch (error) {
+    res.status(500).json({ success: false, msg: `Server error, ${error.message}` });
+  }
 };
 
 module.exports = {

@@ -147,13 +147,9 @@ const UpdateProfilePopup = ({
   closePopup,
   role
 }) => {
-
-  const [editData, setEditData] =
-    useState(userData);
-
+  const [editData, setEditData] = useState(userData);
   // Handle Input
   const handleChange = (e) => {
-
     setEditData({
       ...editData,
       [e.target.name]: e.target.value
@@ -162,77 +158,43 @@ const UpdateProfilePopup = ({
 
   // Update Profile
   const handleUpdateProfile = async (e) => {
-
     e.preventDefault();
 
     try {
-
       let response;
-
       // USER UPDATE
       if (role === "user") {
-
-        response =
-          await updateProfile({
+        response =await updateProfile({
             fullName: {
-              firstName:
-                editData.firstName,
-
-              lastName:
-                editData.lastName
+              firstName: editData.firstName,
+              lastName: editData.lastName
             },
-
-            email:
-              editData.email,
-
-            phone:
-              editData.phone
+            email: editData.email,
+            phone: editData.phone
           });
       }
 
       // AGENCY UPDATE
       else {
-
-        response =
-          await updateAgencyProfile({
-            agencyName:
-              editData.agencyName,
-
-            email:
-              editData.email,
-
-            phone:
-              editData.phone,
-
+        response = await updateAgencyProfile({
+            agencyName: editData.agencyName,
+            email: editData.email,
+            phone: editData.phone,
             address: {
-              street:
-                editData.street,
-
-              city:
-                editData.city,
-
-              state:
-                editData.state,
-
-              pincode:
-                editData.pincode
+              street: editData.street,
+              city: editData.city,
+              state: editData.state,
+              pincode: editData.pincode
             },
-
             gst: {
-              gstin:
-                editData.gstin,
-
-              legalName:
-                editData.legalName,
-
-              tradeName:
-                editData.tradeName
+              gstin: editData.gstin,
+              legalName: editData.legalName,
+              tradeName: editData.tradeName
             }
           });
       }
 
       if (response?.success) {
-
         setUserData(editData);
 
         toast.success(

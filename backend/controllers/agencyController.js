@@ -154,70 +154,41 @@ const resetPassword = async (req, res) => {
     }
 };
 
-// Get profile
 // Get Agency Profile
 const getProfile = async (req, res) => {
 
     try {
-
         const agency =
-            await Agency.findById(req.auth.id)
-            .select("-password");
+            await Agency.findById(req.auth.id) .select("-password");
 
         if (!agency) {
-
-            return res.status(404).json({
-                success: false,
-                msg: "Agency not found"
-            });
+            return res.status(404).json({ success: false, msg: "Agency not found" });
         }
 
         res.status(200).json({
             success: true,
-
             agency: {
-                name:
-                    agency.agencyName,
-
-                email:
-                    agency.email,
-
-                phone:
-                    agency.phone,
+                name: agency.agencyName,
+                email: agency.email,
+                phone: agency.phone,
 
                 address: {
-                    street:
-                        agency.address?.street || "",
-
-                    city:
-                        agency.address?.city || "",
-
-                    state:
-                        agency.address?.state || "",
-
-                    pincode:
-                        agency.address?.pincode || ""
+                    street: agency.address?.street || "",
+                    city: agency.address?.city || "",
+                    state: agency.address?.state || "",
+                    pincode: agency.address?.pincode || ""
                 },
 
                 gst: {
-                    gstin:
-                        agency.gst?.gstin || "",
-
-                    legalName:
-                        agency.gst?.legalName || "",
-
-                    tradeName:
-                        agency.gst?.tradeName || ""
+                    gstin: agency.gst?.gstin || "",
+                    legalName: agency.gst?.legalName || "",
+                    tradeName: agency.gst?.tradeName || ""
                 }
             }
         });
 
     } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            msg: `Server error ${error.message}`
-        });
+        res.status(500).json({ success: false, msg: `Server error ${error.message}` });
     }
 };
 
@@ -230,7 +201,7 @@ const updateProfile = async (req, res) => {
         delete updates.otp;
         delete updates.otpExpire;
         const agency = await Agency.findByIdAndUpdate(req.auth.id, updates, { returnDocument: "after", runValidators: true }).select("-password");
-        res.status(200).json({ msg: "Profile updated", data: agency });
+        res.status(200).json({ success: true, msg: "Profile updated", data: agency });
 
     } catch (error) {
         res.status(500).json({ msg: `Server error,${error}` });

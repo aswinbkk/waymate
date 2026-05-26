@@ -11,6 +11,6 @@ router.post("/forgot-password", agencyController.forgotPassword);
 router.post("/reset-password", agencyController.resetPassword);
 
 router.get("/profile", authMiddleware, agencyController.getProfile);
-router.put("/dashboard/profile/update", authMiddleware, agencyController.updateProfile);
+router.put("/update-profile", authMiddleware, agencyController.updateProfile);
 
 module.exports = router;

@@ -151,8 +151,7 @@ const ActionButton = styled.button`
 `;
 
 const RideDetailsPopup = ({
-  show, ride, type, onClose, onJoin, onLeave, onUpdate, onDelete
-}) => {
+  show, ride, type, onClose, onJoin, onLeave}) => {
 
   if (!show || !ride) return null;
   return (
@@ -203,17 +202,6 @@ const RideDetailsPopup = ({
             <ActionButton $variant="leave" onClick={onLeave}>
               Leave Ride
               </ActionButton>)}
-          {type === "offered" && (
-            <>
-              <ActionButton onClick={onUpdate}>
-                Update Ride
-                </ActionButton>
-
-              <ActionButton $variant="delete" onClick={onDelete}>
-                Delete Ride
-              </ActionButton>
-            </>
-          )}
         </ButtonContainer>
       </PopupContainer>
     </Overlay>

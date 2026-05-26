@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const agencyController = require("../controllers/agencyController");
-const authMiddleware = require("../middleware/middleware");
+const authMiddleware = require('../middleWare/middleWare');
 
 router.post("/register", agencyController.registerAgency);
 router.post("/login", agencyController.loginAgency);

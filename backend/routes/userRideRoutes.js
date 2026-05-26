@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const userRideController = require("../controllers/userRideController");
-const authMiddleware = require("../middleware/middleware");
+const authMiddleware = require('../middleWare/middleWare');
 
 router.post("/create", authMiddleware, userRideController.createUserRide);
 router.put("/update/:id", authMiddleware, userRideController.updateUserRide);

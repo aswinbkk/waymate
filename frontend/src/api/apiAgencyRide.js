@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:3000/agency-ride";
+const baseUrl = "https://waymate-hw2l.onrender.com/agency-ride";
 
 // Create agency ride
 export const createAgencyRide = async (rideData) => {

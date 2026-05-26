@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:3000/user";
+const baseUrl = "https://waymate-hw2l.onrender.com/user";
 
 // Register User
 export const registerUser = async (userData) => {

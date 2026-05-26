@@ -17,7 +17,7 @@ app.get('/',(req,res)=>{
     res.send("server running")
 })
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://waymate-1.onrender.com",
     credentials: true
 }));
 

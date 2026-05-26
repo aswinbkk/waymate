@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:3000/user-ride";
+const baseUrl = "https://waymate-hw2l.onrender.com/user-ride";
 
 // Get all rides
 export const getUserRide = async () => {

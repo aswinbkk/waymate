@@ -60,5 +60,6 @@ app.listen(PORT, () => {
         waymate server started successfully
         Environment : ${process.env.NODE_ENV}
         Port        : ${PORT}
+        Frontend URL: ${process.env.FRONTEND_URL}
 `);
 });

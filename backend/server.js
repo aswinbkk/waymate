@@ -1,11 +1,20 @@
 const express = require("express");
-const app = express();
-
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 
-// Load correct env file
+const connectDB = require("./config/db");
+
+// Route
+const userRoutes = require("./routes/userRoutes");
+const userRideRoutes = require("./routes/userRideRoutes");
+const agencyRoutes = require("./routes/agencyRoutes");
+const agencyRideRoutes = require("./routes/agencyRideRoutes");
+const bidRoutes = require("./routes/bidRoutes");
+
+const app = express();
+
+// Environment Configuration
 dotenv.config({
     path:
         process.env.NODE_ENV === "production"
@@ -13,9 +22,7 @@ dotenv.config({
             : ".env.development",
 });
 
-const connectDB = require("./config/db");
-
-// Connect Database
+// Database Connection
 connectDB();
 
 // Middleware
@@ -25,24 +32,18 @@ app.use(cookieParser());
 // CORS
 app.use(
     cors({
-        origin:
-            process.env.NODE_ENV === "production"
-                ? "https://waymate-1.onrender.com"
-                : "http://localhost:5173",
+        origin: process.env.FRONTEND_URL,
         credentials: true,
     })
 );
 
-// Routes
-const userRoutes = require("./routes/userRoutes");
-const userRideRoutes = require("./routes/userRideRoutes");
-const agencyRoutes = require("./routes/agencyRoutes");
-const agencyRideRoutes = require("./routes/agencyRideRoutes");
-const bidRoutes = require("./routes/bidRoutes");
-
 // Default Route
 app.get("/", (req, res) => {
-    res.send("Server Running 🚀");
+    res.status(200).json({
+        success: true,
+        message: "waymate backend server running successfully",
+        environment: process.env.NODE_ENV,
+    });
 });
 
 // API Routes
@@ -52,10 +53,12 @@ app.use("/agency", agencyRoutes);
 app.use("/agency-ride", agencyRideRoutes);
 app.use("/bid", bidRoutes);
 
-// PORT
+//Server
 const PORT = process.env.PORT || 3000;
-
-// Server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`
+        waymate server started successfully
+        Environment : ${process.env.NODE_ENV}
+        Port        : ${PORT}
+`);
 });

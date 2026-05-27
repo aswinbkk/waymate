@@ -29,20 +29,10 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = process.env.FRONTEND_URL.split(",");
-
+// CORS
 app.use(
     cors({
-        origin: function (origin, callback) {
-            // allow requests with no origin (like mobile apps or postman)
-            if (!origin) return callback(null, true);
-
-            if (allowedOrigins.includes(origin)) {
-                return callback(null, true);
-            } else {
-                return callback(new Error("Not allowed by CORS"));
-            }
-        },
+        origin: process.env.FRONTEND_URL,
         credentials: true,
     })
 );

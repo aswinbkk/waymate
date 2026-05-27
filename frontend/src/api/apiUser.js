@@ -1,4 +1,4 @@
-const baseUrl = "https://waymate-hw2l.onrender.com/user";
+const baseUrl = `${import.meta.env.VITE_API_URL}/user`;
 
 // Register User
 export const registerUser = async (userData) => {

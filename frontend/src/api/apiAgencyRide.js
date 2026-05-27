@@ -1,4 +1,4 @@
-const baseUrl = "https://waymate-hw2l.onrender.com/agency-ride";
+const baseUrl = `${import.meta.env.VITE_API_URL}/agency-ride`;
 
 // Create agency ride
 export const createAgencyRide = async (rideData) => {

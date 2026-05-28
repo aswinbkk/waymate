@@ -30,14 +30,15 @@ import { AuthContext } from "../context/AuthContext";
 
 const Page = styled.div`
   min-height: 100vh;
-  padding: 40px 20px;
   background: #f8fafc;
+  padding: 40px 20px 80px;
 `;
 
 const Container = styled.div`
-  max-width: 1300px;
+  max-width: 1400px;
   margin: auto;
 `;
+
 
 const Section = styled.div`
   margin-bottom: 70px;
@@ -48,17 +49,25 @@ const TopBar = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
 `;
 
-const TitleWrapper = styled.div``;
+const LeftContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
 
 const Title = styled.h1`
   font-size: 34px;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 10px;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
 `;
 
 const Description = styled.p`
@@ -67,15 +76,88 @@ const Description = styled.p`
   line-height: 1.7;
 `;
 
-const AddRideButton = styled.button`
-  width: 60px;
-  height: 60px;
-  border: none;
-  border-radius: 18px;
+const ActionWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
+const PageBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+
+  padding: 9px 16px;
+  margin-bottom: 22px;
+
+  border-radius: 999px;
+
+  background: #eff6ff;
+
+  border: 1px solid #dbeafe;
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+
+  text-transform: uppercase;
+
+  @media (max-width: 768px) {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+`;
+
+const ViewAllButton = styled.button`
+  padding: 11px 18px;
+
+  border-radius: 12px;
+
+  border: 1px solid #dbeafe;
+
+  background: white;
+
+  color: #2563eb;
+
+  font-size: 14px;
+  font-weight: 600;
+
   cursor: pointer;
-  font-size: 32px;
-  font-weight: 500;
-  color: white;
+
+  transition: 0.25s ease;
+
+  &:hover {
+    background: #eff6ff;
+
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+`;
+
+const CreateRideButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 20px;
+
+  border: none;
+
+  border-radius: 12px;
 
   background: linear-gradient(
     135deg,
@@ -84,13 +166,64 @@ const AddRideButton = styled.button`
     #2563eb
   );
 
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+  color: white;
 
-  transition: 0.3s;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+
+  box-shadow:
+    0 10px 24px rgba(
+      37,
+      99,
+      235,
+      0.18
+    );
 
   &:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    padding: 11px 16px;
+    font-size: 13px;
+  }
+`;
+
+const PlusIcon = styled.span`
+  width: 15px;
+  height: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.18
+  );
+
+  font-size: 18px;
+  font-weight: 600;
+
+  line-height: 1;
+`;
+
+const EmptyText = styled.p`
+  margin-top: 20px;
+  color: #94a3b8;
+  font-size: 15px;
 `;
 
 const MyTrip = () => {
@@ -100,20 +233,40 @@ const MyTrip = () => {
 
   const isLoggedIn = !!user;
 
-  const [offeredRides,
-    setOfferedRides] = useState([]);
+  const [
+    offeredRides,
+    setOfferedRides
+  ] = useState([]);
 
-  const [joinedRides,
-    setJoinedRides] = useState([]);
+  const [
+    joinedRides,
+    setJoinedRides
+  ] = useState([]);
 
-  const [createdRideIds,
-    setCreatedRideIds] = useState([]);
+  const [
+    createdRideIds,
+    setCreatedRideIds
+  ] = useState([]);
 
-  const [joinedRideIds,
-    setJoinedRideIds] = useState([]);
+  const [
+    joinedRideIds,
+    setJoinedRideIds
+  ] = useState([]);
 
-  const [showCreatePopup,
-    setShowCreatePopup] = useState(false);
+  const [
+    showCreatePopup,
+    setShowCreatePopup
+  ] = useState(false);
+
+  const [
+    showAllOffered,
+    setShowAllOffered
+  ] = useState(false);
+
+  const [
+    showAllJoined,
+    setShowAllJoined
+  ] = useState(false);
 
   // ---------------- FETCH OFFERED RIDES ----------------
 
@@ -224,7 +377,9 @@ const MyTrip = () => {
             "Ride created successfully"
           );
 
-          setShowCreatePopup(false);
+          setShowCreatePopup(
+            false
+          );
 
           fetchAllTrips();
 
@@ -353,6 +508,18 @@ const MyTrip = () => {
       closeRidePopup();
     };
 
+  // ---------------- DISPLAY RIDES ----------------
+
+  const displayedOfferedRides =
+    showAllOffered
+      ? offeredRides
+      : offeredRides.slice(0, 4);
+
+  const displayedJoinedRides =
+    showAllJoined
+      ? joinedRides
+      : joinedRides.slice(0, 4);
+
   return (
     <Layout>
 
@@ -360,13 +527,17 @@ const MyTrip = () => {
 
         <Container>
 
+          <PageBadge>
+            My Trip
+          </PageBadge>
+
           {/* OFFERED RIDES */}
 
           <Section>
 
             <TopBar>
 
-              <TitleWrapper>
+              <LeftContent>
 
                 <Title>
                   Offered Rides
@@ -374,29 +545,71 @@ const MyTrip = () => {
 
                 <Description>
                   Manage rides created by
-                  you for other passengers.
+                  you for passengers.
                 </Description>
 
-              </TitleWrapper>
+              </LeftContent>
 
-              <AddRideButton
-                onClick={() =>
-                  setShowCreatePopup(
-                    true
+              <ActionWrapper>
+
+                {
+                  offeredRides.length >
+                  4 && (
+                    <ViewAllButton
+                      onClick={() =>
+                        setShowAllOffered(
+                          !showAllOffered
+                        )
+                      }
+                    >
+                      {
+                        showAllOffered
+                          ? "Show Less"
+                          : "View All"
+                      }
+                    </ViewAllButton>
                   )
                 }
-              >
-                +
-              </AddRideButton>
+
+                <CreateRideButton
+                  onClick={() =>
+                    setShowCreatePopup(
+                      true
+                    )
+                  }
+                >
+                  <PlusIcon>
+                    +
+                  </PlusIcon>
+
+                  Create Ride
+                </CreateRideButton>
+
+              </ActionWrapper>
 
             </TopBar>
 
-            <RideGrid
-              rides={offeredRides}
-              onViewRide={(ride) =>
-                openRidePopup(ride)
-              }
-            />
+            {
+              offeredRides.length >
+                0 ? (
+                <RideGrid
+                  rides={
+                    displayedOfferedRides
+                  }
+                  onViewRide={(
+                    ride
+                  ) =>
+                    openRidePopup(
+                      ride
+                    )
+                  }
+                />
+              ) : (
+                <EmptyText>
+                  No offered rides found.
+                </EmptyText>
+              )
+            }
 
           </Section>
 
@@ -404,21 +617,63 @@ const MyTrip = () => {
 
           <Section>
 
-            <Title>
-              Joined Rides
-            </Title>
+            <TopBar>
 
-            <Description>
-              View rides you joined
-              through WayMate.
-            </Description>
+              <LeftContent>
 
-            <RideGrid
-              rides={joinedRides}
-              onViewRide={(ride) =>
-                openRidePopup(ride)
+                <Title>
+                  Joined Rides
+                </Title>
+
+                <Description>
+                  View rides you joined
+                  through WayMate.
+                </Description>
+
+              </LeftContent>
+
+              {
+                joinedRides.length >
+                4 && (
+                  <ViewAllButton
+                    onClick={() =>
+                      setShowAllJoined(
+                        !showAllJoined
+                      )
+                    }
+                  >
+                    {
+                      showAllJoined
+                        ? "Show Less"
+                        : "View All"
+                    }
+                  </ViewAllButton>
+                )
               }
-            />
+
+            </TopBar>
+
+            {
+              joinedRides.length >
+                0 ? (
+                <RideGrid
+                  rides={
+                    displayedJoinedRides
+                  }
+                  onViewRide={(
+                    ride
+                  ) =>
+                    openRidePopup(
+                      ride
+                    )
+                  }
+                />
+              ) : (
+                <EmptyText>
+                  No joined rides found.
+                </EmptyText>
+              )
+            }
 
           </Section>
 
@@ -459,8 +714,6 @@ const MyTrip = () => {
         />
 
       ) : (
-
-        /* JOIN / LEAVE POPUP */
 
         <JoinLeavePopup
           show={!!selectedRide}

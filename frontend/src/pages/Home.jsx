@@ -11,6 +11,7 @@ import {
 import { getAgencyRide } from "../api/apiAgencyRide";
 import useRideActions from "../hooks/useRideActions";
 import { AuthContext } from "../context/AuthContext";
+import HomeSlider from "../components/HomeSlider";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -152,6 +153,7 @@ const Home = () => {
     <Layout>
       <PageContainer>
         <ContentWrapper>
+          <HomeSlider />
           <HeroSection>
             <Title>User Rides</Title>
             <Subtitle>Connect with riders travelling on same route</Subtitle>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const Overlay = styled.div`
@@ -15,12 +15,14 @@ const Overlay = styled.div`
 
 const PopupContainer = styled.div`
   width: 100%;
-  max-width: 520px;
+  max-width: 650px;
   background: white;
   border-radius: 30px;
   padding: 35px;
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+
   animation: popupShow 0.25s ease;
+
   @keyframes popupShow {
     from {
       opacity: 0;
@@ -56,7 +58,7 @@ const CloseButton = styled.button`
   color: #64748b;
   font-size: 22px;
   font-weight: 700;
-  transition: 0.3s;
+
   &:hover {
     background: #e2e8f0;
   }
@@ -67,10 +69,9 @@ const Route = styled.h3`
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 28px;
-  line-height: 1.5;
 `;
 
-const InfoGrid = styled.div`
+const FormGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
@@ -81,42 +82,42 @@ const InfoGrid = styled.div`
   }
 `;
 
-const InfoCard = styled.div`
-  padding: 18px;
-  border-radius: 18px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
-const Label = styled.p`
-  font-size: 12px;
+const Label = styled.label`
+  font-size: 13px;
   font-weight: 700;
   color: #64748b;
   margin-bottom: 8px;
-  text-transform: uppercase;
 `;
 
-const Value = styled.h4`
-  font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.5;
+const Input = styled.input`
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 14px;
+  outline: none;
+
+  &:focus {
+    border-color: #2563eb;
+  }
 `;
 
-const PreferenceContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 35px;
-`;
+const Select = styled.select`
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 14px;
+  outline: none;
 
-const PreferenceTag = styled.div`
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
-  font-size: 13px;
-  font-weight: 700;
+  &:focus {
+    border-color: #2563eb;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -136,76 +137,300 @@ const ActionButton = styled.button`
   font-size: 14px;
   font-weight: 700;
 
-  background:
-    ${({ $variant }) =>
+  background: ${({ $variant }) =>
     $variant === "delete"
       ? "#ef4444"
-      : $variant === "leave"
-        ? "#f59e0b"
-        : "linear-gradient(135deg,#22c55e,#06b6d4,#2563eb)"};
+      : $variant === "save"
+      ? "#16a34a"
+      : "linear-gradient(135deg,#22c55e,#06b6d4,#2563eb)"};
 
   transition: 0.3s;
+
   &:hover {
     transform: translateY(-2px);
   }
 `;
 
-const RideDetailsPopup = ({
-  show, ride, type, onClose, onJoin, onLeave}) => {
+const UpdateDeletePopup = ({
+  show,
+  ride,
+  onClose,
+  onUpdate,
+  onDelete
+}) => {
+  const [isEditing, setIsEditing] =
+    useState(false);
+
+  const [formData, setFormData] =
+    useState({
+      origin: "",
+      destination: "",
+      date: "",
+      totalSeats: "",
+      availableSeats: "",
+      vehicleNumber: "",
+      pricePerSeat: "",
+      gender: "any",
+      ac: false
+    });
+
+  useEffect(() => {
+    if (ride) {
+      setFormData({
+        origin: ride.origin || "",
+        destination:
+          ride.destination || "",
+        date: ride.date
+          ? new Date(ride.date)
+              .toISOString()
+              .slice(0, 16)
+          : "",
+        totalSeats:
+          ride.totalSeats || "",
+        availableSeats:
+          ride.availableSeats || "",
+        vehicleNumber:
+          ride.vehicleNumber || "",
+        pricePerSeat:
+          ride.pricePerSeat || "",
+        gender:
+          ride.preferences?.gender ||
+          "any",
+        ac:
+          ride.preferences?.ac || false
+      });
+
+      setIsEditing(false);
+    }
+  }, [ride]);
 
   if (!show || !ride) return null;
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } =
+      e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : value
+    }));
+  };
+
+  const handleSave = async () => {
+    const updatedRide = {
+      ...formData,
+      preferences: {
+        gender: formData.gender,
+        ac: formData.ac
+      }
+    };
+
+    await onUpdate(
+      ride._id || ride.id,
+      updatedRide
+    );
+
+    setIsEditing(false);
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this ride?"
+      );
+
+    if (!confirmDelete) return;
+
+    await onDelete(
+      ride._id || ride.id
+    );
+
+    onClose();
+  };
+
   return (
     <Overlay>
       <PopupContainer>
+
         <Header>
-          <Title>Ride Details</Title>
-          <CloseButton onClick={onClose}> × </CloseButton>
+          <Title>
+            {isEditing
+              ? "Update Ride"
+              : "Manage Ride"}
+          </Title>
+
+          <CloseButton onClick={onClose}>
+            ×
+          </CloseButton>
         </Header>
-        <Route> {ride.origin} {" → "} {ride.destination} </Route>
-        <InfoGrid>
-          <InfoCard>
+
+        <Route>
+          {ride.origin} →{" "}
+          {ride.destination}
+        </Route>
+
+        <FormGrid>
+
+          <InputGroup>
+            <Label>Origin</Label>
+
+            <Input
+              name="origin"
+              value={formData.origin}
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
+
+          <InputGroup>
+            <Label>Destination</Label>
+
+            <Input
+              name="destination"
+              value={formData.destination}
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
+
+          <InputGroup>
             <Label>Date</Label>
-            <Value> {new Date(ride.date).toLocaleDateString()} </Value>
-          </InfoCard>
 
-          <InfoCard>
-            <Label>Seats</Label>
-            <Value> {ride.availableSeats} {" / "} {ride.totalSeats} </Value>
-          </InfoCard>
+            <Input
+              type="datetime-local"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
 
-          <InfoCard>
-            <Label>Vehicle</Label>
-            <Value> {ride.vehicleNumber} </Value>
-          </InfoCard>
+          <InputGroup>
+            <Label>Total Seats</Label>
 
-          <InfoCard>
-            <Label>Price</Label>
-            <Value> ₹{ride.pricePerSeat} {" / seat"} </Value>
-          </InfoCard>
+            <Input
+              type="number"
+              name="totalSeats"
+              value={formData.totalSeats}
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
 
-          <InfoCard>
-            <Label>Status</Label>
-            <Value> {ride.status} </Value>
-          </InfoCard>
-        </InfoGrid>
-        <PreferenceContainer>
-          <PreferenceTag> {ride.preferences.gender} </PreferenceTag>
-          <PreferenceTag> {ride.preferences.ac ? "AC" : "Non AC"} </PreferenceTag>
-        </PreferenceContainer>
+          <InputGroup>
+            <Label>Available Seats</Label>
+
+            <Input
+              type="number"
+              name="availableSeats"
+              value={
+                formData.availableSeats
+              }
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
+
+          <InputGroup>
+            <Label>Vehicle Number</Label>
+
+            <Input
+              name="vehicleNumber"
+              value={
+                formData.vehicleNumber
+              }
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
+
+          <InputGroup>
+            <Label>Price Per Seat</Label>
+
+            <Input
+              type="number"
+              name="pricePerSeat"
+              value={
+                formData.pricePerSeat
+              }
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
+
+          <InputGroup>
+            <Label>Gender</Label>
+
+            <Select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              disabled={!isEditing}
+            >
+              <option value="any">
+                Any
+              </option>
+
+              <option value="male">
+                Male
+              </option>
+
+              <option value="female">
+                Female
+              </option>
+            </Select>
+          </InputGroup>
+
+          <InputGroup>
+            <Label>AC Ride</Label>
+
+            <Input
+              type="checkbox"
+              name="ac"
+              checked={formData.ac}
+              onChange={handleChange}
+              disabled={!isEditing}
+            />
+          </InputGroup>
+
+        </FormGrid>
 
         <ButtonContainer>
-          {type === "available" && (
-            <ActionButton onClick={onJoin}>
-              Join Ride
-              </ActionButton> )}
-          {type === "joined" && (
-            <ActionButton $variant="leave" onClick={onLeave}>
-              Leave Ride
-              </ActionButton>)}
+
+          {!isEditing ? (
+            <>
+              <ActionButton
+                onClick={() =>
+                  setIsEditing(true)
+                }
+              >
+                Update Ride
+              </ActionButton>
+
+              <ActionButton
+                $variant="delete"
+                onClick={handleDelete}
+              >
+                Delete Ride
+              </ActionButton>
+            </>
+          ) : (
+            <ActionButton
+              $variant="save"
+              onClick={handleSave}
+            >
+              Save Changes
+            </ActionButton>
+          )}
+
         </ButtonContainer>
+
       </PopupContainer>
     </Overlay>
   );
 };
 
-export default RideDetailsPopup;
+export default UpdateDeletePopup;

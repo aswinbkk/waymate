@@ -1,12 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext
+} from "react";
+
 import styled from "styled-components";
+
 import Layout from "../layouts/Layout";
+
 import RideGrid from "../components/RideGrid";
+
 import CreateRidePopup from "../components/CreateRidePopup";
-import RideDetailsPopup from "../components/UpdateDeletePopup";
+
+import JoinLeavePopup from "../components/JoinLeavePopup";
+
+import UpdateDeletePopup from "../components/UpdateDeletePopup";
+
 import useRideActions from "../hooks/useRideActions";
-import { viewUserCreatedRides, viewUserJoinedRides, createUserRide } from "../api/apiUserRide";
+
+import {
+  viewUserCreatedRides,
+  viewUserJoinedRides,
+  createUserRide
+} from "../api/apiUserRide";
+
 import { toast } from "react-toastify";
+
+import { AuthContext } from "../context/AuthContext";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -56,9 +76,18 @@ const AddRideButton = styled.button`
   font-size: 32px;
   font-weight: 500;
   color: white;
-  background: linear-gradient( 135deg, #22c55e, #06b6d4, #2563eb);
-  box-shadow: 0 10px 25px rgba(37,99,235,0.18);
+
+  background: linear-gradient(
+    135deg,
+    #22c55e,
+    #06b6d4,
+    #2563eb
+  );
+
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+
   transition: 0.3s;
+
   &:hover {
     transform: translateY(-3px);
   }
@@ -66,130 +95,394 @@ const AddRideButton = styled.button`
 
 const MyTrip = () => {
 
-  const [offeredRides, setOfferedRides] = useState([]);
-  const [joinedRides, setJoinedRides] = useState([]);
-  const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const { user } =
+    useContext(AuthContext);
 
-  // Fetch Offered Rides
-  const fetchOfferedRides = async () => {
+  const isLoggedIn = !!user;
 
-    try {
-      const response = await viewUserCreatedRides();
-      setOfferedRides(response.data);
+  const [offeredRides,
+    setOfferedRides] = useState([]);
 
-    } catch (error) {
-      console.error(error);
+  const [joinedRides,
+    setJoinedRides] = useState([]);
 
-    }
-  };
+  const [createdRideIds,
+    setCreatedRideIds] = useState([]);
 
-  // Fetch Joined Rides
-  const fetchJoinedRides = async () => {
-    try {
-      const response = await viewUserJoinedRides();
-      setJoinedRides(response.data);
+  const [joinedRideIds,
+    setJoinedRideIds] = useState([]);
 
-    } catch (error) {
-      console.error(error);
+  const [showCreatePopup,
+    setShowCreatePopup] = useState(false);
 
-    }
-  };
+  // ---------------- FETCH OFFERED RIDES ----------------
 
-  // Fetch All Trips
-  const fetchAllTrips = () => {
-    fetchOfferedRides();
-    fetchJoinedRides();
-  };
+  const fetchOfferedRides =
+    async () => {
 
-  // Custom Hook
+      try {
+
+        const response =
+          await viewUserCreatedRides();
+
+        setOfferedRides(
+          response.data || []
+        );
+
+        setCreatedRideIds(
+          response.createdRideIds?.map(
+            String
+          ) || []
+        );
+
+      } catch (error) {
+
+        console.error(error);
+      }
+    };
+
+  // ---------------- FETCH JOINED RIDES ----------------
+
+  const fetchJoinedRides =
+    async () => {
+
+      try {
+
+        const response =
+          await viewUserJoinedRides();
+
+        setJoinedRides(
+          response.data || []
+        );
+
+        setJoinedRideIds(
+          response.joinedRideIds?.map(
+            String
+          ) || []
+        );
+
+      } catch (error) {
+
+        console.error(error);
+      }
+    };
+
+  // ---------------- FETCH ALL ----------------
+
+  const fetchAllTrips =
+    async () => {
+
+      await fetchOfferedRides();
+
+      await fetchJoinedRides();
+    };
+
+  // ---------------- CUSTOM HOOK ----------------
+
   const {
-    showRidePopup,
     selectedRide,
-    rideType,
 
     openRidePopup,
     closeRidePopup,
 
-    handleLeaveRide,
+    handleUpdateRide,
     handleDeleteRide,
-    handleUpdateRide
 
-  } = useRideActions({ fetchRides: fetchAllTrips });
+    handleJoinRide,
+    handleLeaveRide
+
+  } = useRideActions({
+    fetchRides: fetchAllTrips
+  });
+
+  // ---------------- EFFECT ----------------
 
   useEffect(() => {
-    fetchAllTrips();
-  }, []);
 
-  // Create Ride
-  const handleCreateRide = async (rideData) => {
+    if (isLoggedIn) {
 
-    try {
-      const response = await createUserRide(rideData);
-      if (response.success) {
-        toast.success("Ride created successfully");
-        setShowCreatePopup(false);
-        fetchAllTrips();
-
-      } else {
-        toast.error(response.message || "Ride creation failed");
-      }
-
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
+      fetchAllTrips();
     }
-  };
+
+  }, [isLoggedIn]);
+
+  // ---------------- CREATE RIDE ----------------
+
+  const handleCreateRide =
+    async (rideData) => {
+
+      try {
+
+        const response =
+          await createUserRide(
+            rideData
+          );
+
+        if (response.success) {
+
+          toast.success(
+            "Ride created successfully"
+          );
+
+          setShowCreatePopup(false);
+
+          fetchAllTrips();
+
+        } else {
+
+          toast.error(
+            response.message ||
+            "Ride creation failed"
+          );
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+        toast.error(
+          "Something went wrong"
+        );
+      }
+    };
+
+  // ---------------- STATUS ----------------
+
+  const rideId = String(
+    selectedRide?._id ||
+    selectedRide?.id ||
+    ""
+  );
+
+  const isJoined =
+    joinedRideIds.includes(
+      rideId
+    );
+
+  const isOwner =
+    createdRideIds.includes(
+      rideId
+    );
+
+  // ---------------- JOIN ----------------
+
+  const onJoinRide =
+    async () => {
+
+      await handleJoinRide();
+
+      setJoinedRideIds(
+        (prev) => [
+          ...prev,
+          rideId
+        ]
+      );
+    };
+
+  // ---------------- LEAVE ----------------
+
+  const onLeaveRide =
+    async () => {
+
+      await handleLeaveRide();
+
+      setJoinedRideIds(
+        (prev) =>
+          prev.filter(
+            (id) =>
+              id !== rideId
+          )
+      );
+
+      setJoinedRides(
+        (prev) =>
+          prev.filter(
+            (ride) =>
+              String(
+                ride._id ||
+                ride.id
+              ) !== rideId
+          )
+      );
+
+      closeRidePopup();
+    };
+
+  // ---------------- UPDATE ----------------
+
+  const onUpdateRide =
+    async (
+      rideId,
+      updatedData
+    ) => {
+
+      await handleUpdateRide(
+        rideId,
+        updatedData
+      );
+
+      toast.success(
+        "Ride updated successfully"
+      );
+
+      fetchAllTrips();
+    };
+
+  // ---------------- DELETE ----------------
+
+  const onDeleteRide =
+    async (rideId) => {
+
+      const confirmDelete =
+        window.confirm(
+          "Are you sure you want to delete this ride?"
+        );
+
+      if (!confirmDelete) return;
+
+      await handleDeleteRide(
+        rideId
+      );
+
+      toast.success(
+        "Ride deleted successfully"
+      );
+
+      fetchAllTrips();
+
+      closeRidePopup();
+    };
 
   return (
     <Layout>
+
       <Page>
+
         <Container>
+
+          {/* OFFERED RIDES */}
+
           <Section>
+
             <TopBar>
+
               <TitleWrapper>
-                <Title>Offered Rides</Title>
+
+                <Title>
+                  Offered Rides
+                </Title>
+
                 <Description>
-                  Manage rides created by you
-                  for other passengers.
+                  Manage rides created by
+                  you for other passengers.
                 </Description>
+
               </TitleWrapper>
-              <AddRideButton onClick={() => setShowCreatePopup(true)}>
+
+              <AddRideButton
+                onClick={() =>
+                  setShowCreatePopup(
+                    true
+                  )
+                }
+              >
                 +
               </AddRideButton>
+
             </TopBar>
+
             <RideGrid
               rides={offeredRides}
-              onViewRide={(ride) => openRidePopup(ride, "offered")} />
+              onViewRide={(ride) =>
+                openRidePopup(ride)
+              }
+            />
+
           </Section>
+
+          {/* JOINED RIDES */}
 
           <Section>
-            <Title> Joined Rides </Title>
+
+            <Title>
+              Joined Rides
+            </Title>
+
             <Description>
-              View rides you joined through
-              the WayMate platform.
+              View rides you joined
+              through WayMate.
             </Description>
+
             <RideGrid
               rides={joinedRides}
-              onViewRide={(ride) => openRidePopup(ride, "joined")}
+              onViewRide={(ride) =>
+                openRidePopup(ride)
+              }
             />
+
           </Section>
+
         </Container>
+
       </Page>
+
+      {/* CREATE RIDE */}
+
       <CreateRidePopup
         show={showCreatePopup}
-        onClose={() => setShowCreatePopup(false)}
-        onCreateRide={handleCreateRide}
+        onClose={() =>
+          setShowCreatePopup(
+            false
+          )
+        }
+        onCreateRide={
+          handleCreateRide
+        }
       />
 
-      <RideDetailsPopup
-        show={showRidePopup}
-        ride={selectedRide}
-        type={rideType}
-        onClose={closeRidePopup}
-        onUpdate={handleUpdateRide}
-        onDelete={handleDeleteRide}
-        onLeave={handleLeaveRide}
-      />
+      {/* OWNER POPUP */}
+
+      {isOwner ? (
+
+        <UpdateDeletePopup
+          show={!!selectedRide}
+          ride={selectedRide}
+          onClose={
+            closeRidePopup
+          }
+          onUpdate={
+            onUpdateRide
+          }
+          onDelete={
+            onDeleteRide
+          }
+        />
+
+      ) : (
+
+        /* JOIN / LEAVE POPUP */
+
+        <JoinLeavePopup
+          show={!!selectedRide}
+          ride={selectedRide}
+          isLoggedIn={
+            isLoggedIn
+          }
+          isJoined={isJoined}
+          isOwner={isOwner}
+          onClose={
+            closeRidePopup
+          }
+          onJoin={
+            onJoinRide
+          }
+          onLeave={
+            onLeaveRide
+          }
+        />
+
+      )}
+
     </Layout>
   );
 };

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
 import CreateRidePopup from "../components/CreateRidePopup";
-import RideDetailsPopup from "../components/RideDetailsPopup";
+import RideDetailsPopup from "../components/UpdateDeletePopup";
 import useRideActions from "../hooks/useRideActions";
 import { viewUserCreatedRides, viewUserJoinedRides, createUserRide } from "../api/apiUserRide";
 import { toast } from "react-toastify";

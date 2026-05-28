@@ -6,7 +6,7 @@ import { getAgencyProfile } from "../api/apiAgency";
 import { viewUserCreatedRides, viewUserJoinedRides } from "../api/apiUserRide";
 import { viewAgencyCreatedRides } from "../api/apiAgencyRide";
 import UpdateProfilePopup from "../components/UpdateProfilePopup";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -190,8 +190,7 @@ const LoadingText = styled.p`
 
 const Profile = () => {
 
-  const { user } = useContext(AuthProvider);
-
+  const { user } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
 
   const [userRideData, setUserRideData] =

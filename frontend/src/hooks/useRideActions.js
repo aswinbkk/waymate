@@ -29,7 +29,7 @@ const useRideActions = ({fetchRides}) => {
 
       if (response.success) {
         toast.success("Ride joined");
-        fetchRides?.();
+        await fetchRides?.();
         closeRidePopup();
 
       } else {
@@ -50,6 +50,7 @@ const useRideActions = ({fetchRides}) => {
 
       if (response.success) {
         toast.success("Ride left");
+        await fetchRides?.();
         fetchRides?.();
         closeRidePopup();
 

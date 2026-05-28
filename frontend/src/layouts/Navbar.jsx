@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect, useContext } from "react";
 import Search from "../components/Search";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import {logoutUser} from "../api/apiUser"
 
@@ -173,7 +173,7 @@ const MenuItem = styled(Link)`
 `;
 
 const Navbar = () => {
-  const { user, setUser } = useContext(AuthProvider);
+  const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const [showSearch, setShowSearch] = useState(false);

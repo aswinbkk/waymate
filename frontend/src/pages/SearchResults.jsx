@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
-import RideDetailsPopup from "../components/RideDetailsPopup";
+import JoinLeavePopup from "../components/JoinLeavePopup";
 import { searchUserRides } from "../api/apiUserRide";
 import { searchAgencyRides } from "../api/apiAgencyRide";
 import useRideActions from "../hooks/useRideActions";
+import { AuthContext } from "../context/AuthContext";
+import { viewUserJoinedRides, viewUserCreatedRides } from "../api/apiUserRide";
 
 const Container = styled.div`
   padding: 40px;
@@ -36,64 +38,164 @@ const EmptyText = styled.p`
 `;
 
 const SearchResults = () => {
+  const { user } = useContext(AuthContext);
+  const isLoggedIn = !!user;
   const [searchParams] = useSearchParams();
   const [rides, setRides] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
+  const [joinedRideIds, setJoinedRideIds] = useState([]);
+  const [createdRideIds, setCreatedRideIds] = useState([]);
   const type = searchParams.get("type") || "user";
   const originName = searchParams.get("originName") || "";
   const destinationName = searchParams.get("destinationName") || "";
   const range = searchParams.get("range") || "";
   const status = searchParams.get("status") || "open";
 
+  // ---------------- FETCH ALL DATA ----------------
+  const fetchAllData = async () => {
+    await fetchSearchResults();
+
+    if (isLoggedIn) {
+      await fetchJoinedRides();
+      await fetchCreatedRides();
+    } else {
+      setJoinedRideIds([]);
+      setCreatedRideIds([]);
+    }
+  };
+
   const {
     showRidePopup,
     selectedRide,
-    rideType,
     openRidePopup,
     closeRidePopup,
-    handleJoinRide
-  } = useRideActions({});
+    handleJoinRide,
+    handleLeaveRide
+  } = useRideActions({
+    fetchRides: fetchAllData
+  });
 
-  // Fetch Search Results
-  const fetchSearchResults =
-    async () => {
+  // ---------------- FETCH JOINED IDS ----------------
+  const fetchJoinedRides = async () => {
+    try {
+      const res = await viewUserJoinedRides();
 
-      try {
-        setLoading(true);
-        const searchData = { originName, destinationName, range, status };
+      console.log(
+        "viewUserJoinedRides",
+        res.joinedRideIds
+      );
 
-        const response = type === "agency"
-            ? await searchAgencyRides(
-              searchData
-            )
-            : await searchUserRides(
-              searchData
-            );
-        console.log( "Search Response:", response );
+      setJoinedRideIds(
+        res?.joinedRideIds?.map(String) || []
+      );
+    } catch (error) {
+      console.error(error);
+      setJoinedRideIds([]);
+    }
+  };
 
-        if (response?.success) {
-          setRides(response.data);
-          setCount( response.data.length );
+  // ---------------- FETCH CREATED IDS ----------------
+  const fetchCreatedRides = async () => {
+    try {
+      const res = await viewUserCreatedRides();
 
-        } else {
-          setRides([]);
-          setCount(0);
-        }
+      console.log(
+        "viewUserCreatedRides",
+        res.createdRideIds
+      );
 
-      } catch (error) {
-        console.error(error);
-        setRides([]);
-        setCount(0);
+      setCreatedRideIds(
+        res?.createdRideIds?.map(String) || []
+      );
+    } catch (error) {
+      console.error(error);
+      setCreatedRideIds([]);
+    }
+  };
 
-      } finally {
-        setLoading(false);
-      }
-    };
+  // ---------------- SEARCH ----------------
+  const fetchSearchResults = async () => {
+    try {
+      setLoading(true);
 
+      const searchData = {
+        originName,
+        destinationName,
+        range,
+        status
+      };
+
+      const response =
+        type === "agency"
+          ? await searchAgencyRides(searchData)
+          : await searchUserRides(searchData);
+
+      const result = response?.data || [];
+
+      setRides(result);
+      setCount(result.length);
+
+    } catch (error) {
+      console.error(error);
+      setRides([]);
+      setCount(0);
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- EFFECT ----------------
   useEffect(() => {
-    fetchSearchResults();
-  }, []);
+    fetchAllData();
+  }, [
+    isLoggedIn,
+    type,
+    originName,
+    destinationName,
+    range,
+    status
+  ]);
+
+  // ---------------- FILTER OWNER RIDES ----------------
+  const filteredRides = isLoggedIn
+    ? rides.filter(
+        (ride) =>
+          !createdRideIds.includes(
+            String(ride.id)
+          )
+      )
+    : rides;
+
+  // ---------------- STATUS ----------------
+  const rideId = String( selectedRide?.id || ""
+  );
+
+  const isJoined =
+    joinedRideIds.includes(rideId);
+
+  const isOwner =
+    createdRideIds.includes(rideId);
+
+  // ---------------- JOIN ----------------
+  const onJoinRide = async () => {
+    await handleJoinRide();
+
+    setJoinedRideIds((prev) => [
+      ...prev,
+      rideId
+    ]);
+  };
+
+  // ---------------- LEAVE ----------------
+  const onLeaveRide = async () => {
+    await handleLeaveRide();
+
+    setJoinedRideIds((prev) =>
+      prev.filter((id) => id !== rideId)
+    );
+  };
 
   return (
     <Layout>
@@ -109,29 +211,32 @@ const SearchResults = () => {
         </Description>
 
         {loading ? (
-          <LoadingText> Loading rides... </LoadingText>
-        ) : rides.length === 0 ? (
-          <EmptyText> No rides found </EmptyText>
+          <LoadingText>
+            Loading rides...
+          </LoadingText>
+        ) : filteredRides.length === 0 ? (
+          <EmptyText>
+            No rides found
+          </EmptyText>
         ) : (
-
           <RideGrid
-            rides={rides}
+            rides={filteredRides}
             onViewRide={(ride) =>
-              openRidePopup(
-                ride,
-                "available"
-              )
+              openRidePopup(ride)
             }
           />
         )}
-
       </Container>
-      <RideDetailsPopup
-        show={showRidePopup}
+
+      <JoinLeavePopup
+        show={!!selectedRide}
         ride={selectedRide}
-        type={rideType}
+        isLoggedIn={isLoggedIn}
+        isJoined={isJoined}
+        isOwner={isOwner}
         onClose={closeRidePopup}
-        onJoin={handleJoinRide}
+        onJoin={onJoinRide}
+        onLeave={onLeaveRide}
       />
     </Layout>
   );

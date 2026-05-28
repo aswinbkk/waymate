@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Layout from "../layouts/Layout";
 import { loginUser } from "../api/apiUser";
 import { loginAgency } from "../api/apiAgency";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -157,7 +157,7 @@ const BottomText = styled.p`
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthProvider);
+  const { user, setUser } = useContext(AuthContext);
   const [accountType, setAccountType] = useState("user");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({

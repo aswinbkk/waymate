@@ -2,41 +2,43 @@ import React, { createContext, useState, useEffect } from "react";
 import { getProfile } from "../api/apiUser";
 import { getAgencyProfile } from "../api/apiAgency";
 
-export const AuthProvider = createContext();
+export const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore Login
+  // Restore login session
   useEffect(() => {
     const fetchUser = async () => {
-
       try {
-        // Check User Login
+        // Try USER login
         const userResponse = await getProfile();
-        console.log("1",userResponse);
-        
 
         if (userResponse?.success) {
-          setUser({ ...userResponse.user, role: "user" });
+          setUser({
+            ...userResponse.user,
+            role: "user",
+          });
           return;
         }
 
-        // Check Agency Login
+        // Try AGENCY login
         const agencyResponse = await getAgencyProfile();
-        console.log("2",agencyResponse);
-        if (agencyResponse?.success) {
-          setUser({ ...agencyResponse.agency, role: "agency" });
 
-        } else {
-          setUser(null);
+        if (agencyResponse?.success) {
+          setUser({
+            ...agencyResponse.agency,
+            role: "agency",
+          });
+          return;
         }
 
-      } catch (error) {
-        console.error(error);
+        // No valid session
         setUser(null);
-
+      } catch (error) {
+        console.error("Auth error:", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -46,9 +48,9 @@ const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthProvider.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
-    </AuthProvider.Provider>
+    </AuthContext.Provider>
   );
 };
 

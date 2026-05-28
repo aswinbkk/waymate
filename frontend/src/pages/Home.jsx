@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Layout from "../layouts/Layout";
 import RideGrid from "../components/RideGrid";
@@ -15,43 +16,147 @@ import HomeSlider from "../components/HomeSlider";
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  background: #f8fafc;
 `;
 
-const ContentWrapper = styled.div`
+const ContentWrapper = styled.section`
   width: 100%;
-  max-width: 1400px;
+  max-width: 1350px;
+
   margin: auto;
-  padding: 40px 50px 80px;
+
+  padding: 40px 32px;
 
   @media (max-width: 768px) {
-    padding: 30px 20px 60px;
+    padding: 28px 18px;
   }
 `;
 
 const HeroSection = styled.div`
-  margin-bottom: 30px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 28px;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+  }
+`;
+
+const HeroContent = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Badge = styled.div`
+  width: fit-content;
+
+  padding: 8px 14px;
+
+  border-radius: 999px;
+
+  background: rgba(37, 99, 235, 0.08);
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 0.4px;
+
+  margin-bottom: 14px;
 `;
 
 const Title = styled.h1`
-  font-size: 42px;
+  font-size: 36px;
   font-weight: 800;
+
   color: #0f172a;
+
+  line-height: 1.1;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
 `;
 
 const Subtitle = styled.p`
-  color: #64748b;
-  font-size: 16px;
   margin-top: 10px;
+
+  color: #64748b;
+
+  font-size: 15px;
+  line-height: 1.7;
+
+  max-width: 650px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+const ViewAllButton = styled.button`
+  border: none;
+  outline: none;
+
+  padding: 12px 18px;
+
+  border-radius: 14px;
+
+  background: white;
+
+  border: 1px solid #dbeafe;
+
+  color: #2563eb;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: #eff6ff;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const Home = () => {
   const { user } = useContext(AuthContext);
   const isLoggedIn = !!user;
+  const location = useLocation();
   const [userRides, setUserRides] = useState([]);
   const [agencyRides, setAgencyRides] = useState([]);
   const [joinedRideIds, setJoinedRideIds] = useState([]);
   const [createdRideIds, setCreatedRideIds] = useState([]);
+  const [showAllUserRides, setShowAllUserRides] =
+    useState(false);
+
+  const [
+    showAllAgencyRides,
+    setShowAllAgencyRides,
+  ] = useState(false);
+
 
   const fetchAllRides = async () => {
     await fetchUserRides();
@@ -134,6 +239,44 @@ const Home = () => {
     }
   }, [isLoggedIn]);
 
+  const userRideRef = useRef(null);
+
+  const agencyRideRef = useRef(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(
+      location.search
+    );
+
+    const section =
+      params.get("section");
+
+    if (section === "user-rides") {
+
+      setShowAllUserRides(true);
+
+      setTimeout(() => {
+        userRideRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 150);
+
+    } else if (
+      section === "agency-rides"
+    ) {
+
+      setShowAllAgencyRides(true);
+
+      setTimeout(() => {
+        agencyRideRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 150);
+    }
+  }, [location]);
+
   // ---------------- FILTER ----------------
   const filteredUserRides = isLoggedIn
     ? userRides.filter((r) => !createdRideIds.includes(String(r.id)))
@@ -154,26 +297,90 @@ const Home = () => {
       <PageContainer>
         <ContentWrapper>
           <HomeSlider />
+        </ContentWrapper>
+        <ContentWrapper ref={userRideRef}>
           <HeroSection>
-            <Title>User Rides</Title>
-            <Subtitle>Connect with riders travelling on same route</Subtitle>
+
+            <HeroContent>
+              <Badge>COMMUNITY RIDES</Badge>
+
+              <Title>User Rides</Title>
+
+              <Subtitle>
+                Connect with riders travelling on the
+                same route and enjoy affordable,
+                eco-friendly journeys together.
+              </Subtitle>
+            </HeroContent>
+
+            {filteredUserRides.length > 4 && (
+              <ViewAllButton
+                onClick={() =>
+                  setShowAllUserRides(
+                    !showAllUserRides
+                  )
+                }
+              >
+                {showAllUserRides
+                  ? "Show Less"
+                  : "View All"}
+              </ViewAllButton>
+            )}
+
           </HeroSection>
 
           <RideGrid
-            rides={filteredUserRides}
-            onViewRide={(ride) => openRidePopup(ride)}
+            rides={
+              showAllUserRides
+                ? filteredUserRides
+                : filteredUserRides.slice(0, 4)
+            }
+            onViewRide={(ride) =>
+              openRidePopup(ride)
+            }
           />
         </ContentWrapper>
 
-        <ContentWrapper>
+        <ContentWrapper ref={agencyRideRef}>
           <HeroSection>
-            <Title>Agency Rides</Title>
-            <Subtitle>Premium verified agency rides</Subtitle>
+
+            <HeroContent>
+              <Badge>PREMIUM TRAVEL</Badge>
+
+              <Title>Agency Rides</Title>
+
+              <Subtitle>
+                Book verified agency rides with
+                comfortable seating and professional
+                travel experience.
+              </Subtitle>
+            </HeroContent>
+
+            {filteredAgencyRides.length > 4 && (
+              <ViewAllButton
+                onClick={() =>
+                  setShowAllAgencyRides(
+                    !showAllAgencyRides
+                  )
+                }
+              >
+                {showAllAgencyRides
+                  ? "Show Less"
+                  : "View All"}
+              </ViewAllButton>
+            )}
+
           </HeroSection>
 
           <RideGrid
-            rides={filteredAgencyRides}
-            onViewRide={(ride) => openRidePopup(ride)}
+            rides={
+              showAllAgencyRides
+                ? filteredAgencyRides
+                : filteredAgencyRides.slice(0, 4)
+            }
+            onViewRide={(ride) =>
+              openRidePopup(ride)
+            }
           />
         </ContentWrapper>
       </PageContainer>

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import Search from "../components/Search";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
-import {logoutUser} from "../api/apiUser"
+import { logoutUser } from "../api/apiUser"
 
 const NavbarContainer = styled.nav`
   width: 100%;
@@ -179,41 +179,41 @@ const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-// Logout
-const handleLogout = async () => {
+  // Logout
+  const handleLogout = async () => {
 
-  try {
+    try {
 
-    const response =
-      await logoutUser();
+      const response =
+        await logoutUser();
 
-    if (response.success) {
+      if (response.success) {
 
-      setUser(null);
+        setUser(null);
 
-      toast.success(
-        "Logout Successful"
-      );
+        toast.success(
+          "Logout Successful"
+        );
 
-      navigate("/login");
+        navigate("/login");
 
-    } else {
+      } else {
+
+        toast.error(
+          response.msg ||
+          "Logout Failed"
+        );
+      }
+
+    } catch (error) {
+
+      console.error(error);
 
       toast.error(
-        response.msg ||
-        "Logout Failed"
+        "Something went wrong"
       );
     }
-
-  } catch (error) {
-
-    console.error(error);
-
-    toast.error(
-      "Something went wrong"
-    );
-  }
-};
+  };
 
   // Close menu outside click
   useEffect(() => {
@@ -248,9 +248,17 @@ const handleLogout = async () => {
         <NavbarCenter>
           <NavLinks>
             <Link to="/">Home</Link>
-            <Link to="/">User Ride</Link>
-            <Link to="/">Agency Ride</Link>
+
+            <Link to="/?section=user-rides">
+              User Ride
+            </Link>
+
+            <Link to="/?section=agency-rides">
+              Agency Ride
+            </Link>
+
             <Link to="/help">Help</Link>
+
             <Link to="/about">About</Link>
           </NavLinks>
 

@@ -1,64 +1,110 @@
- 🚗 waymate – Smart Carpooling Platform
+<div align="center">
 
-<p align="center">
-  <img src="frontend/public/waymate_standalone_icon.png" alt="waymate icon" width="200"/>
-</p>
+# 🚗 waymate
 
-<p align="center">
-  <img src="frontend/public/waymate_wordmark_logo.png" alt="waymate wordmark" width="200"/>
-</p>
+### Smart MERN Stack Carpooling Platform
+
+WayMate is a modern carpooling platform built using the MERN stack that helps users create, discover, and join rides easily.
+
+Designed with a clean UI, secure authentication, and smooth ride management experience.
+
+<br/>
+
+### 🌐 Live Demo
+
+👉 https://waymate-beta.vercel.app
+
+<br/>
+
+### 🔗 Repository
+
+👉 https://github.com/aswinbkk/waymate
+
+<br/>
+
+<img src="frontend/public/waymate_full_logo.png" alt="waymate icon" width="400" />
+
+</div>
 
 ---
 
 # ✨ Features
 
-## 👤 Users
+## 👤 User Authentication
 
-* Create ride requests
-* Join rides created by users & agencies
-* Create & join group bookings
-* Bid for cheaper rides 💰
-* Set travel preferences (AC, gender, timing, etc.)
-* View ride history & dashboard
+* Secure signup and login system
+* JWT-based authentication
+* Password encryption using bcrypt
+* Protected routes and persistent sessions
 
 ---
 
-## 🏢 Ride Providers (Agencies)
+## 🚘 Ride Management
 
-* Create rides on specific routes
-* View user demand on routes 📍
-* Accept or reject group bookings
-* Participate in bidding system
-* Set ride preferences
+* Create rides
+* Update existing rides
+* Delete rides with confirmation popup
+* View ride details using modals
+* Auto-filled ride update forms
 
 ---
 
-## 🔍 Smart Matching
+## 🤝 Join & Leave Rides
 
-* Location-based ride search (Geo matching)
-* Route-based pickup & destination matching
-* Nearby ride discovery
+* Join available rides
+* Leave joined rides
+* Track joined rides in **My Trips**
+* Manage rides created by the user
+
+---
+
+## 🎨 Modern UI/UX
+
+* Responsive design
+* Styled-components based UI
+* Smooth popup interactions
+* Clean and modern interface
+* Mobile-friendly experience
+
+---
+
+## 📂 Ride Categories
+
+* Upcoming rides
+* Joined rides
+* Created rides
+* Ride history management
 
 ---
 
 # 🛠️ Tech Stack
 
-### Frontend
+## Frontend
 
-* ⚛️ React.js
-* 🎨 CSS / Tailwind (optional)
-
-### Backend
-
-* 🟢 Node.js
-* 🚀 Express.js
-* 🍃 MongoDB (Mongoose)
-
-### Other Tools
-
-* JWT Authentication 🔐
+* React.js
+* Vite
+* Styled Components
+* React Router DOM
 * Axios
-* OpenStreetMap (Geocoding)
+
+---
+
+## Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* bcrypt
+
+---
+
+## Deployment
+
+* Frontend → Vercel
+* Backend → Render
+* Database → MongoDB Atlas
 
 ---
 
@@ -67,125 +113,210 @@
 ```bash
 WayMate/
 │
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── context/
+│   │   ├── layouts/
+│   │   └── services/
+│   └── public/
+│
 ├── backend/
 │   ├── controllers/
 │   ├── models/
 │   ├── routes/
 │   ├── middleware/
-│   ├── utils/
-│   └── server.js
-│
-├── frontend/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── App.js
+│   ├── validators/
+│   └── config/
 │
 └── README.md
 ```
 
 ---
 
-# ⚙️ Backend Setup
+# ⚙️ Installation & Setup
+
+## 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/aswinbkk/waymate.git
+
+cd waymate
+```
+
+---
+
+## 2️⃣ Backend Setup
 
 ```bash
 cd backend
+
 npm install
 ```
 
-### 🔑 Create `.env`
+### Create `.env` inside backend
 
 ```env
-PORT=4000
+PORT=3000
+
 MONGO_URI=your_mongodb_connection
+
 JWT_SECRET=your_secret_key
+
+CLIENT_URL=http://localhost:5173
 ```
 
-### ▶️ Run Server
+### Run Backend
 
 ```bash
-npm start
+npm run dev
 ```
 
 ---
 
-# 💻 Frontend Setup
+## 3️⃣ Frontend Setup
 
 ```bash
 cd frontend
+
 npm install
-npm start
+```
+
+### Create `.env` inside frontend
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Run Frontend
+
+```bash
+npm run dev
 ```
 
 ---
 
-# 🔐 API Highlights
+# 🚀 Deployment
 
-## Auth
+## Frontend Deployment (Vercel)
 
-* `POST /api/users/register`
-* `POST /api/users/login`
-
-## Rides
-
-* `POST /api/rides/create`
-* `GET /api/rides/search`
-* `POST /api/users/ride/:id/join`
-* `POST /api/users/ride/:id/leave`
-
-## User
-
-* `GET /api/users/profile`
-* `GET /api/users/my-rides`
-* `GET /api/users/joined-rides`
+| Setting          | Value         |
+| ---------------- | ------------- |
+| Framework Preset | Vite          |
+| Root Directory   | frontend      |
+| Build Command    | npm run build |
+| Output Directory | dist          |
 
 ---
 
-# 📊 Dashboard Features
+## Backend Deployment
 
-* Total rides created
-* Total rides joined
-* Activity tracking
+You can deploy the backend using:
 
----
+* Render
+* Railway
+* VPS
+* EC2
 
-# 🌍 Geo Features
+### Important Production Setup
 
-* Convert location name → coordinates
-* Find rides within range
-* Match origin & destination
-
----
-
-# 🚀 Future Enhancements
-
-* 🔄 Real-time ride tracking
-* 💳 Payment integration
-* 📱 Mobile app (React Native)
-* ⭐ Ratings & reviews
-* 🔔 Notifications system
+* Add environment variables
+* Configure CORS properly
+* Use MongoDB Atlas
+* Enable secure JWT secret
 
 ---
 
-# 🧠 Concept
+# 🔐 Environment Variables
 
-WayMate solves:
+## Backend `.env`
 
-* 🚗 Empty seats problem
-* 💸 High travel costs
-* 🌱 Environmental impact
+```env
+PORT=
+
+MONGO_URI=
+
+JWT_SECRET=
+
+CLIENT_URL=
+```
+
+---
+
+## Frontend `.env`
+
+```env
+VITE_API_URL=
+```
+
+---
+
+# 📸 Screenshots
+
+Add screenshots for:
+
+* Home Page
+* Ride Details Popup
+* Create Ride Form
+* My Trips Page
+* Authentication Pages
+
+---
+
+# 📌 Future Improvements
+
+* Real-time rider chat
+* Google Maps integration
+* Ride rating system
+* Email notifications
+* Payment integration
+* Ride filtering & search
+* Admin dashboard
 
 ---
 
 # 🤝 Contributing
 
-Pull requests are welcome!
-For major changes, open an issue first.
+Contributions are welcome.
+
+### Steps
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
 
 ---
 
 # 📄 License
 
-MIT License
+This project is licensed under the **MIT License**.
 
 ---
+
+# 👨‍💻 Author
+
+### Aswin
+
+🔗 GitHub: https://github.com/aswinbkk
+
+---
+
+# ⭐ Support
+
+If you like this project:
+
+* Give it a ⭐ on GitHub
+* Share it with others
+* Contribute to improve WayMate
+
+---
+
+<div align="center">
+
+### 🚗 Made with ❤️ using MERN Stack
+
+</div>

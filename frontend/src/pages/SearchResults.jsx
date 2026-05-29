@@ -145,7 +145,7 @@ const SearchResults = () => {
     status
   ]);
 
-  //  FILTER OWNER RIDES
+  // FILTER OWNER RIDES
   const filteredRides = isLoggedIn
     ? rides.filter(
         (ride) =>

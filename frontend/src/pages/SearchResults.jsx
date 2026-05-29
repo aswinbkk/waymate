@@ -200,9 +200,7 @@ const SearchResults = () => {
         {loading ? (
           <LoadingText> Loading rides... </LoadingText>
         ) : filteredRides.length === 0 ? (
-          <EmptyText>
-            No rides found
-          </EmptyText>
+          <EmptyText> No rides found </EmptyText>
         ) : (
           <RideGrid
             rides={filteredRides}

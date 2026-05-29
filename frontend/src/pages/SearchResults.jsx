@@ -193,9 +193,7 @@ const SearchResults = () => {
             : "User Ride Results"}
         </Title>
 
-        <Description>
-          {count} rides found matching your search
-        </Description>
+        <Description> {count} rides found matching your search </Description>
 
         {loading ? (
           <LoadingText> Loading rides... </LoadingText>

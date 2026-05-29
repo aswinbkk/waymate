@@ -410,7 +410,6 @@ const MyTrip = () => {
                   </ViewAllButton>
                 )
               }
-
             </TopBar>
 
             {

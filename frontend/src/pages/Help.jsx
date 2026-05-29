@@ -209,10 +209,7 @@ const Help = () => {
             </Title>
 
             <Description>
-              Find answers to common questions,
-              manage your rides and get support
-              for bookings, payments and account
-              related issues.
+              Find answers to common questions, manage your rides and get support for bookings, payments and account related issues.
             </Description>
           </Hero>
 
@@ -220,34 +217,19 @@ const Help = () => {
             <Card>
               <Icon> 🚗 </Icon>
               <CardTitle> Join a Ride </CardTitle>
-
-              <CardText>
-                Search available rides and
-                reserve your seat quickly
-                and easily.
-              </CardText>
+              <CardText> Search available rides and reserve your seat quickly and easily. </CardText>
             </Card>
 
             <Card>
               <Icon> 👤 </Icon>
               <CardTitle> Manage Account </CardTitle>
-
-              <CardText>
-                Update profile details,
-                preferences and manage
-                your account securely.
-              </CardText>
+              <CardText> Update profile details, preferences and manage your account securely. </CardText>
             </Card>
 
             <Card>
               <Icon> 💳 </Icon>
               <CardTitle> Payments </CardTitle>
-
-              <CardText>
-                Learn about pricing,
-                bookings and secure
-                payment options.
-              </CardText>
+              <CardText> Learn about pricing, bookings and secure payment options. </CardText>
             </Card>
           </CardGrid>
 
@@ -256,36 +238,22 @@ const Help = () => {
             <FAQGrid>
               <FAQCard>
                 <Question> How do I join a ride? </Question>
-
                 <Answer>
-                  Browse available rides,
-                  choose your preferred
-                  ride and click the
-                  join button.
+                  Browse available rides, choose your preferred ride and click the join button.
                 </Answer>
               </FAQCard>
 
               <FAQCard>
                 <Question> Can I create my own ride? </Question>
-
                 <Answer>
-                  Yes. Users and agencies
-                  can create rides by
-                  adding route, timing
-                  and seat details.
+                  Yes. Users and agencies can create rides by adding route, timing and seat details.
                 </Answer>
               </FAQCard>
 
               <FAQCard>
                 <Question> Is waymate safe? </Question>
-
                 <Answer>
-                  WayMate focuses on
-                  verified users and
-                  transparent ride
-                  information for a
-                  safer ride-sharing
-                  experience.
+                  waymate focuses on verified users and transparent ride information for a safer ride-sharing experience.
                 </Answer>
               </FAQCard>
             </FAQGrid>
@@ -294,9 +262,7 @@ const Help = () => {
           <ContactCard>
             <ContactTitle> Still Need Help? </ContactTitle>
             <ContactText>
-              Contact our support team for
-              ride issues, booking problems
-              or account related help.
+              Contact our support team for ride issues, booking problems or account related help.
             </ContactText>
             <ContactButton> Contact Support </ContactButton>
           </ContactCard>

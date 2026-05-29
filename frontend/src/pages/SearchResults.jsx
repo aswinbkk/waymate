@@ -52,7 +52,7 @@ const SearchResults = () => {
   const range = searchParams.get("range") || "";
   const status = searchParams.get("status") || "open";
 
-  // ---------------- FETCH ALL DATA ----------------
+  // FETCH ALL DATA
   const fetchAllData = async () => {
     await fetchSearchResults();
 
@@ -76,35 +76,22 @@ const SearchResults = () => {
     fetchRides: fetchAllData
   });
 
-  // ---------------- FETCH JOINED IDS ----------------
+  //FETCH JOINED IDS
   const fetchJoinedRides = async () => {
     try {
       const res = await viewUserJoinedRides();
+      setJoinedRideIds( res?.joinedRideIds?.map(String) || [] );
 
-      console.log(
-        "viewUserJoinedRides",
-        res.joinedRideIds
-      );
-
-      setJoinedRideIds(
-        res?.joinedRideIds?.map(String) || []
-      );
     } catch (error) {
       console.error(error);
       setJoinedRideIds([]);
     }
   };
 
-  // ---------------- FETCH CREATED IDS ----------------
+  // FETCH CREATED IDS
   const fetchCreatedRides = async () => {
     try {
       const res = await viewUserCreatedRides();
-
-      console.log(
-        "viewUserCreatedRides",
-        res.createdRideIds
-      );
-
       setCreatedRideIds(
         res?.createdRideIds?.map(String) || []
       );
@@ -114,7 +101,7 @@ const SearchResults = () => {
     }
   };
 
-  // ---------------- SEARCH ----------------
+  // SEARCH
   const fetchSearchResults = async () => {
     try {
       setLoading(true);
@@ -146,7 +133,7 @@ const SearchResults = () => {
     }
   };
 
-  // ---------------- EFFECT ----------------
+  //  EFFECT 
   useEffect(() => {
     fetchAllData();
   }, [
@@ -158,7 +145,7 @@ const SearchResults = () => {
     status
   ]);
 
-  // ---------------- FILTER OWNER RIDES ----------------
+  //  FILTER OWNER RIDES
   const filteredRides = isLoggedIn
     ? rides.filter(
         (ride) =>
@@ -168,7 +155,7 @@ const SearchResults = () => {
       )
     : rides;
 
-  // ---------------- STATUS ----------------
+  // STATUS
   const rideId = String( selectedRide?.id || ""
   );
 
@@ -178,7 +165,7 @@ const SearchResults = () => {
   const isOwner =
     createdRideIds.includes(rideId);
 
-  // ---------------- JOIN ----------------
+  // JOIN 
   const onJoinRide = async () => {
     await handleJoinRide();
 
@@ -188,7 +175,7 @@ const SearchResults = () => {
     ]);
   };
 
-  // ---------------- LEAVE ----------------
+  // LEAVE
   const onLeaveRide = async () => {
     await handleLeaveRide();
 

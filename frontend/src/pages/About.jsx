@@ -205,11 +205,7 @@ const About = () => {
               </Title>
 
               <Description>
-                waymate is a modern ride-sharing
-                platform that helps users and
-                agencies connect easily for
-                affordable, comfortable and
-                eco-friendly travel.
+                waymate is a modern ride-sharing platform that helps users and agencies connect easily for affordable, comfortable and eco-friendly travel.
               </Description>
             </HeroContent>
 
@@ -224,10 +220,7 @@ const About = () => {
               ?
             </SectionTitle>
             <SectionText>
-              Enjoy secure ride-sharing,
-              smart route matching and
-              affordable travel with
-              a simple and modern platform.
+              Enjoy secure ride-sharing, smart route matching and affordable travel with a simple and modern platform.
             </SectionText>
 
             <FeatureGrid>
@@ -236,9 +229,7 @@ const About = () => {
                 <FeatureTitle> Smart Matching </FeatureTitle>
 
                 <FeatureText>
-                  Find people travelling
-                  on the same route and
-                  reduce travel costs.
+                  Find people travelling on the same route and reduce travel costs.
                 </FeatureText>
               </FeatureCard>
 
@@ -247,9 +238,7 @@ const About = () => {
                 <FeatureTitle> Safe Travel </FeatureTitle>
 
                 <FeatureText>
-                  Verified profiles and
-                  trusted ride providers
-                  for secure journeys.
+                  Verified profiles and trusted ride providers for secure journeys.
                 </FeatureText>
               </FeatureCard>
 
@@ -258,9 +247,7 @@ const About = () => {
                 <FeatureTitle> Eco Friendly </FeatureTitle>
 
                 <FeatureText>
-                  Share rides and help
-                  reduce traffic and
-                  pollution together.
+                  Share rides and help reduce traffic and pollution together.
                 </FeatureText>
               </FeatureCard>
             </FeatureGrid>
@@ -269,9 +256,7 @@ const About = () => {
           <Section>
             <SectionTitle>waymate In Numbers </SectionTitle>
             <SectionText>
-              Thousands of riders trust
-              waymate every day for
-              comfortable ride-sharing.
+              Thousands of riders trust waymate every day for comfortable ride-sharing.
             </SectionText>
 
             <StatsGrid>

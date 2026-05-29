@@ -9,7 +9,6 @@ import Profile from "../pages/Profile";
 import MyTrip from "../pages/MyTrip";
 import SearchResults from "../pages/SearchResults";
 
-
 const Routing = () => {
     return (
         <>
